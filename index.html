@@ -471,6 +471,7 @@
              justify-content: center;
              align-items: center;
         }
+        body.chat-keyboard-open { background: #F8F8F8 !important; }
         #home-screen {
              width: 100%;
              height: 100%;
@@ -27854,8 +27855,9 @@ ${msgContext ? msgContext : '无'}
         function applyFix() {
             if (!chatView.classList.contains('active')) return;
             var h = getViewH();
-            // 取原始高度和键盘高度中间值，让输入框只上移一半距离
-            chatView.style.height = ((heightBefore + h) / 2) + 'px';
+            // 输入框只上移 1/4 距离，留更多空间在下方
+            chatView.style.height = ((heightBefore * 3 + h) / 4) + 'px';
+            document.body.classList.add('chat-keyboard-open');
             isKeyboardOpen = true;
             if (msgs) {
                 requestAnimationFrame(function() { msgs.scrollTop = msgs.scrollHeight; });
@@ -27864,6 +27866,7 @@ ${msgContext ? msgContext : '无'}
 
         function resetFix() {
             chatView.style.height = '';
+            document.body.classList.remove('chat-keyboard-open');
             isKeyboardOpen = false;
         }
 
