@@ -27854,7 +27854,8 @@ ${msgContext ? msgContext : '无'}
         function applyFix() {
             if (!chatView.classList.contains('active')) return;
             var h = getViewH();
-            chatView.style.height = h + 'px';
+            // 取原始高度和键盘高度中间值，让输入框只上移一半距离
+            chatView.style.height = ((heightBefore + h) / 2) + 'px';
             isKeyboardOpen = true;
             if (msgs) {
                 requestAnimationFrame(function() { msgs.scrollTop = msgs.scrollHeight; });
