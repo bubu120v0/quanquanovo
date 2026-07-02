@@ -3398,14 +3398,6 @@
         body.ios-mode-active .recollection-detail-header { padding-top: calc(env(safe-area-inset-top, 20px) + 15px); }
         body.ios-mode-active .takeout-header { padding-top: calc(env(safe-area-inset-top, 20px) + 15px); } /* <-- 新增外卖App */
         
-        /* --- 15plus顶栏适配：iOS模式 + 15plus开关同时开启时，额外下移顶栏 --- */
-        body.ios-plus-15-active .wallet-details-header {
-            padding-top: calc(env(safe-area-inset-top, 20px) + 35px);
-        }
-        body.ios-plus-15-active .forum-header-home {
-            padding-top: calc(env(safe-area-inset-top, 20px) + 35px);
-        }
-        
                 /* --- 修复：转账页返回按钮位置更靠上 --- */
                 /* --- 修复：转账页返回按钮位置下移 --- */
         .transfer-back-btn {
@@ -13928,13 +13920,6 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
                 </label>
             </div>
             <div class="settings-row-with-switch" style="margin-top: 10px;">
-                <label for="ios-plus-15-switch">15plus顶栏适配</label>
-                <label class="ios-switch">
-                    <input type="checkbox" id="ios-plus-15-switch">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <div class="settings-row-with-switch" style="margin-top: 10px;">
                 <label for="phone-frame-switch">手机框</label>
                 <label class="ios-switch">
                     <input type="checkbox" id="phone-frame-switch">
@@ -16099,7 +16084,6 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     const WALLET_DATA_KEY = 'walletData_v3'; 
     const WORLDBOOK_DATA_KEY = 'worldbookData_v3_covers';
     const IOS_MODE_KEY = 'iosModeEnabled_v1';
-    const IOS_PLUS_15_KEY = 'iosPlus15Enabled_v1';
     const PHONE_FRAME_KEY = 'phoneFrameEnabled_v2'; 
     const PHONE_CASE_COLOR_KEY = 'phoneCaseColor_v1';
     const CAT_EARS_KEY = 'catEarsEnabled_v1';
@@ -17600,29 +17584,10 @@ function renderPurchasedProducts() {
     function applyIOSMode(enabled) {
       if (enabled) {
         document.body.classList.add('ios-mode-active');
-        // 如果15plus开关也开启了，同时应用15plus适配
-        const plus15 = document.getElementById('ios-plus-15-switch');
-        if (plus15 && plus15.checked) {
-          document.body.classList.add('ios-plus-15-active');
-        }
       } else {
         document.body.classList.remove('ios-mode-active');
-        document.body.classList.remove('ios-plus-15-active');
       }
       localStorage.setItem(IOS_MODE_KEY, enabled);
-    }
-
-    function applyIOSPlus15(enabled) {
-      if (enabled) {
-        localStorage.setItem(IOS_PLUS_15_KEY, true);
-        // 只有iOS模式也开启时才生效
-        if (document.body.classList.contains('ios-mode-active')) {
-          document.body.classList.add('ios-plus-15-active');
-        }
-      } else {
-        localStorage.setItem(IOS_PLUS_15_KEY, false);
-        document.body.classList.remove('ios-plus-15-active');
-      }
     }
 
     // --- *** START: Takeout App Logic *** ---
@@ -32685,7 +32650,6 @@ ${verifyHistory}
             document.getElementById('lock-pwd-setting-row').style.display = e.target.checked ? 'flex' : 'none';
         });
 document.getElementById('ios-mode-switch').checked = localStorage.getItem(IOS_MODE_KEY) === 'true';
-document.getElementById('ios-plus-15-switch').checked = localStorage.getItem(IOS_PLUS_15_KEY) === 'true';
 document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHONE_FRAME_KEY) === 'true';
         document.getElementById('cat-ears-switch').checked = localStorage.getItem(CAT_EARS_KEY) === 'true';
 
@@ -32863,9 +32827,6 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         const iosMode = document.getElementById('ios-mode-switch').checked;
         applyIOSMode(iosMode);
         
-        const iosPlus15 = document.getElementById('ios-plus-15-switch').checked;
-        applyIOSPlus15(iosPlus15);
-        
         const phoneFrame = document.getElementById('phone-frame-switch').checked;
         applyPhoneFrame(phoneFrame);
         
@@ -32881,11 +32842,6 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
     document.getElementById('ios-mode-switch').addEventListener('change', (e) => {
         applyIOSMode(e.target.checked);
         localStorage.setItem(IOS_MODE_KEY, e.target.checked);
-    });
-
-    // 15plus顶栏适配开关即时应用
-    document.getElementById('ios-plus-15-switch').addEventListener('change', (e) => {
-        applyIOSPlus15(e.target.checked);
     });
 
     // 手机框开关监听
@@ -34888,9 +34844,6 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
 
         const isIosMode = localStorage.getItem(IOS_MODE_KEY) === 'true';
         applyIOSMode(isIosMode);
-        
-        const isIosPlus15 = localStorage.getItem(IOS_PLUS_15_KEY) === 'true';
-        applyIOSPlus15(isIosPlus15);
         
         const isPhoneFrame = localStorage.getItem(PHONE_FRAME_KEY) === 'true';
         applyPhoneFrame(isPhoneFrame);
