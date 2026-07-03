@@ -499,8 +499,60 @@
         #takeout-shop-detail-page, #forum-post-detail-page, #forum-user-profile-page,
         #forum-my-posts-page, #forum-all-forums-page, #forum-favorite-posts-page,
         #forum-all-liked-posts-page, #forum-following-page, #edit-forum-page,
-        #recollection-color-page, #worldbook-entry-fullscreen-page {
+        #recollection-color-page, #worldbook-entry-fullscreen-page,
+        #chat-conversation-view, #pet-app-page {
             transform-origin: center center;
+        }
+        /* 非手机框模式下，页面缩放后通过伪元素背景层填满视口，避免底部露出 #app-wrapper 深色背景条 */
+        body:not(.phone-frame-active) #chat-app-page::before,
+        body:not(.phone-frame-active) #wallet-app-page::before,
+        body:not(.phone-frame-active) #wallet-details-page::before,
+        body:not(.phone-frame-active) #settings-page::before,
+        body:not(.phone-frame-active) #worldbook-app-page::before,
+        body:not(.phone-frame-active) #worldbook-color-page::before,
+        body:not(.phone-frame-active) #forum-app-page::before,
+        body:not(.phone-frame-active) #recollection-app-page::before,
+        body:not(.phone-frame-active) #recollection-detail-page::before,
+        body:not(.phone-frame-active) #mall-app-page::before,
+        body:not(.phone-frame-active) #takeout-app-page::before,
+        body:not(.phone-frame-active) #gallery-app-page::before,
+        body:not(.phone-frame-active) #hushh-app-page::before,
+        body:not(.phone-frame-active) #hushh-phone-page::before,
+        body:not(.phone-frame-active) #role-settings-page::before,
+        body:not(.phone-frame-active) #transfer-page::before,
+        body:not(.phone-frame-active) #mall-detail-page::before,
+        body:not(.phone-frame-active) #mall-home-page::before,
+        body:not(.phone-frame-active) #mall-cart-page::before,
+        body:not(.phone-frame-active) #mall-favorite-page::before,
+        body:not(.phone-frame-active) #mall-sent-gifts-page::before,
+        body:not(.phone-frame-active) #mall-purchased-page::before,
+        body:not(.phone-frame-active) #mall-received-gifts-page::before,
+        body:not(.phone-frame-active) #takeout-profile-page::before,
+        body:not(.phone-frame-active) #takeout-favorite-page::before,
+        body:not(.phone-frame-active) #takeout-all-orders-page::before,
+        body:not(.phone-frame-active) #takeout-shop-detail-page::before,
+        body:not(.phone-frame-active) #forum-post-detail-page::before,
+        body:not(.phone-frame-active) #forum-user-profile-page::before,
+        body:not(.phone-frame-active) #forum-my-posts-page::before,
+        body:not(.phone-frame-active) #forum-all-forums-page::before,
+        body:not(.phone-frame-active) #forum-favorite-posts-page::before,
+        body:not(.phone-frame-active) #forum-all-liked-posts-page::before,
+        body:not(.phone-frame-active) #forum-following-page::before,
+        body:not(.phone-frame-active) #edit-forum-page::before,
+        body:not(.phone-frame-active) #recollection-color-page::before,
+        body:not(.phone-frame-active) #worldbook-entry-fullscreen-page::before,
+        body:not(.phone-frame-active) #chat-conversation-view::before,
+        body:not(.phone-frame-active) #pet-app-page::before,
+        body:not(.phone-frame-active) div[style*="position: fixed"][style*="width: 100vw"][style*="height: 100vh"]::before {
+            content: '';
+            position: absolute;
+            top: -8.8235%;
+            left: -8.8235%;
+            width: 117.647%;
+            height: 117.647%;
+            background: inherit;
+            z-index: -1;
+            pointer-events: none;
         }
                 body.settings-active #home-screen,
         body.chat-active #home-screen,
