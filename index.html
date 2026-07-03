@@ -477,7 +477,6 @@
              height: 100%;
              display: flex;
              flex-direction: column;
-             overflow: hidden;
              padding: 0 0 env(safe-area-inset-bottom, 20px) 0;
              /* 【安卓兼容修复】缩短过渡时间并使用 will-change 提示浏览器优化合成层，
                 避免安卓上 opacity+transform 过渡引发大面积重绘闪烁 */
@@ -502,23 +501,6 @@
         #forum-all-liked-posts-page, #forum-following-page, #edit-forum-page,
         #recollection-color-page, #worldbook-entry-fullscreen-page {
             transform-origin: center center;
-        }
-        /* 所有全屏App页面禁止溢出滚动，防止拖出底部粉色区块 */
-        #chat-app-page, #chat-conversation-view, #wallet-app-page, #wallet-details-page, #settings-page,
-        #worldbook-app-page, #worldbook-color-page, #forum-app-page,
-        #recollection-app-page, #recollection-detail-page, #mall-app-page,
-        #takeout-app-page, #gallery-app-page, #hushh-app-page, #hushh-phone-page,
-        #role-settings-page, #transfer-page, #mall-detail-page, #mall-home-page,
-        #mall-cart-page, #mall-favorite-page, #mall-sent-gifts-page, #mall-purchased-page, #mall-received-gifts-page,
-        #takeout-profile-page, #takeout-favorite-page, #takeout-all-orders-page,
-        #takeout-shop-detail-page, #forum-post-detail-page, #forum-user-profile-page,
-        #forum-my-posts-page, #forum-all-forums-page, #forum-favorite-posts-page,
-        #forum-all-liked-posts-page, #forum-following-page, #edit-forum-page,
-        #recollection-color-page, #worldbook-entry-fullscreen-page,
-        #fav-detail-page, #fav-memo-page, #fav-memo-detail-page, #fav-chat-detail-page,
-        #fav-voice-page, #fav-voice-detail-page, #fav-chat-page, #fav-role-chat-page, #fav-role-chat-detail-page,
-        #tarot-app-page, #voice-call-page, #hushh-phone-page, #favorites-app-page {
-            overflow: hidden;
         }
                 body.settings-active #home-screen,
         body.chat-active #home-screen,
@@ -5732,7 +5714,6 @@
           width: 100%;
           height: 100%;
           position: relative;
-          overflow: hidden;
           background-size: cover;
           background-position: center;
           background: linear-gradient(135deg, #FFF0F5 0%, #FFE4EC 50%, #FFDDE6 100%);
@@ -13274,12 +13255,12 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     </nav>
 
     <!-- 投喂订单页面 -->
-    <div id="feed-orders-page" class="app-page" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; z-index:9999; overflow:hidden;">
+    <div id="feed-orders-page" class="app-page" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; z-index:9999; overflow-y:auto;">
         <div class="feed-orders-header" style="position:sticky; top:0; background:#fff; padding:12px 16px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #eee; z-index:10;">
             <span onclick="closeFeedOrdersPage()" style="font-size:20px; cursor:pointer; color:#e58aab;">←</span>
             <span style="font-size:16px; font-weight:600;">投喂记录</span>
         </div>
-        <div id="feed-orders-list" style="padding:12px; overflow-y:auto; flex:1;"></div>
+        <div id="feed-orders-list" style="padding:12px;"></div>
     </div>
 
     <!-- 请他代付 - 好友选择页面 -->
@@ -13295,12 +13276,12 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     </div>
 
     <!-- 我的代付记录页面 -->
-    <div id="my-pay-requests-page" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; z-index:9999; overflow:hidden;">
+    <div id="my-pay-requests-page" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#f5f5f5; z-index:9999; overflow-y:auto;">
         <div class="my-pay-requests-header" style="position:sticky; top:0; background:#fff; padding:12px 16px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #eee; z-index:10;">
             <span onclick="closeMyPayRequestsPage()" style="font-size:20px; cursor:pointer; color:#ff9800;">←</span>
             <span style="font-size:16px; font-weight:600;">我的代付</span>
         </div>
-        <div id="my-pay-requests-list" style="padding:12px; overflow-y:auto; flex:1;"></div>
+        <div id="my-pay-requests-list" style="padding:12px;"></div>
     </div>
 
     <div id="takeout-dish-detail-modal" class="modal"><div class="modal-content"><button class="close-modal-btn">&times;</button><img id="takeout-dish-detail-image" src=""><h3 id="takeout-dish-detail-name"></h3><h4>制作步骤</h4><div id="takeout-dish-detail-steps" class="steps-content"></div></div></div>
