@@ -455,13 +455,26 @@
              -webkit-tap-highlight-color: transparent;
              font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
          }
+        html {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
         body {
              width: 100vw;
              height: 100vh;
              height: var(--app-vh, 100vh); /* 【安卓兼容修复】JS动态计算真实视口高度 */
              overflow: hidden;
              background: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib-rb-1.2.1&auto=format&fit=crop&w=1000&q=80') center/cover no-repeat;
-             position: relative;
+             position: fixed;
+             top: 0;
+             left: 0;
+             overscroll-behavior: none;
+             -webkit-overflow-scrolling: auto;
              /* 【安卓兼容修复】移除 transition: background-image，安卓不支持对背景图做过渡，
                 强制过渡会导致持续重绘闪烁 */
              /* 【安卓兼容修复】移除 z-index: -2，安卓上导致body内容被推到最底层，
@@ -478,6 +491,7 @@
              display: flex;
              flex-direction: column;
              padding: 0 0 env(safe-area-inset-bottom, 20px) 0;
+             overflow: hidden;
              /* 【安卓兼容修复】缩短过渡时间并使用 will-change 提示浏览器优化合成层，
                 避免安卓上 opacity+transform 过渡引发大面积重绘闪烁 */
              transition: opacity 0.15s ease, transform 0.15s ease;
@@ -499,8 +513,9 @@
         #takeout-shop-detail-page, #forum-post-detail-page, #forum-user-profile-page,
         #forum-my-posts-page, #forum-all-forums-page, #forum-favorite-posts-page,
         #forum-all-liked-posts-page, #forum-following-page, #edit-forum-page,
-        #recollection-color-page, #worldbook-entry-fullscreen-page {
+        #recollection-color-page, #worldbook-entry-fullscreen-page, #pet-app-page {
             transform-origin: center center;
+            overflow: hidden;
         }
                 body.settings-active #home-screen,
         body.chat-active #home-screen,
@@ -3453,6 +3468,7 @@
             z-index: 550;
             display: flex; flex-direction: column;
             transform: translateY(100%) scale(var(--ps, 0.85)); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow: hidden;
         }
         body.worldbook-active #worldbook-app-page { transform: translateY(0) scale(var(--ps, 0.85)); }
         
@@ -5714,6 +5730,7 @@
           width: 100%;
           height: 100%;
           position: relative;
+          overflow: hidden;
           background-size: cover;
           background-position: center;
           background: linear-gradient(135deg, #FFF0F5 0%, #FFE4EC 50%, #FFDDE6 100%);
@@ -11730,6 +11747,7 @@ body.ios-mode-active .pet-header { padding-top: calc(env(safe-area-inset-top, 20
     background: rgba(0,0,0,0.4); z-index: 1000;
     display: none; align-items: center; justify-content: center;
     backdrop-filter: blur(4px);
+    overflow: hidden;
 }
 .pet-settings-overlay.active { display: flex; }
 .pet-settings-modal {
@@ -16003,22 +16021,45 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
 
     // ========================= 全局页面滑动锁定 =========================
     (function() {
-        document.addEventListener('touchmove', function(e) {
-            var target = e.target;
+        function hasScrollableParent(el) {
+            var target = el;
             while (target && target !== document.body && target !== document.documentElement) {
                 var style = window.getComputedStyle(target);
-                var overflowX = style.overflowX;
                 var overflowY = style.overflowY;
-                if (((overflowX === 'auto' || overflowX === 'scroll') && 
-                     target.scrollWidth > target.clientWidth) ||
-                    ((overflowY === 'auto' || overflowY === 'scroll') && 
-                     target.scrollHeight > target.clientHeight)) {
-                    return;
+                var overflowX = style.overflowX;
+                var canScrollY = (overflowY === 'auto' || overflowY === 'scroll') && 
+                                 target.scrollHeight > target.clientHeight + 1;
+                var canScrollX = (overflowX === 'auto' || overflowX === 'scroll') && 
+                                 target.scrollWidth > target.clientWidth + 1;
+                if (canScrollY || canScrollX) {
+                    return true;
                 }
                 target = target.parentNode;
             }
-            e.preventDefault();
+            return false;
+        }
+        document.addEventListener('touchmove', function(e) {
+            if (!hasScrollableParent(e.target)) {
+                e.preventDefault();
+            }
         }, { passive: false });
+        document.addEventListener('touchstart', function(e) {
+            var target = e.target;
+            while (target && target !== document.body && target !== document.documentElement) {
+                var style = window.getComputedStyle(target);
+                var overflowY = style.overflowY;
+                if ((overflowY === 'auto' || overflowY === 'scroll') && 
+                    target.scrollHeight > target.clientHeight + 1) {
+                    if (target.scrollTop === 0) {
+                        target.scrollTop = 1;
+                    } else if (target.scrollTop + target.clientHeight >= target.scrollHeight - 1) {
+                        target.scrollTop = target.scrollTop - 1;
+                    }
+                    break;
+                }
+                target = target.parentNode;
+            }
+        }, { passive: true });
     })();
 
     // ========================= 核心：无限容量图片引擎 (IndexedDB) =========================
