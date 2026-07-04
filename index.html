@@ -16001,6 +16001,26 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
         });
     })();
 
+    // ========================= 全局页面滑动锁定 =========================
+    (function() {
+        document.addEventListener('touchmove', function(e) {
+            var target = e.target;
+            while (target && target !== document.body && target !== document.documentElement) {
+                var style = window.getComputedStyle(target);
+                var overflowX = style.overflowX;
+                var overflowY = style.overflowY;
+                if (((overflowX === 'auto' || overflowX === 'scroll') && 
+                     target.scrollWidth > target.clientWidth) ||
+                    ((overflowY === 'auto' || overflowY === 'scroll') && 
+                     target.scrollHeight > target.clientHeight)) {
+                    return;
+                }
+                target = target.parentNode;
+            }
+            e.preventDefault();
+        }, { passive: false });
+    })();
+
     // ========================= 核心：无限容量图片引擎 (IndexedDB) =========================
     const DB_NAME = 'QuanQuanJi_ImageDB';
     let imgDB = null;
