@@ -1917,12 +1917,13 @@
 
         /* 语音通话收起按钮 */
         .voice-call-minimize-btn {
-            position: absolute; top: 55px; left: 16px;
-            width: 36px; height: 36px; border-radius: 50%;
-            background: rgba(255,255,255,0.12); border: none;
-            color: #fff; font-size: 18px; cursor: pointer;
+            position: absolute; top: 75px; left: 16px;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); border: none;
+            color: #fff; font-size: 20px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s, transform 0.2s; z-index: 10;
+            transition: background 0.2s, transform 0.2s; z-index: 100;
+            touch-action: manipulation; -webkit-tap-highlight-color: transparent;
         }
         .voice-call-minimize-btn:hover { background: rgba(255,255,255,0.22); }
         .voice-call-minimize-btn:active { transform: scale(0.9); }
@@ -12681,7 +12682,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
 
         <!-- 语音通话页面 -->
         <div id="voice-call-page">
-            <button class="voice-call-minimize-btn" onclick="minimizeVoiceCall()" title="收起">
+            <button id="voice-call-minimize-btn" class="voice-call-minimize-btn" title="收起">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="4 14 10 14 10 20"></polyline>
                     <polyline points="20 10 14 10 14 4"></polyline>
@@ -21616,7 +21617,7 @@ ${roleDetails}\n`;
             }
 
             const payload = {
-                model: mmSettings.model,
+                model: getMinimaxT2AV2Model(mmSettings.model),
                 text: rec.content,
                 stream: false,
                 voice_setting: { voice_id: voiceId, speed: 1, vol: 1, pitch: 0 },
@@ -28226,13 +28227,49 @@ ${msgContext ? msgContext : '无'}
         const fragment = document.createDocumentFragment();
 
         messages.forEach(msg => {
-            if (msg.isCallRecord) return;
+            if (msg.isCallRecord && !msg.callSummary) return;
             if (msg.timestamp - lastMsgTime > 5 * 60 * 1000) {
                 const timeDiv = document.createElement('div');
                 timeDiv.className = 'chat-time-stamp';
                 timeDiv.innerText = formatChatTime(msg.timestamp);
                 fragment.appendChild(timeDiv);
                 lastMsgTime = msg.timestamp;
+            }
+
+            if (msg.isCallRecord && msg.callSummary) {
+                const callDiv = document.createElement('div');
+                callDiv.className = 'msg-recalled-tip';
+                callDiv.style.alignSelf = 'center';
+                callDiv.style.margin = '5px 0';
+                callDiv.style.cursor = 'pointer';
+                callDiv.style.padding = '5px 12px';
+                callDiv.style.borderRadius = '12px';
+                callDiv.style.background = 'rgba(0,0,0,0.04)';
+                callDiv.style.userSelect = 'none';
+                callDiv.style.webkitUserSelect = 'none';
+                callDiv.innerText = msg.callSummary;
+
+                if (msg.callTranscript) {
+                    const detailDiv = document.createElement('div');
+                    detailDiv.style.cssText = 'display:none; margin-top:8px; padding:8px 10px; border-radius:10px; background:rgba(0,0,0,0.03); font-size:12px; line-height:1.6; color:#666; max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all;';
+                    detailDiv.innerText = msg.callTranscript;
+
+                    let expanded = false;
+                    callDiv.addEventListener('click', function() {
+                        expanded = !expanded;
+                        detailDiv.style.display = expanded ? 'block' : 'none';
+                        callDiv.style.background = expanded ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.04)';
+                    });
+
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'display:flex; flex-direction:column; align-items:center; margin:5px 0;';
+                    wrapper.appendChild(callDiv);
+                    wrapper.appendChild(detailDiv);
+                    fragment.appendChild(wrapper);
+                } else {
+                    fragment.appendChild(callDiv);
+                }
+                return;
             }
 
             if (msg.isSystemEvent) {
@@ -28948,7 +28985,7 @@ ${msgContext ? msgContext : '无'}
             }
 
             const payload = {
-                model: mmSettings.model,
+                model: getMinimaxT2AV2Model(mmSettings.model),
                 text: textToRead,
                 stream: false,
                 voice_setting: {
@@ -29906,8 +29943,33 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
             if (replyText.includes('<ACCEPT_CALL>') || replyText.toLowerCase().includes('accept') || replyText.includes('接听') || replyText.includes('接电话')) {
                 startCallConversation();
             } else {
-                // 保存拒接理由，挂断后作为角色消息发送
+                // 保存拒接理由，立即发送角色消息到聊天
                 voiceCallRejectReason = rejectReason || '不好意思，现在不方便接电话。';
+                voiceCallOutgoingRejected = true;
+
+                // 立即保存角色拒绝消息到聊天记录（不依赖 hangUpVoiceCall 延迟保存）
+                if (currentChatContactId) {
+                    const key = getMessagesKey(currentChatContactId);
+                    let msgs = JSON.parse(localStorage.getItem(key) || '[]');
+                    // 隐藏通话记录（给AI读取）
+                    msgs.push({
+                        id: Date.now() + Math.random(),
+                        type: 'sent',
+                        text: `[系统提示：你打了语音通话，但对方拒绝了接听。拒接理由：${voiceCallRejectReason}]`,
+                        isSystemEvent: true,
+                        isCallRecord: true,
+                        timestamp: Date.now()
+                    });
+                    // 角色消息（界面可见）
+                    msgs.push({
+                        id: Date.now() + 1 + Math.random(),
+                        type: 'received',
+                        text: voiceCallRejectReason,
+                        timestamp: Date.now() + 1000
+                    });
+                    localStorage.setItem(key, JSON.stringify(msgs));
+                }
+
                 showCallResult('对方已拒绝', true);
             }
         } catch (err) {
@@ -30068,6 +30130,32 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
             sendVoiceCallMessage();
         }
     };
+
+    // Minimax t2a_v2 模型名映射：旧版模型名 → v2 兼容模型名
+    function getMinimaxT2AV2Model(modelName) {
+        if (!modelName) return 'speech-02';
+        const m = modelName.toLowerCase();
+        const map = {
+            'speech-2.5-hd': 'speech-02',
+            'speech-2.6-turbo': 'speech-02',
+            'speech-2.6-hd': 'speech-02',
+            'speech-2.5-turbo': 'speech-02',
+            'speech-2.0-hd': 'speech-02',
+            'speech-2.0-turbo': 'speech-02',
+            'speech-1.5-hd': 'speech-01',
+            'speech-1.0-hd': 'speech-01',
+            'speech-01-hd': 'speech-01',
+            'speech-01-turbo': 'speech-01',
+            'speech-02-hd': 'speech-02',
+            'speech-02-turbo': 'speech-02',
+            'speech-01': 'speech-01',
+            'speech-02': 'speech-02'
+        };
+        if (map[m]) return map[m];
+        if (m.startsWith('speech-2') || m.startsWith('speech-2.5') || m.startsWith('speech-2.6')) return 'speech-02';
+        if (m.startsWith('speech-1')) return 'speech-01';
+        return modelName;
+    }
 
     window.sendVoiceCallMessage = async () => {
         if (!voiceCallAccepted || !currentChatContactId) return;
@@ -30266,7 +30354,7 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
             }
 
             const payload = {
-                model: mmSettings.model,
+                model: getMinimaxT2AV2Model(mmSettings.model),
                 text: text,
                 stream: false,
                 voice_setting: { voice_id: voiceId, speed: 1, vol: 1, pitch: 0 },
@@ -30318,7 +30406,6 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
     window.hangUpVoiceCall = () => {
         const wasAccepted = voiceCallAccepted;
         const wasIncoming = voiceCallIsIncoming;
-        const savedRejectReason = voiceCallRejectReason;
         stopVoiceCallRingtone();
         if (voiceCallAbortController) {
             voiceCallAbortController.abort();
@@ -30350,34 +30437,22 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
                 }
             }
 
-            // 去电被拒：发送角色消息作为回复，同时保存一条隐藏的通话记录
-            if (!wasIncoming && !wasAccepted && voiceCallOutgoingRejected) {
-                // 保存一条隐藏的通话记录消息（给AI读取）
-                messages.push({
-                    id: Date.now() + Math.random(),
-                    type: 'sent',
-                    text: `[系统提示：你打了语音通话，但对方拒绝了接听。拒接理由：${savedRejectReason}]`,
-                    isSystemEvent: true,
-                    isCallRecord: true,
-                    timestamp: Date.now()
-                });
-                // 发送角色消息（界面可见）
-                messages.push({
-                    id: Date.now() + 1 + Math.random(),
-                    type: 'received',
-                    text: savedRejectReason || '不好意思，现在不方便接电话。',
-                    timestamp: Date.now() + 1000
-                });
-            }
+            // 去电被拒：角色消息已在 API 返回时立即保存，这里不再重复保存
 
-            // 通话接通后挂断：保存隐藏通话记录（给AI读取，但不显示）
+            // 通话接通后挂断：保存通话记录（界面显示摘要，点击展开详情）
             if (wasAccepted) {
+                const sysContact = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]').find(c => String(c.id) === String(currentChatContactId));
+                const sysCharName = sysContact ? (sysContact.alias || sysContact.name) : '好友';
+                const sysUName = getUserProfile().nickname || 'User';
+                const transcriptStr = formatCallTranscript(savedTranscript, sysUName, sysCharName);
                 messages.push({
                     id: Date.now() + Math.random(),
                     type: 'sent',
-                    text: `[系统提示：语音通话已结束，通话时长${formatCallDuration(savedDuration)}。通话记录：${formatCallTranscript(savedTranscript, (getUserProfile().nickname || 'User'), (JSON.parse(localStorage.getItem(CHAT_DATA_KEY)||'[]').find(c=>String(c.id)===String(currentChatContactId))?.alias||'好友'))}]`,
+                    text: `[系统提示：语音通话已结束，通话时长${formatCallDuration(savedDuration)}。通话记录：${transcriptStr || '通话中双方没有对话。'}]`,
                     isSystemEvent: true,
                     isCallRecord: true,
+                    callSummary: `语音通话结束  时长${formatCallDuration(savedDuration)}`,
+                    callTranscript: transcriptStr,
                     timestamp: Date.now()
                 });
             }
@@ -30417,8 +30492,8 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
 
     // 收起语音通话为悬浮窗
     window.minimizeVoiceCall = () => {
-        if (!document.getElementById('voice-call-page').classList.contains('active')) return;
         const callPage = document.getElementById('voice-call-page');
+        if (!callPage.classList.contains('active')) return;
         const floatEl = document.getElementById('voice-call-float');
 
         const avatarEl = document.getElementById('voice-call-avatar');
@@ -30446,6 +30521,92 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
 
         voiceCallMinimized = true;
     };
+
+    // 绑定收起按钮事件（用 addEventListener 确保移动端可靠触发）
+    (() => {
+        const minBtn = document.getElementById('voice-call-minimize-btn');
+        if (minBtn) {
+            let minimizeBusy = false;
+            const doMinimize = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (minimizeBusy) return;
+                minimizeBusy = true;
+                minimizeVoiceCall();
+                setTimeout(() => { minimizeBusy = false; }, 500);
+            };
+            minBtn.addEventListener('click', doMinimize);
+            minBtn.addEventListener('touchend', doMinimize, { passive: false });
+        }
+    })();
+
+    // ========================= 语音通话页面键盘适配 =========================
+    (function() {
+        const callPage = document.getElementById('voice-call-page');
+        const callInput = document.getElementById('voice-call-input');
+        const callConv = document.getElementById('voice-call-conversation');
+        if (!callPage || !callInput) return;
+
+        var vcKeyboardOpen = false;
+
+        function getVH() {
+            return window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        }
+
+        function scrollConvToBottom() {
+            if (callConv) {
+                requestAnimationFrame(function() {
+                    callConv.scrollTop = callConv.scrollHeight;
+                });
+            }
+        }
+
+        function vcApplyFix() {
+            var h = getVH();
+            callPage.style.height = h + 'px';
+            vcKeyboardOpen = true;
+            scrollConvToBottom();
+        }
+
+        function vcResetFix() {
+            callPage.style.height = '100vh';
+            vcKeyboardOpen = false;
+            scrollConvToBottom();
+        }
+
+        // visualViewport 监听
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', function() {
+                if (!callPage.classList.contains('active')) return;
+                var h = getVH();
+                var fullH = window.screen.height;
+                var diff = fullH - h;
+                if (diff > 80) {
+                    vcApplyFix();
+                } else if (vcKeyboardOpen && diff < 40) {
+                    vcResetFix();
+                }
+            });
+        }
+
+        // focus/blur 事件作为后备
+        callInput.addEventListener('focus', function() {
+            setTimeout(function() {
+                if (!callPage.classList.contains('active')) return;
+                var h = getVH();
+                var fullH = window.screen.height;
+                if (fullH - h > 80) {
+                    vcApplyFix();
+                }
+            }, 300);
+        });
+
+        callInput.addEventListener('blur', function() {
+            setTimeout(function() {
+                if (vcKeyboardOpen) vcResetFix();
+            }, 100);
+        });
+    })();
 
     // 展开悬浮窗为完整通话界面
     window.expandVoiceCall = (e) => {
@@ -37845,7 +38006,7 @@ window.executeDisableLock = () => {
             }
 
             const payload = {
-                model: mmSettings.model,
+                model: getMinimaxT2AV2Model(mmSettings.model),
                 text: rec.content,
                 stream: false,
                 voice_setting: {
