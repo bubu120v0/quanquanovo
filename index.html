@@ -12680,44 +12680,43 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
              <button class="chat-multiselect-delete-btn" onclick="executeBatchDelete()">删除</button>
         </div>
 
-        <!-- 语音通话页面 -->
-        <div id="voice-call-page">
-            <button id="voice-call-minimize-btn" class="voice-call-minimize-btn" title="收起">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="4 14 10 14 10 20"></polyline>
-                    <polyline points="20 10 14 10 14 4"></polyline>
-                    <line x1="14" y1="10" x2="21" y2="3"></line>
-                    <line x1="3" y1="21" x2="10" y2="14"></line>
-                </svg>
-            </button>
-            <div class="voice-call-info">
-                <div class="voice-call-avatar-wrapper">
-                    <img id="voice-call-avatar" class="voice-call-avatar" src="">
-                </div>
-                <div id="voice-call-name" class="voice-call-name"></div>
-                <div id="voice-call-status" class="voice-call-status">正在呼叫...</div>
-                <div id="voice-call-duration" class="voice-call-duration"></div>
-            </div>
-            <div id="voice-call-conversation" class="voice-call-conversation"></div>
-            <div id="voice-call-input-area" class="voice-call-input-area">
-                <input type="text" id="voice-call-input" class="voice-call-input" placeholder="输入你想说的话..." onkeydown="handleVoiceCallInputKey(event)">
-                <button class="voice-call-send-btn" onclick="sendVoiceCallMessage()">发送</button>
-            </div>
-            <div class="voice-call-actions">
-                <img id="voice-call-answer-btn" class="voice-call-answer" src="https://img.heliar.top/file/1781886984554_电话拨入_phone-incoming.png" onclick="answerIncomingVoiceCall()" style="display:none;">
-                <img src="https://img.heliar.top/file/1781886601052_电话关闭_phone-off.png" class="voice-call-hangup" onclick="hangUpVoiceCall()">
-            </div>
-        </div>
-        <!-- 语音通话悬浮窗（收起状态） -->
-        <div id="voice-call-float" onclick="expandVoiceCall(event)">
-            <img id="vc-float-avatar" class="vc-float-avatar" src="">
-            <div id="vc-float-status" class="vc-float-status">通话中</div>
-            <div class="vc-float-pulse"></div>
-        </div>
-        <!-- 通话状态提示弹窗 -->
-        <div id="call-status-toast"></div>
     </div>
-</div>
+    <!-- 语音通话页面 - 放在 chat-conversation-view 外部，避免父级 transform 导致 fixed 失效 -->
+    <div id="voice-call-page">
+        <button id="voice-call-minimize-btn" class="voice-call-minimize-btn" title="收起">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 14 10 14 10 20"></polyline>
+                <polyline points="20 10 14 10 14 4"></polyline>
+                <line x1="14" y1="10" x2="21" y2="3"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+        </button>
+        <div class="voice-call-info">
+            <div class="voice-call-avatar-wrapper">
+                <img id="voice-call-avatar" class="voice-call-avatar" src="">
+            </div>
+            <div id="voice-call-name" class="voice-call-name"></div>
+            <div id="voice-call-status" class="voice-call-status">正在呼叫...</div>
+            <div id="voice-call-duration" class="voice-call-duration"></div>
+        </div>
+        <div id="voice-call-conversation" class="voice-call-conversation"></div>
+        <div id="voice-call-input-area" class="voice-call-input-area">
+            <input type="text" id="voice-call-input" class="voice-call-input" placeholder="输入你想说的话..." onkeydown="handleVoiceCallInputKey(event)">
+            <button class="voice-call-send-btn" onclick="sendVoiceCallMessage()">发送</button>
+        </div>
+        <div class="voice-call-actions">
+            <img id="voice-call-answer-btn" class="voice-call-answer" src="https://img.heliar.top/file/1781886984554_电话拨入_phone-incoming.png" onclick="answerIncomingVoiceCall()" style="display:none;">
+            <img src="https://img.heliar.top/file/1781886601052_电话关闭_phone-off.png" class="voice-call-hangup" onclick="hangUpVoiceCall()">
+        </div>
+    </div>
+    <!-- 语音通话悬浮窗（收起状态）- 放在 chat-conversation-view 外部，避免父级 transform 导致 fixed 失效 -->
+    <div id="voice-call-float" onclick="expandVoiceCall(event)">
+        <img id="vc-float-avatar" class="vc-float-avatar" src="">
+        <div id="vc-float-status" class="vc-float-status">通话中</div>
+        <div class="vc-float-pulse"></div>
+    </div>
+    <!-- 通话状态提示弹窗 -->
+    <div id="call-status-toast"></div>
 
 <!-- 角色设置页面 -->
 <div id="role-settings-page">
@@ -30131,30 +30130,39 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
         }
     };
 
-    // Minimax t2a_v2 模型名映射：旧版模型名 → v2 兼容模型名
+    // Minimax t2a_v2 模型名映射：确保模型名带 -hd/-turbo 后缀
+    // t2a_v2 支持的模型：speech-2.5-hd-preview, speech-2.5-turbo-preview,
+    //   speech-02-hd, speech-02-turbo, speech-01-hd, speech-01-turbo,
+    //   speech-01-240228, speech-01-turbo-240228
     function getMinimaxT2AV2Model(modelName) {
-        if (!modelName) return 'speech-02';
-        const m = modelName.toLowerCase();
+        if (!modelName) return 'speech-02-turbo';
+        const m = modelName.toLowerCase().trim();
+        // 已经是 t2a_v2 支持的模型名，直接返回
+        const validModels = [
+            'speech-2.5-hd-preview', 'speech-2.5-turbo-preview',
+            'speech-02-hd', 'speech-02-turbo',
+            'speech-01-hd', 'speech-01-turbo',
+            'speech-01-240228', 'speech-01-turbo-240228'
+        ];
+        if (validModels.includes(m)) return m;
+        // 映射旧模型名到 t2a_v2 兼容名
         const map = {
-            'speech-2.5-hd': 'speech-02',
-            'speech-2.6-turbo': 'speech-02',
-            'speech-2.6-hd': 'speech-02',
-            'speech-2.5-turbo': 'speech-02',
-            'speech-2.0-hd': 'speech-02',
-            'speech-2.0-turbo': 'speech-02',
-            'speech-1.5-hd': 'speech-01',
-            'speech-1.0-hd': 'speech-01',
-            'speech-01-hd': 'speech-01',
-            'speech-01-turbo': 'speech-01',
-            'speech-02-hd': 'speech-02',
-            'speech-02-turbo': 'speech-02',
-            'speech-01': 'speech-01',
-            'speech-02': 'speech-02'
+            'speech-2.5-hd': 'speech-2.5-hd-preview',
+            'speech-2.5-turbo': 'speech-2.5-turbo-preview',
+            'speech-2.6-hd': 'speech-02-hd',
+            'speech-2.6-turbo': 'speech-02-turbo',
+            'speech-2.0-hd': 'speech-02-hd',
+            'speech-2.0-turbo': 'speech-02-turbo',
+            'speech-1.5-hd': 'speech-01-hd',
+            'speech-1.0-hd': 'speech-01-hd',
+            'speech-01': 'speech-01-turbo',
+            'speech-02': 'speech-02-turbo'
         };
         if (map[m]) return map[m];
-        if (m.startsWith('speech-2') || m.startsWith('speech-2.5') || m.startsWith('speech-2.6')) return 'speech-02';
-        if (m.startsWith('speech-1')) return 'speech-01';
-        return modelName;
+        // 兜底：带 -hd 的映射到 -hd，带 -turbo 的映射到 -turbo，否则默认
+        if (m.includes('-hd')) return 'speech-02-hd';
+        if (m.includes('-turbo')) return 'speech-02-turbo';
+        return 'speech-02-turbo';
     }
 
     window.sendVoiceCallMessage = async () => {
@@ -30549,6 +30557,7 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
         if (!callPage || !callInput) return;
 
         var vcKeyboardOpen = false;
+        var vcScrollTimer = null;
 
         function getVH() {
             return window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -30563,24 +30572,37 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
         }
 
         function vcApplyFix() {
-            // 不缩小页面高度，保持 100vh 黑色背景覆盖全屏
-            // 给底部操作区加 padding，把输入框推到键盘上方
             var h = getVH();
             var fullH = window.innerHeight || window.screen.height;
             var keyboardH = fullH - h;
             if (keyboardH < 0) keyboardH = 0;
+
+            // 给底部操作区加 padding，把输入框推到键盘上方
             if (callActions) {
                 callActions.style.paddingBottom = (keyboardH + 20) + 'px';
             }
+
+            // 页面高度设为全屏高度，确保黑色背景覆盖整个屏幕（包括键盘区域下方）
+            callPage.style.height = fullH + 'px';
+
+            // 防止 iOS 把 fixed 元素推上去露出底部
+            window.scrollTo(0, 0);
+            if (vcScrollTimer) clearInterval(vcScrollTimer);
+            vcScrollTimer = setInterval(function() { window.scrollTo(0, 0); }, 50);
+            setTimeout(function() {
+                if (vcScrollTimer) { clearInterval(vcScrollTimer); vcScrollTimer = null; }
+            }, 600);
+
             vcKeyboardOpen = true;
             scrollConvToBottom();
         }
 
         function vcResetFix() {
-            // 恢复原始 padding
             if (callActions) {
                 callActions.style.paddingBottom = '40px';
             }
+            callPage.style.height = '100vh';
+            if (vcScrollTimer) { clearInterval(vcScrollTimer); vcScrollTimer = null; }
             vcKeyboardOpen = false;
             scrollConvToBottom();
         }
@@ -33503,15 +33525,14 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         const groupId = document.getElementById('minimax-group-id-input').value.trim();
         const region = document.getElementById('minimax-region-select').value || 'cn';
 
-        // 预设 Minimax 官方常用的语音模型作为兜底（含最新模型）
+        // 预设 Minimax t2a_v2 官方支持的语音模型
         const defaultMinimaxVoiceModels = [
-            "speech-01-turbo",
-            "speech-01-hd",
-            "speech-02-turbo",
+            "speech-2.5-hd-preview",
+            "speech-2.5-turbo-preview",
             "speech-02-hd",
-            "speech-2.5-hd",
-            "speech-2.6-turbo",
-            "speech-2.6-hd"
+            "speech-02-turbo",
+            "speech-01-hd",
+            "speech-01-turbo"
         ];
 
         // 根据区域选择正确的API域名
