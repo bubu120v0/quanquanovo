@@ -1917,7 +1917,7 @@
 
         /* 语音通话收起按钮 */
         .voice-call-minimize-btn {
-            position: absolute; top: 16px; left: 16px;
+            position: absolute; top: 55px; left: 16px;
             width: 36px; height: 36px; border-radius: 50%;
             background: rgba(255,255,255,0.12); border: none;
             color: #fff; font-size: 18px; cursor: pointer;
@@ -12932,7 +12932,10 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px;">
 
     <div class="settings-card-title" style="margin-bottom: 0; border-bottom: none;">自定义样式 (CSS)</div>
-            <button class="role-bg-btn" onclick="openSaveCssPresetModal()">保存</button>
+            <div style="display: flex; gap: 8px;">
+                <button id="css-preset-delete-btn" class="role-bg-btn" style="background-color: #F5F5F5; color: #999; display: none;" onclick="deleteSelectedCssPreset()">删除</button>
+                <button class="role-bg-btn" onclick="openSaveCssPresetModal()">保存</button>
+            </div>
         </div>
         <textarea id="role-setting-css" class="role-css-input" placeholder="/* 在这里输入CSS代码，可修改整个聊天页面样式 */
 
@@ -13867,7 +13870,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
 </div>
 
 <!-- Save CSS Preset Modal -->
-<div id="save-preset-modal" class="delete-confirm-modal" style="display: none;">
+<div id="save-preset-modal" class="delete-confirm-modal" onclick="closeSaveCssPresetModal()">
     <div class="delete-card" onclick="event.stopPropagation()" style="text-align: left; padding: 20px;">
         <div class="delete-card-title" style="text-align: center; margin-bottom: 15px;">保存预设样式</div>
         <input type="text" id="preset-name-input" class="add-friend-input" placeholder="输入预设名称..." style="margin-bottom: 20px;">
@@ -28223,6 +28226,7 @@ ${msgContext ? msgContext : '无'}
         const fragment = document.createDocumentFragment();
 
         messages.forEach(msg => {
+            if (msg.isCallRecord) return;
             if (msg.timestamp - lastMsgTime > 5 * 60 * 1000) {
                 const timeDiv = document.createElement('div');
                 timeDiv.className = 'chat-time-stamp';
@@ -29667,6 +29671,7 @@ ${msgContext ? msgContext : '无'}
     let audioUnlocked = false;
     let voiceCallDurationSeconds = 0;
     let voiceCallOutgoingRejected = false;
+    let voiceCallRejectReason = '';
 
     function formatCallDuration(seconds) {
         if (!seconds || seconds <= 0) return '不到1秒';
@@ -29891,16 +29896,19 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
             // 移除思维链内容，防止干扰接听/拒接判断
             replyText = stripThinkingContent(replyText);
 
-            if (replyText.includes('<ACCEPT_CALL>')) {
+            let rejectReason = '';
+            if (replyText.includes('<REJECT_CALL>')) {
+                rejectReason = replyText.replace(/<REJECT_CALL>/g, '').trim();
+            } else if (!(replyText.includes('<ACCEPT_CALL>') || replyText.toLowerCase().includes('accept') || replyText.includes('接听') || replyText.includes('接电话'))) {
+                rejectReason = replyText.replace(/[<>]/g, '').trim();
+            }
+
+            if (replyText.includes('<ACCEPT_CALL>') || replyText.toLowerCase().includes('accept') || replyText.includes('接听') || replyText.includes('接电话')) {
                 startCallConversation();
-            } else if (replyText.includes('<REJECT_CALL>')) {
-                showCallResult('对方已拒绝', true);
             } else {
-                if (replyText.toLowerCase().includes('accept') || replyText.includes('接听') || replyText.includes('接')) {
-                    startCallConversation();
-                } else {
-                    showCallResult('对方已拒绝', true);
-                }
+                // 保存拒接理由，挂断后作为角色消息发送
+                voiceCallRejectReason = rejectReason || '不好意思，现在不方便接电话。';
+                showCallResult('对方已拒绝', true);
             }
         } catch (err) {
             if (err.name === 'AbortError') return;
@@ -30308,149 +30316,99 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
     }
 
     window.hangUpVoiceCall = () => {
-        const wasAccepted = voiceCallAccepted; // 记录通话是否已接通
-        const wasIncoming = voiceCallIsIncoming; // 记录是否为来电
-        stopVoiceCallRingtone(); // 停止铃声
+        const wasAccepted = voiceCallAccepted;
+        const wasIncoming = voiceCallIsIncoming;
+        const savedRejectReason = voiceCallRejectReason;
+        stopVoiceCallRingtone();
         if (voiceCallAbortController) {
             voiceCallAbortController.abort();
             voiceCallAbortController = null;
         }
 
-        // 获取联系人信息（用于生成系统事件消息）
-        const sysContacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
-        const sysContact = sysContacts.find(c => String(c.id) === String(currentChatContactId));
-        const sysCharName = sysContact ? (sysContact.alias || sysContact.name) : '好友';
-        const globalProfile = getUserProfile();
-        const sysUName = sysContact ? (sysContact.userName || globalProfile.nickname || 'User') : (globalProfile.nickname || 'User');
-
-        // 如果是来电且未接听，标记为已拒绝
-        if (wasIncoming && !wasAccepted && voiceCallIncomingMsgId && currentChatContactId) {
-            const key = getMessagesKey(currentChatContactId);
-            let messages = JSON.parse(localStorage.getItem(key) || '[]');
-            const msgIndex = messages.findIndex(m => String(m.id) === String(voiceCallIncomingMsgId) && m.isIncomingCall);
-            if (msgIndex !== -1 && messages[msgIndex].callData.status === 'pending') {
-                messages[msgIndex].callData.status = 'rejected';
-                messages[msgIndex].callData.durationSeconds = 0;
-                messages[msgIndex].callData.transcript = [];
-                localStorage.setItem(key, JSON.stringify(messages));
-            }
-            // 追加系统事件消息：用户拒绝了来电
-            messages.push({
-                id: Date.now() + Math.random(),
-                type: 'sent',
-                text: `[系统提示：${sysCharName} 给你打来了语音通话，但你拒绝了接听。]`,
-                isSystemEvent: true,
-                timestamp: Date.now()
-            });
-            localStorage.setItem(key, JSON.stringify(messages));
-        }
-
-        // 来电被拒绝时：短暂延迟后关闭页面
-        if (wasIncoming && !wasAccepted) {
-            document.getElementById('voice-call-answer-btn').style.display = 'none';
-            const statusEl = document.getElementById('voice-call-status');
-            statusEl.textContent = '已拒绝';
-            statusEl.style.animation = 'none';
-            statusEl.style.color = '#f44336';
-            // 延迟关闭通话页面
-            setTimeout(() => {
-                voiceCallAccepted = false;
-                voiceCallMessages = [];
-                voiceCallIsIncoming = false;
-                voiceCallIncomingMsgId = null;
-                stopCallTimer();
-                document.getElementById('voice-call-duration').classList.remove('visible');
-                document.getElementById('voice-call-duration').textContent = '';
-                document.getElementById('voice-call-conversation').innerHTML = '';
-                document.getElementById('voice-call-conversation').classList.remove('visible');
-                document.getElementById('voice-call-input-area').classList.remove('visible');
-                document.getElementById('voice-call-answer-btn').style.display = 'none';
-                document.getElementById('voice-call-page').classList.remove('active');
-                const floatEl = document.getElementById('voice-call-float');
-                floatEl.classList.remove('visible', 'float-in', 'dragging');
-                voiceCallMinimized = false;
-                showCallStatusToast('已拒绝来电');
-                renderConversationMessages();
-            }, 1500);
-            return;
-        }
-
-        // 通话已接通后挂断：保存通话记录和时长，追加系统事件消息
         const savedTranscript = [...voiceCallMessages];
         stopCallTimer();
         const savedDuration = voiceCallDurationSeconds;
 
-        // 来电已接听后挂断：更新 callData
-        if (wasIncoming && voiceCallIncomingMsgId && currentChatContactId) {
+        // 保存通话记录到消息（用于给AI读取，但不显示在界面上）
+        if (currentChatContactId) {
             const key = getMessagesKey(currentChatContactId);
             let messages = JSON.parse(localStorage.getItem(key) || '[]');
-            const msgIndex = messages.findIndex(m => String(m.id) === String(voiceCallIncomingMsgId) && m.isIncomingCall);
-            if (msgIndex !== -1) {
-                messages[msgIndex].callData.status = 'ended';
-                messages[msgIndex].callData.durationSeconds = savedDuration;
-                messages[msgIndex].callData.transcript = savedTranscript;
-                localStorage.setItem(key, JSON.stringify(messages));
-            }
-        }
 
-        // 追加系统事件消息
-        if (currentChatContactId && wasAccepted) {
-            const sysKey = getMessagesKey(currentChatContactId);
-            let sysMsgs = JSON.parse(localStorage.getItem(sysKey) || '[]');
-            const durationStr = formatCallDuration(savedDuration);
-            const transcriptStr = formatCallTranscript(savedTranscript, sysUName, sysCharName);
-
-            let systemEventText;
-            if (wasIncoming) {
-                systemEventText = `[系统提示：你和${sysCharName}进行了一次语音通话，通话时长${durationStr}。`;
-            } else if (voiceCallOutgoingRejected) {
-                systemEventText = `[系统提示：你给${sysCharName}打语音通话，但对方拒绝了接听。]`;
-            } else {
-                systemEventText = `[系统提示：你和${sysCharName}进行了一次语音通话，通话时长${durationStr}。`;
-            }
-
-            if (!voiceCallOutgoingRejected) {
-                if (transcriptStr) {
-                    systemEventText += `通话记录如下：\n${transcriptStr}]`;
-                } else {
-                    systemEventText += `通话中双方没有对话。]`;
+            // 来电相关：更新 callData
+            if (wasIncoming && voiceCallIncomingMsgId) {
+                const msgIndex = messages.findIndex(m => String(m.id) === String(voiceCallIncomingMsgId) && m.isIncomingCall);
+                if (msgIndex !== -1) {
+                    if (!wasAccepted) {
+                        messages[msgIndex].callData.status = 'rejected';
+                        messages[msgIndex].callData.durationSeconds = 0;
+                        messages[msgIndex].callData.transcript = [];
+                    } else {
+                        messages[msgIndex].callData.status = 'ended';
+                        messages[msgIndex].callData.durationSeconds = savedDuration;
+                        messages[msgIndex].callData.transcript = savedTranscript;
+                    }
                 }
             }
 
-            sysMsgs.push({
-                id: Date.now() + Math.random(),
-                type: 'sent',
-                text: systemEventText,
-                isSystemEvent: true,
-                timestamp: Date.now()
-            });
-            localStorage.setItem(sysKey, JSON.stringify(sysMsgs));
+            // 去电被拒：发送角色消息作为回复，同时保存一条隐藏的通话记录
+            if (!wasIncoming && !wasAccepted && voiceCallOutgoingRejected) {
+                // 保存一条隐藏的通话记录消息（给AI读取）
+                messages.push({
+                    id: Date.now() + Math.random(),
+                    type: 'sent',
+                    text: `[系统提示：你打了语音通话，但对方拒绝了接听。拒接理由：${savedRejectReason}]`,
+                    isSystemEvent: true,
+                    isCallRecord: true,
+                    timestamp: Date.now()
+                });
+                // 发送角色消息（界面可见）
+                messages.push({
+                    id: Date.now() + 1 + Math.random(),
+                    type: 'received',
+                    text: savedRejectReason || '不好意思，现在不方便接电话。',
+                    timestamp: Date.now() + 1000
+                });
+            }
+
+            // 通话接通后挂断：保存隐藏通话记录（给AI读取，但不显示）
+            if (wasAccepted) {
+                messages.push({
+                    id: Date.now() + Math.random(),
+                    type: 'sent',
+                    text: `[系统提示：语音通话已结束，通话时长${formatCallDuration(savedDuration)}。通话记录：${formatCallTranscript(savedTranscript, (getUserProfile().nickname || 'User'), (JSON.parse(localStorage.getItem(CHAT_DATA_KEY)||'[]').find(c=>String(c.id)===String(currentChatContactId))?.alias||'好友'))}]`,
+                    isSystemEvent: true,
+                    isCallRecord: true,
+                    timestamp: Date.now()
+                });
+            }
+
+            localStorage.setItem(key, JSON.stringify(messages));
         }
 
+        // 重置状态
         voiceCallAccepted = false;
         voiceCallMessages = [];
         voiceCallIsIncoming = false;
         voiceCallIncomingMsgId = null;
         voiceCallOutgoingRejected = false;
+        voiceCallRejectReason = '';
+
         document.getElementById('voice-call-duration').classList.remove('visible');
         document.getElementById('voice-call-duration').textContent = '';
         document.getElementById('voice-call-conversation').innerHTML = '';
         document.getElementById('voice-call-conversation').classList.remove('visible');
         document.getElementById('voice-call-input-area').classList.remove('visible');
-        // 隐藏接听按钮
         document.getElementById('voice-call-answer-btn').style.display = 'none';
         document.getElementById('voice-call-page').classList.remove('active');
-        // 同时隐藏悬浮窗并重置收起状态
         const floatEl = document.getElementById('voice-call-float');
         floatEl.classList.remove('visible', 'float-in', 'dragging');
         voiceCallMinimized = false;
-        // 如果通话已接通后挂断，显示结束提示
+
         if (wasAccepted) {
             showCallStatusToast('语音通话已结束');
         } else if (wasIncoming) {
-            showCallStatusToast('未接来电');
+            showCallStatusToast('已拒绝来电');
         }
-        // 刷新消息列表以更新来电卡片状态
         renderConversationMessages();
     };
 
@@ -30459,26 +30417,26 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
 
     // 收起语音通话为悬浮窗
     window.minimizeVoiceCall = () => {
-        if (!voiceCallAccepted) return; // 仅在通话接通后才允许收起
+        if (!document.getElementById('voice-call-page').classList.contains('active')) return;
         const callPage = document.getElementById('voice-call-page');
         const floatEl = document.getElementById('voice-call-float');
 
-        // 同步悬浮窗显示信息
         const avatarEl = document.getElementById('voice-call-avatar');
         const floatAvatar = document.getElementById('vc-float-avatar');
         floatAvatar.src = avatarEl.src;
         floatAvatar.onerror = function() { this.onerror = null; this.src = ''; };
 
-        // 同步当前通话时长到悬浮窗
+        const statusEl = document.getElementById('voice-call-status');
         const durationEl = document.getElementById('voice-call-duration');
         const floatStatusEl = document.getElementById('vc-float-status');
-        if (durationEl.textContent && durationEl.classList.contains('visible')) {
+        if (voiceCallAccepted && durationEl.textContent && durationEl.classList.contains('visible')) {
             floatStatusEl.textContent = durationEl.textContent;
+        } else if (statusEl.textContent) {
+            floatStatusEl.textContent = statusEl.textContent;
         } else {
             floatStatusEl.textContent = '通话中';
         }
 
-        // 播放收起动画
         callPage.classList.add('collapsing');
         setTimeout(() => {
             callPage.classList.remove('active', 'collapsing');
@@ -31828,6 +31786,7 @@ window.openTransferConfirmPopup = (amount) => {
     function loadCssPresets() {
         const select = document.getElementById('css-preset-select');
         const actions = document.getElementById('css-preset-actions');
+        const topDelBtn = document.getElementById('css-preset-delete-btn');
         let presets = {};
         try { presets = JSON.parse(localStorage.getItem(CSS_PRESETS_KEY) || '{}'); } catch(e) {}
         
@@ -31840,12 +31799,16 @@ window.openTransferConfirmPopup = (amount) => {
         });
         
         actions.style.display = 'none';
+        if (topDelBtn) topDelBtn.style.display = 'none';
         select.value = "";
     }
 
     window.handlePresetSelection = (selectEl) => {
         const actions = document.getElementById('css-preset-actions');
-        actions.style.display = selectEl.value ? 'flex' : 'none';
+        const topDelBtn = document.getElementById('css-preset-delete-btn');
+        const hasSelection = selectEl.value ? true : false;
+        actions.style.display = hasSelection ? 'flex' : 'none';
+        if (topDelBtn) topDelBtn.style.display = hasSelection ? 'inline-block' : 'none';
     };
 
     window.applySelectedCssPreset = () => {
@@ -31878,11 +31841,12 @@ window.openTransferConfirmPopup = (amount) => {
         const cssContent = document.getElementById('role-setting-css').value.trim();
         if(!cssContent) { showToast("CSS内容为空，无法保存"); return; }
         document.getElementById('preset-name-input').value = '';
-        document.getElementById('save-preset-modal').style.display = 'flex';
+        document.getElementById('save-preset-modal').classList.add('active');
+        setTimeout(() => document.getElementById('preset-name-input').focus(), 100);
     };
 
     window.closeSaveCssPresetModal = () => {
-        document.getElementById('save-preset-modal').style.display = 'none';
+        document.getElementById('save-preset-modal').classList.remove('active');
     };
 
     window.saveCurrentCssPreset = () => {
