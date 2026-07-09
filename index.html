@@ -5154,7 +5154,7 @@
 #mall-purchase-panel {
     background-color: #f7f7f7; /* 浅灰色背景，更有层次感 */
     width: 100%;
-    height: 55%; /* 占屏幕一半多一点，视觉效果更好 */
+    height: 65%; /* 占屏幕65%，确保购买按钮可见 */
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
     transform: translateY(100%);
@@ -5186,6 +5186,7 @@
     justify-content: center;
     align-items: center;
     margin-top: -40px; /* 向上突出一部分，更有立体感 */
+    margin-left: 8px;
     border: 1px solid #eee;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
@@ -5204,6 +5205,12 @@
     content: '¥';
     font-size: 14px;
     margin-right: 2px;
+}
+
+.mall-purchase-price-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 #mall-purchase-quantity-selector {
@@ -5246,24 +5253,26 @@
 }
 
 .mall-purchase-styles-section .section-title {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+    padding-left: 16px;
 }
 
 #mall-purchase-styles-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
+    padding-left: 16px;
 }
 .style-option-btn {
-    padding: 8px 15px;
+    padding: 6px 12px;
     border: 1px solid #ddd;
     background-color: #fff;
     color: #333;
     border-radius: 15px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     transition: border-color 0.2s, background-color 0.2s;
 }
 .style-option-btn.active {
@@ -5274,20 +5283,16 @@
 }
 
 .mall-purchase-footer {
-    padding: 10px 20px calc(10px + env(safe-area-inset-bottom, 20px));
-    border-top: 1px solid #eee;
-    background-color: #fff;
-    flex-shrink: 0;
+    display: none;
 }
 
 #mall-purchase-confirm-btn {
-    width: 100%;
-    padding: 14px;
+    padding: 6px 18px;
     border: none;
-    border-radius: 25px;
+    border-radius: 16px;
     background-color: var(--theme-pink-btn, #F5B3C9);
     color: white;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
 }
@@ -5607,6 +5612,130 @@
             background-color: #f6f2f4;
             padding-bottom: env(safe-area-inset-bottom, 0);
         }
+
+        /* ===== 移动端支付密码弹窗 - 底部半屏弹出（仿微信） ===== */
+        @media (max-width: 500px) {
+            #transfer-confirm-popup {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 5% !important;
+                top: 30vh !important;
+                width: 90% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                overflow-y: auto !important;
+                border-radius: 16px 16px 0 0 !important;
+                transform: translateY(100%);
+                transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            #transfer-confirm-overlay.active #transfer-confirm-popup {
+                transform: translateY(0) !important;
+            }
+            /* 外卖付款弹窗高度66%（修改top值即可调整高度，top = 100% - 想要的弹窗高度%） */
+            #transfer-confirm-popup.food-payment {
+                top: 33vh !important;
+            }
+            .confirm-popup-header {
+                padding: 8px 12px 4px;
+                font-size: 14px;
+            }
+            .confirm-popup-close {
+                left: 14px;
+                width: 18px;
+                height: 18px;
+            }
+            .confirm-popup-content {
+                padding: 6px 12px;
+            }
+            #confirm-transfer-target {
+                font-size: 12px;
+                margin-bottom: 3px;
+            }
+            #confirm-transfer-amount {
+                font-size: 32px !important;
+                margin-bottom: 6px;
+            }
+            .confirm-payment-method {
+                padding-top: 4px;
+                gap: 2px;
+                align-items: flex-start;
+            }
+            .confirm-payment-method > span {
+                font-size: 11px;
+            }
+            .payment-method-details {
+                padding: 4px 8px;
+            }
+            .payment-method-details > span {
+                font-size: 11px;
+            }
+            .password-input-section {
+                padding: 6px 0 2px 0;
+            }
+            .password-input-section p {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+            .password-boxes {
+                gap: 4px;
+                margin-bottom: 4px;
+            }
+            .password-box {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+                border-radius: 5px;
+            }
+            .numeric-keypad {
+                padding-bottom: 0 !important;
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                flex-shrink: 0;
+            }
+            .keypad-btn {
+                padding: 4px 12px;
+                font-size: 16px;
+            }
+            .keypad-btn.delete img {
+                width: 18px;
+                height: 18px;
+            }
+            /* 红包创建弹窗缩小 */
+            #redpacket-popup {
+                width: 260px !important;
+            }
+            #redpacket-popup > div:first-child {
+                padding: 14px 12px 8px !important;
+            }
+            #redpacket-popup > div:first-child > div:first-child {
+                font-size: 15px !important;
+            }
+            #redpacket-popup > div:first-child > div:last-child {
+                font-size: 11px !important;
+            }
+            #redpacket-popup > div:nth-child(2) {
+                margin: 0 6px !important;
+                padding: 10px 10px !important;
+            }
+            #redpacket-target-avatar {
+                width: 26px !important;
+                height: 26px !important;
+            }
+            #redpacket-target-name {
+                font-size: 12px !important;
+            }
+            #redpacket-amount-input {
+                font-size: 22px !important;
+            }
+            #redpacket-greeting-input {
+                padding: 7px 8px !important;
+                font-size: 12px !important;
+            }
+            #redpacket-popup button[onclick="submitRedPacket()"] {
+                padding: 8px !important;
+                font-size: 13px !important;
+            }
+        }
                 .keypad-btn {
             padding: 15px 0;
             font-size: 24px;
@@ -5683,39 +5812,28 @@
             margin: 0 2px;
         }
 
-        /* 强制去除键盘底部的安全距离（因为手机框里不需要） */
+        /* 强制去除键盘底部的安全距离，撑满剩余空间 */
         body.phone-frame-active .numeric-keypad {
             padding-bottom: 0 !important;
             background-color: #f6f2f4;
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            flex-shrink: 0;
         }
 
-        /* 压扁数字键盘的按钮高度 */
+        /* 数字键盘按钮 */
         body.phone-frame-active .keypad-btn {
-            padding: 8px 0 !important; /* 减少内边距 */
-            height: 42px !important;   /* 强制固定高度 */
-            font-size: 18px !important;
-            line-height: 42px; /* 让文字垂直居中 */
+            padding: 5px 10px !important;
+            height: auto !important;
+            font-size: 15px !important;
+            line-height: normal;
         }
 
-        /* 缩小删除按钮的图标 */
+        /* 删除按钮的图标 */
         body.phone-frame-active .keypad-btn.delete img {
-            width: 20px; 
-            height: 20px;
+            width: 16px; 
+            height: 16px;
             vertical-align: middle;
-        }
-        
-        /* 确保弹窗在手机框内绝对定位到底部 */
-        body.phone-frame-active #transfer-confirm-popup {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            transform: translateY(100%); /* 默认隐藏 */
-        }
-        /* 激活状态 */
-        body.phone-frame-active #transfer-confirm-overlay.active #transfer-confirm-popup {
-            transform: translateY(0);
         }
         
        /* --- 手机外框 - 新增与修改 --- */
@@ -6001,9 +6119,23 @@
             position: absolute !important;
             bottom: 0 !important;
             left: 0 !important;
+            top: 30% !important;
             width: 100% !important;
-            max-height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow-y: auto !important;
             border-radius: 16px 16px 0 0 !important;
+            transform: translateY(100%);
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        body.phone-frame-active #transfer-confirm-overlay.active #transfer-confirm-popup {
+            transform: translateY(0) !important;
+        }
+
+        /* 外卖付款弹窗高度66%（修改top值即可调整高度，top = 100% - 想要的弹窗高度%） */
+        body.phone-frame-active #transfer-confirm-popup.food-payment {
+            top: 33% !important;
         }
 
         /* 手机框模式下通讯录页面适配 */
@@ -8002,6 +8134,11 @@ body.phone-frame-active #mall-sent-gifts-page .mall-favorite-header { padding-to
 #mall-purchased-page.active { transform: translateX(0) scale(var(--ps, 0.85)); }
 body.ios-mode-active #mall-purchased-page .mall-favorite-header { padding-top: calc(env(safe-area-inset-top, 20px) + 15px); }
 body.phone-frame-active #mall-purchased-page .mall-favorite-header { padding-top: calc(15px + var(--status-bar-height)); }
+body.phone-frame-active .mall-purchase-styles-section .section-title { font-size: 11px !important; padding-left: 20px !important; }
+body.phone-frame-active .style-option-btn { padding: 5px 10px !important; font-size: 11px !important; }
+body.phone-frame-active #mall-purchase-styles-grid { padding-left: 20px !important; gap: 6px !important; }
+body.phone-frame-active #mall-purchase-product-emoji { margin-left: 12px !important; }
+body.phone-frame-active #mall-purchase-panel { height: 70% !important; }
 #mall-received-gifts-page {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background-color: #f7f7f7; z-index: 556;
@@ -15326,7 +15463,10 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
         <div class="mall-purchase-header">
             <span id="mall-purchase-product-emoji"></span>
             <div class="mall-purchase-product-info">
-                <div id="mall-purchase-product-price"></div>
+                <div class="mall-purchase-price-row">
+                    <div id="mall-purchase-product-price"></div>
+                    <button id="mall-purchase-confirm-btn">确定</button>
+                </div>
                 <div id="mall-purchase-quantity-selector">
                     <button class="quantity-btn minus">-</button>
                     <span id="mall-purchase-quantity">1</span>
@@ -15342,9 +15482,6 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
                     <!-- 款式会由JS动态生成到这里 -->
                 </div>
             </div>
-        </div>
-        <div class="mall-purchase-footer">
-            <button id="mall-purchase-confirm-btn">确定</button>
         </div>
     </div>
 </div>
@@ -20548,6 +20685,7 @@ ${roleDetails}\n`;
                 
                 renderNumericKeypad();
                 document.getElementById('transfer-confirm-overlay').classList.add('active');
+                document.getElementById('transfer-confirm-popup').classList.add('food-payment');
             };
         }
     }
@@ -30973,6 +31111,7 @@ window.openTransferConfirmPopup = (amount) => {
 
     window.closeTransferConfirmPopup = () => {
         document.getElementById('transfer-confirm-overlay').classList.remove('active');
+        document.getElementById('transfer-confirm-popup').classList.remove('food-payment');
         document.getElementById('confirm-popup-askpay-btn').style.display = 'none';
         // 关闭找人代付小弹窗
         const askPayModal = document.getElementById('askpay-friend-modal');
@@ -33231,9 +33370,14 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         const lockScreen = document.getElementById('lock-screen');
         if (lockScreen) {
             if (lockWp) {
-                lockScreen.style.background = `url(${lockWp}) center/cover no-repeat`;
+                lockScreen.style.background = '';
+                lockScreen.style.backgroundImage = `url(${lockWp})`;
+                lockScreen.style.backgroundSize = 'cover';
+                lockScreen.style.backgroundPosition = 'center';
+                lockScreen.style.backgroundRepeat = 'no-repeat';
             } else {
                 lockScreen.style.background = '#000000';
+                lockScreen.style.backgroundImage = '';
             }
         }
         
