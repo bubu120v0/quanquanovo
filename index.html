@@ -386,6 +386,13 @@
             width: 85px; height: 85px; border-radius: 12px; background: #f9f9f9;
             display: flex; justify-content: center; align-items: center; font-size: 45px;
             flex-shrink: 0; border: 1px solid #eee;
+            overflow: hidden;
+        }
+        .takeout-dish-emoji.multi-emoji {
+            font-size: 24px;
+            flex-wrap: wrap;
+            gap: 2px;
+            padding: 4px;
         }
         .takeout-dish-info {
             flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0;
@@ -5476,7 +5483,7 @@
             width: 24px; height: 24px;
             cursor: pointer;
         }
-9        .confirm-popup-askpay-btn {
+        .confirm-popup-askpay-btn {
             position: absolute;
             right: 15px; top: 50%;
             transform: translateY(-50%);
@@ -20554,9 +20561,14 @@ ${roleDetails}\n`;
                         actionHtml = `<div class="takeout-dish-add-btn" onclick="updateTakeoutCart(${index}, ${itemIdx}, 1, event)">+</div>`;
                     }
 
+                    const rawEmoji = item.emoji || '🍽️';
+                    const emojiChars = [...rawEmoji];
+                    const isMulti = emojiChars.length > 1;
+                    const emojiClass = isMulti ? 'takeout-dish-emoji multi-emoji' : 'takeout-dish-emoji';
+
                     mainHtml += `
                         <div class="takeout-shop-dish-card">
-                            <div class="takeout-dish-emoji">${item.emoji || '🍽️'}</div>
+                            <div class="${emojiClass}">${rawEmoji}</div>
                             <div class="takeout-dish-info">
                                 <div>
                                     <div class="takeout-dish-name">${escapeHtml(item.name)}</div>
