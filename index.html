@@ -14986,7 +14986,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     body.phone-frame-active #forum-following-header .forum-header-back-btn {
         width: 22px !important;
         height: 22px !important;
-        margin-left: 10px;
+        margin-left: 14px;
     }
     html.phone-frame-active #forum-following-header .forum-header-title,
     body.phone-frame-active #forum-following-header .forum-header-title {
@@ -15025,6 +15025,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     html.phone-frame-active .forum-following-right-actions,
     body.phone-frame-active .forum-following-right-actions {
         gap: 8px !important;
+        margin-right: 6px !important;
     }
     html.phone-frame-active .forum-following-btn,
     body.phone-frame-active .forum-following-btn {
@@ -15047,7 +15048,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
 
     /* 关注页面返回图标右移 */
     #forum-following-header .forum-header-back-btn {
-        margin-left: 14px;
+        margin-left: 20px;
     }
 
     /* 外卖APP：投喂记录、我的代付顶栏下移 */
@@ -15227,6 +15228,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
         display: flex;
         align-items: center;
         gap: 12px;
+        margin-right: 6px;
     }
     .forum-following-btn {
         background-color: #f0f2f5; /* 浅灰色 */
@@ -24907,7 +24909,6 @@ ${rolesContext ? rolesContext : '无常驻角色。'}
                 </div>
                 <div class="forum-following-right-actions">
                     <button class="forum-following-btn" onclick="event.stopPropagation();">已关注</button>
-                    <!-- 点击三个点触发修改弹窗 -->
                     <div class="forum-following-dots" onclick="event.stopPropagation(); openEditForumNicknameModal(${contact.id}, '${escapeHtml(name)}')">···</div>
                 </div>
             `;
