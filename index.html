@@ -30871,30 +30871,24 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
         }
 
         function vcApplyFix() {
-            // 将通话页面高度设为可视区域高度，确保黑色背景完全覆盖可视区域，不露出下层页面
+            // 不缩小页面高度，保持 100vh 黑色背景覆盖全屏
+            // 给底部操作区加 padding，把输入框推到键盘上方
             var h = getVH();
             var fullH = window.innerHeight || window.screen.height;
             var keyboardH = fullH - h;
             if (keyboardH < 0) keyboardH = 0;
-            callPage.style.height = h + 'px';
-            // 给底部操作区加 padding，把输入框推到键盘上方
             if (callActions) {
                 callActions.style.paddingBottom = (keyboardH + 20) + 'px';
             }
-            // 将 html 背景也设为黑色，防止键盘收起/展开过渡时露出下层内容
-            document.documentElement.style.background = '#000';
             vcKeyboardOpen = true;
             scrollConvToBottom();
         }
 
         function vcResetFix() {
-            // 恢复原始高度和 padding
-            callPage.style.height = '100vh';
+            // 恢复原始 padding
             if (callActions) {
                 callActions.style.paddingBottom = '40px';
             }
-            // 恢复 html 原始背景
-            document.documentElement.style.background = '';
             vcKeyboardOpen = false;
             scrollConvToBottom();
         }
