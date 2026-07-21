@@ -12828,39 +12828,49 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
             <div class="npc-chat-messages" id="npc-chat-messages"></div>
         </div>
                 <div id="chat-extra-menu">
-            <!-- 第一行 -->
+            <!-- 群聊+私聊通用 -->
             <div class="chat-menu-item" onclick="openRedPacketPage()">
                 <img src="https://img.heliar.top/file/1770713133852_红包_red-envelopes.png" class="chat-menu-icon">
                 <span class="chat-menu-text">红包</span>
             </div>
-            <div class="chat-menu-item" onclick="openTransferPage()">
+            <div class="chat-menu-item chat-menu-private-only" onclick="openTransferPage()">
                 <img src="https://img.heliar.top/file/1770713126016_支出_expenses-one.png" class="chat-menu-icon">
                 <span class="chat-menu-text">转账</span>
             </div>
-                        <div class="chat-menu-item" onclick="openMallPurchasedPageFromChat()">
+            <div class="chat-menu-item chat-menu-private-only" onclick="openMallPurchasedPageFromChat()">
                 <img src="https://img.heliar.top/file/1770713131222_淘宝_taobao_2.png" class="chat-menu-icon">
                 <span class="chat-menu-text">淘宝</span>
             </div>
-
-            <div class="chat-menu-item" onclick="openWalletApp()">
+            <div class="chat-menu-item chat-menu-private-only" onclick="openWalletApp()">
                 <img src="https://img.heliar.top/file/1770721898565_支付宝_alipay.png" class="chat-menu-icon">
                 <span class="chat-menu-text">钱包</span>
             </div>
-            
-                      <!-- 第二行 -->
-            <div class="chat-menu-item" onclick="retryLastAiReply()">
+            <div class="chat-menu-item chat-menu-group-visible" onclick="retryGroupAiReply()">
                 <img src="https://img.heliar.top/file/1773078710555_重新_redo_5.png" class="chat-menu-icon">
                 <span class="chat-menu-text">重说</span>
             </div>
-            <div class="chat-menu-item" onclick="openTakeoutAppFromChat()">
+            <div class="chat-menu-item chat-menu-private-only" onclick="openTakeoutAppFromChat()">
                 <img src="https://img.heliar.top/file/1773415285038_叉子勺子_fork-spoon.png" class="chat-menu-icon">
                 <span class="chat-menu-text">外卖</span>
             </div>
-            <div class="chat-menu-item" onclick="openSummaryFromChat()">
+            <div class="chat-menu-item chat-menu-group-visible" onclick="openSummaryFromChat()">
                 <img src="https://i.postimg.cc/02BN9gm7/nai-lao-cheese-4.png" class="chat-menu-icon">
                 <span class="chat-menu-text">总结</span>
             </div>
-            <div class="chat-menu-item" onclick="startVoiceCall()">
+            <div class="chat-menu-item chat-menu-group-visible" onclick="startVoiceCall()">
+                <img src="https://img.heliar.top/file/1781886503380_电话呼叫_phone-call.png" class="chat-menu-icon">
+                <span class="chat-menu-text">通话</span>
+            </div>
+            <!-- 私聊的重说 -->
+            <div class="chat-menu-item chat-menu-private-only" onclick="retryLastAiReply()">
+                <img src="https://img.heliar.top/file/1773078710555_重新_redo_5.png" class="chat-menu-icon">
+                <span class="chat-menu-text">重说</span>
+            </div>
+            <div class="chat-menu-item chat-menu-private-only" onclick="openSummaryFromChat()">
+                <img src="https://i.postimg.cc/02BN9gm7/nai-lao-cheese-4.png" class="chat-menu-icon">
+                <span class="chat-menu-text">总结</span>
+            </div>
+            <div class="chat-menu-item chat-menu-private-only" onclick="startVoiceCall()">
                 <img src="https://img.heliar.top/file/1781886503380_电话呼叫_phone-call.png" class="chat-menu-icon">
                 <span class="chat-menu-text">通话</span>
             </div>
@@ -12966,6 +12976,10 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
                 <div class="group-settings-action-item" onclick="openMemberAliasList()">
                     <span class="group-settings-action-label">设置群成员备注</span>
                     <span class="group-settings-action-value">></span>
+                </div>
+                <div class="group-settings-action-item" onclick="openGroupUserAvatarModal()">
+                    <span class="group-settings-action-label">设置我的头像</span>
+                    <span class="group-settings-action-value" id="group-settings-user-avatar-val">未设置</span>
                 </div>
             </div>
             <!-- 群成员备注面板 -->
@@ -15925,6 +15939,14 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
                     style="flex:1; border:none; outline:none; font-size:28px; color:#333; font-weight:300; padding-left:6px; background:transparent;"
                     onkeydown="if(event.key==='Enter') submitRedPacket()">
             </div>
+            <div id="redpacket-count-row" style="display:none; margin-bottom:16px;">
+                <div style="font-size:13px; color:#999; margin-bottom:6px;">红包个数</div>
+                <div style="display:flex; align-items:center; border-bottom:1px solid #eee; padding-bottom:8px;">
+                    <input type="number" id="redpacket-count-input" placeholder="1" min="1" step="1"
+                        style="flex:1; border:none; outline:none; font-size:22px; color:#333; font-weight:300; background:transparent;">
+                    <span style="font-size:14px; color:#999;">个</span>
+                </div>
+            </div>
             <div style="font-size:13px; color:#999; margin-bottom:6px;">恭喜发财，大吉大利（祝福语，选填）</div>
             <input type="text" id="redpacket-greeting-input" placeholder="恭喜发财，大吉大利！"
                 style="width:100%; border:1px solid #eee; border-radius:6px; padding:10px 12px; font-size:14px; color:#333; outline:none; margin-bottom:20px; box-sizing:border-box;">
@@ -15933,6 +15955,25 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
         <!-- 底部 -->
         <div style="padding:12px; text-align:center;">
             <span onclick="closeRedPacketPage()" style="color:rgba(255,255,255,0.8); font-size:13px; cursor:pointer;">取消</span>
+        </div>
+    </div>
+</div>
+
+<!-- 群红包详情弹窗 -->
+<div id="group-redpacket-detail-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:10002; align-items:center; justify-content:center;">
+    <div style="width:320px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,0.3);">
+        <!-- 顶部红色区域 -->
+        <div style="background:linear-gradient(180deg, #fa5256 0%, #e8413f 100%); padding:24px 20px 16px; text-align:center; color:#fff;">
+            <img id="grp-detail-avatar" src="" style="width:48px; height:48px; border-radius:50%; object-fit:cover; margin:0 auto 10px; display:block;">
+            <div id="grp-detail-sender" style="font-size:15px; margin-bottom:4px;">的红包</div>
+            <div id="grp-detail-greeting" style="font-size:13px; opacity:0.85; margin-bottom:8px;"></div>
+            <div id="grp-detail-amount" style="font-size:36px; font-weight:600;"></div>
+        </div>
+        <!-- 领取列表 -->
+        <div id="grp-detail-list" style="max-height:280px; overflow-y:auto; padding:0 16px;"></div>
+        <!-- 关闭按钮 -->
+        <div style="padding:12px; text-align:center; border-top:1px solid #f0f0f0;">
+            <span onclick="closeGroupRedPacketDetail()" style="color:#999; font-size:14px; cursor:pointer;">关闭</span>
         </div>
     </div>
 </div>
@@ -21252,24 +21293,42 @@ ${roleDetails}\n`;
         const grid = document.getElementById('recollection-grid');
         grid.innerHTML = '';
         const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
-        
-        if (contacts.length === 0) {
-            grid.innerHTML = '<p style="color: #9f8a8a; grid-column: span 3; text-align:center;">还没有创建任何角色哦</p>';
+        const groups = getGroupChatList();
+
+        if (contacts.length === 0 && groups.length === 0) {
+            grid.innerHTML = '<p style="color: #9f8a8a; grid-column: span 3; text-align:center;">还没有创建任何角色或群聊哦</p>';
             return;
         }
 
+        // 渲染角色的水晶球
         contacts.forEach(contact => {
             const item = document.createElement('div');
             item.className = 'crystal-ball-item';
-            
-            // 简单直接的点击跳转绑定
             item.innerHTML = `
-                <div class="crystal-ball-container" onclick="openRecollectionDetail(${contact.id})">
+                <div class="crystal-ball-container" onclick="openRecollectionDetail('${contact.id}')">
                     <div class="crystal-ball-sphere">
                         <div class="crystal-ball-stars">
                             <div class="star s1"></div><div class="star s2"></div><div class="star s3"></div><div class="star s4"></div>
                         </div>
                          <div class="crystal-ball-name">${escapeHtml(contact.alias || contact.name)}</div>
+                    </div>
+                    <div class="crystal-ball-base"></div>
+                </div>
+            `;
+            grid.appendChild(item);
+        });
+
+        // 渲染群聊的水晶球
+        groups.forEach(group => {
+            const item = document.createElement('div');
+            item.className = 'crystal-ball-item';
+            item.innerHTML = `
+                <div class="crystal-ball-container" onclick="openRecollectionDetail('${group.groupId}')">
+                    <div class="crystal-ball-sphere" style="background:linear-gradient(135deg,#ffb6c1,#ffc0cb);">
+                        <div class="crystal-ball-stars">
+                            <div class="star s1"></div><div class="star s2"></div><div class="star s3"></div><div class="star s4"></div>
+                        </div>
+                         <div class="crystal-ball-name">${escapeHtml(group.groupName || '群聊')}</div>
                     </div>
                     <div class="crystal-ball-base"></div>
                 </div>
@@ -21283,17 +21342,17 @@ ${roleDetails}\n`;
         const list = document.getElementById('recollection-color-list');
         list.innerHTML = '';
         const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
-        
-        if (contacts.length === 0) {
-            list.innerHTML = '<p style="text-align:center; color:#999; padding: 20px;">还没有创建任何角色哦</p>';
+        const groups = getGroupChatList();
+
+        if (contacts.length === 0 && groups.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#999; padding: 20px;">还没有创建任何角色或群聊哦</p>';
         } else {
             contacts.forEach(contact => {
                 const recollectionData = getRecollections(contact.id);
-                const color = recollectionData.crystalColor || '#7b42f5'; 
-                
+                const color = recollectionData.crystalColor || '#ffb6c1';
+
                 const item = document.createElement('div');
                 item.className = 'wb-color-item';
-                // 改用输入框，并加一个小圆点预览颜色
                 item.innerHTML = `
                     <span class="wb-color-item-name">${escapeHtml(contact.alias || contact.name)}</span>
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -21301,13 +21360,40 @@ ${roleDetails}\n`;
                         <input type="text" class="wb-color-input" data-contact-id="${contact.id}" value="${color}" placeholder="#HEX码" style="width: 80px; padding: 6px; border: 1px solid #eee; border-radius: 8px; font-size: 13px; outline: none; text-align: center;">
                     </div>
                 `;
-                
-                // 实时预览输入的颜色
+
                 const textInput = item.querySelector('.wb-color-input');
                 const previewBox = item.querySelector('.color-preview');
                 textInput.addEventListener('input', (e) => {
                     let val = e.target.value.trim();
-                    if(!val.startsWith('#') && val.length > 0) val = '#' + val; // 自动补齐 #
+                    if(!val.startsWith('#') && val.length > 0) val = '#' + val;
+                    const hexRegex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/i;
+                    if(hexRegex.test(val)){
+                        previewBox.style.backgroundColor = val;
+                    }
+                });
+
+                list.appendChild(item);
+            });
+
+            groups.forEach(group => {
+                const recollectionData = getRecollections(group.groupId);
+                const color = recollectionData.crystalColor || '#ffb6c1';
+
+                const item = document.createElement('div');
+                item.className = 'wb-color-item';
+                item.innerHTML = `
+                    <span class="wb-color-item-name">${escapeHtml(group.groupName || '群聊')} <span style="font-size:11px;color:#999;">(群聊)</span></span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="color-preview" style="width: 20px; height: 20px; border-radius: 50%; background-color: ${color}; border: 1px solid #ddd; flex-shrink: 0;"></div>
+                        <input type="text" class="wb-color-input" data-contact-id="${group.groupId}" value="${color}" placeholder="#HEX码" style="width: 80px; padding: 6px; border: 1px solid #eee; border-radius: 8px; font-size: 13px; outline: none; text-align: center;">
+                    </div>
+                `;
+
+                const textInput = item.querySelector('.wb-color-input');
+                const previewBox = item.querySelector('.color-preview');
+                textInput.addEventListener('input', (e) => {
+                    let val = e.target.value.trim();
+                    if(!val.startsWith('#') && val.length > 0) val = '#' + val;
                     const hexRegex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/i;
                     if(hexRegex.test(val)){
                         previewBox.style.backgroundColor = val;
@@ -26986,7 +27072,7 @@ ${actionInstruction}
     window.closeAddFriendModal = () => { document.getElementById('add-friend-modal').classList.remove('active'); };
     window.triggerAvatarUpload = () => { document.getElementById('input-friend-avatar').click(); };
     window.handleAvatarUrlInput = (input) => { const url = input.value.trim(); const imgEl = document.getElementById('new-friend-avatar-preview'); if (url) { tempAvatarUrl = url; imgEl.src = url; imgEl.style.display = 'block'; document.getElementById('avatar-placeholder-icon').style.display = 'none'; } else { tempAvatarUrl = ""; imgEl.style.display = 'none'; document.getElementById('avatar-placeholder-icon').style.display = 'block'; } };
-    window.handleFriendAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { tempAvatarUrl = base64; document.getElementById('new-friend-avatar-url').value = ""; const imgEl = document.getElementById('new-friend-avatar-preview'); imgEl.src = tempAvatarUrl; imgEl.style.display = 'block'; document.getElementById('avatar-placeholder-icon').style.display = 'none'; }); };
+    window.handleFriendAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { tempAvatarUrl = base64; document.getElementById('new-friend-avatar-url').value = ""; const imgEl = document.getElementById('new-friend-avatar-preview'); imgEl.removeAttribute('data-loaded'); imgEl.src = tempAvatarUrl; imgEl.style.display = 'block'; document.getElementById('avatar-placeholder-icon').style.display = 'none'; if (typeof processLocalImages === 'function') processLocalImages(imgEl); }); };
     window.saveNewFriend = () => { const name = document.getElementById('new-friend-name').value.trim(); const alias = document.getElementById('new-friend-alias').value.trim(); if (!name) { showToast("请输入姓名"); return; } if (!tempAvatarUrl) { showToast("请上传头像或输入URL"); return; } let contacts = []; try { contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); } catch (e) { contacts = []; } if (contacts.find(c => c.name === name || (alias && c.alias === alias))) { showToast("该好友已存在"); return; } const globalWbIds = []; try { const allWb = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]'); allWb.filter(b => b.isGlobal).forEach(b => globalWbIds.push(b.id)); } catch(e) {} const newContact = { id: Date.now(), name: name, alias: alias, avatar: tempAvatarUrl, lastMsg: "点击开始聊天", timestamp: Date.now(), previousMessageTime: null, signature: "", backgroundImage: "", isPinned: false, worldbookIds: globalWbIds, timePerceptionEnabled: false, memoryDepth: 15, autoPostEnabled: false, autoCommentMomentEnabled: true, autoReplyCommentEnabled: true, autoPostInterval: 60, isBlocked: false, blockedMessages: [], isBlockedByChar: false, charBlockedMessages: [] };
  contacts.unshift(newContact); try { localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); showToast("添加成功！"); closeAddFriendModal(); renderChatList(); renderContactList(); } catch (e) { console.error("Error saving contact:", e); showToast("保存失败，图片可能过大"); } };
 
@@ -27022,10 +27108,12 @@ ${actionInstruction}
         compressImage(event.target.files[0], 200, (base64) => {
             tempGroupAvatarUrl = base64;
             const preview = document.getElementById('group-avatar-preview');
+            preview.removeAttribute('data-loaded');
             preview.src = base64;
             preview.style.display = 'block';
             document.getElementById('group-avatar-placeholder').style.display = 'none';
             document.getElementById('new-group-avatar-url').value = '';
+            if (typeof processLocalImages === 'function') processLocalImages(preview);
         });
     };
     window.handleGroupAvatarUrlInput = (input) => {
@@ -27245,6 +27333,7 @@ ${actionInstruction}
         document.getElementById('group-settings-member-count').innerText = (group.memberIds.length + 1) + '人';
         document.getElementById('group-settings-pin-val').innerText = group.isPinned ? '已置顶' : '未置顶';
         document.getElementById('group-settings-mute-val').innerText = group.isMuted ? '已开启' : '已关闭';
+        document.getElementById('group-settings-user-avatar-val').innerText = group.userAvatar ? '已设置' : '未设置';
         renderGroupSettingsMembers(group);
         document.getElementById('group-settings-view').classList.add('active');
     };
@@ -27259,9 +27348,10 @@ ${actionInstruction}
         try { contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); } catch(e) {}
         // 我
         const globalProfile = getUserProfile();
+        const myAvatar = (group.userAvatar) ? group.userAvatar : (globalProfile.avatar || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png');
         const meCell = document.createElement('div');
         meCell.className = 'group-member-cell';
-        meCell.innerHTML = `<img src="${globalProfile.avatar || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png'}" onerror="this.src='https://img.heliar.top/file/1770068438490_添加人群_people-plus.png'"><span class="cell-name">我</span>`;
+        meCell.innerHTML = `<img src="${myAvatar}" onerror="this.src='https://img.heliar.top/file/1770068438490_添加人群_people-plus.png'"><span class="cell-name">我</span>`;
         grid.appendChild(meCell);
         // 群成员
         group.memberIds.forEach(mid => {
@@ -27335,6 +27425,17 @@ ${actionInstruction}
         input.placeholder = '请输入备注名';
         input.value = currentAlias;
         currentGroupEditType = 'alias';
+        document.getElementById('group-edit-modal').classList.add('active');
+    };
+    window.openGroupUserAvatarModal = () => {
+        if (!currentChatContactId || !currentChatContactId.startsWith('group_')) return;
+        const group = getGroupInfo(currentChatContactId);
+        if (!group) return;
+        const input = document.getElementById('group-edit-input');
+        document.getElementById('group-edit-modal-title').innerText = '设置我的头像（输入URL）';
+        input.placeholder = '请输入头像图片URL';
+        input.value = group.userAvatar || '';
+        currentGroupEditType = 'userAvatar';
         document.getElementById('group-edit-modal').classList.add('active');
     };
     window.removeGroupMember = (contactId) => {
@@ -27520,6 +27621,14 @@ ${actionInstruction}
             renderGroupSettingsMembers(groups[gi]);
             openMemberAliasList();
             showToast(value ? '备注已保存' : '备注已清除');
+        } else if (currentGroupEditType === 'userAvatar') {
+            if (value) {
+                groups[gi].userAvatar = value;
+            } else {
+                delete groups[gi].userAvatar;
+            }
+            document.getElementById('group-settings-user-avatar-val').innerText = value ? '已设置' : '未设置';
+            showToast(value ? '头像已设置' : '头像已清除');
         }
         saveGroupChatList(groups);
         closeGroupEditModal();
@@ -27639,6 +27748,11 @@ ${actionInstruction}
                 recentMsgs.forEach(m => {
                     if (m.isSystemMsg) {
                         chatContext += `[系统] ${m.text}\n`;
+                    } else if (m.isRedPacket) {
+                        const rpData = m.redPacketData || {};
+                        const rpSender = m.type === 'sent' ? uName : (m.senderName || '未知');
+                        const grabbedInfo = (rpData.grabbers || []).map(g => `${g.memberName}(¥${parseFloat(g.amount).toFixed(2)})`).join('、');
+                        chatContext += `${rpSender}: [红包] ¥${parseFloat(rpData.amount).toFixed(2)}（${rpData.greeting || ''}）${grabbedInfo ? '，已领：' + grabbedInfo : ''}\n`;
                     } else if (m.type === 'sent') {
                         chatContext += `${uName}: ${m.text || '[非文本消息]'}\n`;
                     } else {
@@ -27700,6 +27814,10 @@ ${actionInstruction}
                 systemPrompt += `3. 如果你不认识某个人，不要假装认识，要自然地表现出陌生感。\n`;
                 systemPrompt += `4. 只回复消息内容本身，不要加任何前缀、引号或角色名标记。\n`;
                 systemPrompt += `5. 回复要符合你的性格和语境，保持角色一致性。\n`;
+                systemPrompt += `6. 如果你想引用回复某条消息，在回复内容开头用【@回复:发送者名】标记。例如：\n`;
+                systemPrompt += `   - 回复用户的消息：【@回复:${uName}】你说得对！\n`;
+                systemPrompt += `   - 回复其他成员的消息：【@回复:成员名】我也觉得！\n`;
+                systemPrompt += `   - 不需要引用回复时，直接说内容即可，不要加标记。\n`;
 
                 // 世界书
                 if (member.worldbookIds && member.worldbookIds.length > 0) {
@@ -27714,19 +27832,41 @@ ${actionInstruction}
                     } catch(e) {}
                 }
 
-                // 回忆总结
+                // 回忆总结（角色自己的 + 群聊的）
                 try {
                     const recollectionData = getRecollections(String(memberId));
                     const recollectionItems = recollectionData.items || [];
                     if (recollectionItems.length > 0) {
                         const recollectionContext = recollectionItems.map(item => item.text).join('\n');
                         if (recollectionContext) {
-                            systemPrompt += `\n【回忆总结（你曾经历过的事）】\n${recollectionContext}\n`;
+                            systemPrompt += `\n【回忆总结（你个人曾经历过的事）】\n${recollectionContext}\n`;
+                        }
+                    }
+                } catch(e) {}
+                try {
+                    const groupRecollectionData = getRecollections(String(groupId));
+                    const groupRecollectionItems = groupRecollectionData.items || [];
+                    if (groupRecollectionItems.length > 0) {
+                        const groupRecollectionContext = groupRecollectionItems.map(item => item.text).join('\n');
+                        if (groupRecollectionContext) {
+                            systemPrompt += `\n【群聊回忆总结（这个群聊中发生过的事）】\n${groupRecollectionContext}\n`;
                         }
                     }
                 } catch(e) {}
 
                 systemPrompt += `\n【群聊记录】\n${chatContext}`;
+
+                // 群红包信息
+                const pendingRedPackets = recentMsgs.filter(m => m.isRedPacket && m.redPacketData && m.redPacketData.isGroupRedPacket && m.redPacketData.remainCount > 0 && !(m.redPacketData.grabbers || []).some(g => g.memberId === memberId));
+                if (pendingRedPackets.length > 0) {
+                    systemPrompt += `\n【群红包】\n`;
+                    pendingRedPackets.forEach(rp => {
+                        const rpData = rp.redPacketData;
+                        const grabbedBy = (rpData.grabbers || []).map(g => g.memberName).join('、');
+                        systemPrompt += `- 有一个来自${rpData.senderName}的红包（总金额¥${parseFloat(rpData.amount).toFixed(2)}，${rpData.totalCount}个，已领${rpData.grabbers ? rpData.grabbers.length : 0}个${grabbedBy ? '，'+grabbedBy+'已领' : ''}），祝福语：「${rpData.greeting}」\n`;
+                    });
+                    systemPrompt += `如果你想抢红包，在回复开头加【抢红包】标记。不想抢就不加。抢或不抢都要符合你的性格和当前情境。\n`;
+                }
 
                 // 时间感知
                 if (member.timePerceptionEnabled) {
@@ -27740,19 +27880,107 @@ ${actionInstruction}
                     { role: 'user', content: `请以${member.name}的身份，在群聊中回复一条消息。` }
                 ];
 
-                const response = await fetch(settings.api.url, {
+                let fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
+                const isGemini = settings.api.url.includes('generativelanguage');
+                let bodyData, headers = { 'Content-Type': 'application/json' };
+
+                if (isGemini) {
+                    fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model}:generateContent?key=${settings.api.key}`;
+                    bodyData = JSON.stringify({
+                        contents: [{ parts: [{ text: systemPrompt + "\n\n群聊记录:\n" + chatContext + "\n\n请以" + member.name + "的身份，在群聊中回复一条消息。只回复消息内容本身。" }] }],
+                        generationConfig: { temperature: 0.8, maxOutputTokens: 200 }
+                    });
+                } else {
+                    headers['Authorization'] = `Bearer ${settings.api.key}`;
+                    bodyData = JSON.stringify({ model: settings.api.model || 'gpt-3.5-turbo', messages: apiMessages, max_tokens: 200, temperature: 0.8 });
+                }
+
+                const response = await fetch(fetchUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${settings.api.key}` },
-                    body: JSON.stringify({ model: settings.api.model || 'gpt-3.5-turbo', messages: apiMessages, max_tokens: 200, temperature: 0.8 })
+                    headers: headers,
+                    body: bodyData
                 });
 
                 if (!response.ok) continue;
                 const data = await response.json();
-                const replyText = data.choices?.[0]?.message?.content?.trim();
+
+                let replyText = '';
+                if (isGemini) {
+                    replyText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                } else {
+                    replyText = data.choices?.[0]?.message?.content?.trim();
+                }
                 if (!replyText) continue;
 
                 // 使用备注名（如果有）
                 const alias = (group.memberAliases && group.memberAliases[memberId]) || '';
+
+                // 解析引用回复标记 【@回复:发送者名】
+                let replyToInfo = null;
+                const replyMatch = replyText.match(/^【@回复:(.+?)】/);
+                if (replyMatch) {
+                    const replyToName = replyMatch[1];
+                    replyText = replyText.replace(/^【@回复:.+?】\s*/, '');
+                    // 在最近消息中查找被引用的消息
+                    const targetMsg = [...recentMsgs].reverse().find(m => {
+                        if (m.isSystemMsg) return false;
+                        const senderName = m.type === 'sent' ? uName : (m.senderName || '未知');
+                        return senderName === replyToName;
+                    });
+                    if (targetMsg) {
+                        replyToInfo = {
+                            id: targetMsg.id,
+                            senderType: targetMsg.type === 'sent' ? 'sent' : 'received',
+                            senderName: targetMsg.type === 'sent' ? uName : (targetMsg.senderName || '未知'),
+                            text: targetMsg.text || ''
+                        };
+                    }
+                }
+
+                // 解析抢红包标记 【抢红包】
+                let grabbedRedPacket = false;
+                if (replyText.includes('【抢红包】')) {
+                    replyText = replyText.replace(/【抢红包】\s*/g, '');
+                    // 执行抢红包
+                    try {
+                        let curMsgs = JSON.parse(localStorage.getItem(msgKey) || '[]');
+                        const rpMsgIdx = curMsgs.findIndex(m => m.isRedPacket && m.redPacketData && m.redPacketData.isGroupRedPacket && m.redPacketData.remainCount > 0 && !(m.redPacketData.grabbers || []).some(g => g.memberId === memberId));
+                        if (rpMsgIdx > -1) {
+                            const rpData = curMsgs[rpMsgIdx].redPacketData;
+                            const remainCount = rpData.remainCount;
+                            const totalAmount = parseFloat(rpData.amount);
+                            const alreadyGrabbed = rpData.grabbers || [];
+                            const alreadyGrabbedTotal = alreadyGrabbed.reduce((s, g) => s + parseFloat(g.amount), 0);
+
+                            if (remainCount === 1) {
+                                // 最后一个，拿剩余全部
+                                var grabAmount = Math.round((totalAmount - alreadyGrabbedTotal) * 100) / 100;
+                            } else {
+                                // 随机金额（微信式随机红包算法）
+                                const remainAmount = totalAmount - alreadyGrabbedTotal;
+                                const minGrab = 0.01;
+                                const maxGrab = remainAmount / remainCount * 2;
+                                var grabAmount = Math.round(Math.max(minGrab, Math.random() * Math.min(maxGrab, remainAmount - (remainCount - 1) * minGrab)) * 100) / 100;
+                            }
+
+                            if (!rpData.grabbers) rpData.grabbers = [];
+                            rpData.grabbers.push({
+                                memberId: memberId,
+                                memberName: alias || member.alias || member.name,
+                                memberAvatar: member.avatar || '',
+                                amount: grabAmount,
+                                timestamp: Date.now()
+                            });
+                            rpData.remainCount = Math.max(0, rpData.remainCount - 1);
+                            if (rpData.remainCount === 0) {
+                                rpData.status = 'all_grabbed';
+                            }
+                            curMsgs[rpMsgIdx].redPacketData = rpData;
+                            localStorage.setItem(msgKey, JSON.stringify(curMsgs));
+                            grabbedRedPacket = true;
+                        }
+                    } catch(e) {}
+                }
 
                 // 添加群消息
                 const newMsg = {
@@ -27765,6 +27993,9 @@ ${actionInstruction}
                     senderName: alias || member.alias || member.name,
                     senderAvatar: member.avatar
                 };
+                if (replyToInfo) {
+                    newMsg.replyTo = replyToInfo;
+                }
 
                 // 重新读取消息并追加
                 try { messages = JSON.parse(localStorage.getItem(msgKey) || '[]'); } catch(e) { messages = []; }
@@ -29670,7 +29901,13 @@ ${msgContext ? msgContext : '无'}
         const contact = isGroupChat ? null : contacts.find(c => c.id === currentChatContactId);
         const themAvatar = contact ? contact.avatar : '';
         const globalProfile = getUserProfile();
-        const meAvatar = (contact && contact.userAvatar) ? contact.userAvatar : (globalProfile.avatar || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png');
+        let meAvatar;
+        if (isGroupChat) {
+            const grp = getGroupInfo(currentChatContactId);
+            meAvatar = (grp && grp.userAvatar) ? grp.userAvatar : (globalProfile.avatar || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png');
+        } else {
+            meAvatar = (contact && contact.userAvatar) ? contact.userAvatar : (globalProfile.avatar || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png');
+        }
 
         let lastMsgTime = 0;
         let hasInsertedBlockTip = false; // 是否已插入拉黑提示分隔线
@@ -29864,7 +30101,14 @@ ${msgContext ? msgContext : '无'}
             if (msg.replyTo) {
                 const quoteDiv = document.createElement('div');
                 quoteDiv.className = 'msg-reply-quote';
-                const quoteName = msg.replyTo.senderType === 'sent' ? '我' : (window.currentContactAlias || '对方');
+                let quoteName;
+                if (msg.replyTo.senderType === 'sent') {
+                    quoteName = '我';
+                } else if (msg.isGroupMsg && msg.replyTo.senderName) {
+                    quoteName = msg.replyTo.senderName;
+                } else {
+                    quoteName = window.currentContactAlias || '对方';
+                }
                 let quoteText = msg.replyTo.text || '';
                 if (msg.replyTo.isEmotionImage) quoteText = '[表情包] ' + quoteText;
                 else if (msg.replyTo.isTransfer) quoteText = '[转账]';
@@ -31179,8 +31423,27 @@ ${msgContext ? msgContext : '无'}
 
 
       window.toggleChatExtraMenu = () => {
-        closeChatEmotionPanel(); // 新增：点击左侧功能时，如果右侧面板开着，自动把它关掉
+        closeChatEmotionPanel();
         const menu = document.getElementById('chat-extra-menu');
+        const isGroupChat = String(currentChatContactId).startsWith('group_');
+
+        // 根据群聊/私聊控制菜单项显示
+        const privateOnlyItems = menu.querySelectorAll('.chat-menu-private-only');
+        const groupVisibleItems = menu.querySelectorAll('.chat-menu-group-visible');
+        if (isGroupChat) {
+            privateOnlyItems.forEach(el => el.style.display = 'none');
+            groupVisibleItems.forEach(el => el.style.display = '');
+            menu.style.gridTemplateRows = '1fr';
+            menu.style.width = '260px';
+            menu.style.padding = '10px';
+        } else {
+            privateOnlyItems.forEach(el => el.style.display = '');
+            groupVisibleItems.forEach(el => el.style.display = 'none');
+            menu.style.gridTemplateRows = '';
+            menu.style.width = '';
+            menu.style.padding = '';
+        }
+
         menu.classList.toggle('active');
     };
 
@@ -32239,10 +32502,12 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
 
         // 群聊消息附加发送者信息
         if (isGroupChat) {
+            const grp = getGroupInfo(currentChatContactId);
+            const groupUserAvatar = (grp && grp.userAvatar) ? grp.userAvatar : (globalProfile.avatar || '');
             newMsg.isGroupMsg = true;
             newMsg.senderId = 'user';
             newMsg.senderName = globalProfile.nickname || '我';
-            newMsg.senderAvatar = globalProfile.avatar || '';
+            newMsg.senderAvatar = groupUserAvatar;
             newMsg.mentionIds = currentMentionIds.slice();
         }
         currentMentionIds = [];
@@ -32296,6 +32561,34 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
     }
 
         // 新增：让 AI 重新回复最新的一次对话
+    window.retryGroupAiReply = () => {
+        if (!currentChatContactId) return;
+        document.getElementById('chat-extra-menu').classList.remove('active');
+
+        const key = getMessagesKey(currentChatContactId);
+        let messages = JSON.parse(localStorage.getItem(key) || '[]');
+
+        if (messages.length === 0) return;
+
+        // 从下往上删除所有群聊AI连续回复，直到遇到用户发送的消息
+        let deleteCount = 0;
+        for (let i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].isGroupMsg && messages[i].type === 'received') {
+                deleteCount++;
+            } else {
+                break;
+            }
+        }
+
+        if (deleteCount > 0) {
+            messages.splice(messages.length - deleteCount, deleteCount);
+            localStorage.setItem(key, JSON.stringify(messages));
+        }
+
+        renderConversationMessages();
+        triggerGroupAIReply();
+    };
+
     window.retryLastAiReply = () => {
         if (!currentChatContactId) return;
 
@@ -32754,26 +33047,48 @@ window.openTransferConfirmPopup = (amount) => {
     window.openRedPacketPage = () => {
         if (!currentChatContactId) return;
         document.getElementById('chat-extra-menu').classList.remove('active');
-        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
-        const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
-        if (!contact) return;
 
-        // 设置目标头像和名称
-        const avatarEl = document.getElementById('redpacket-target-avatar');
-        const avatarUrl = contact.avatar || '';
-        avatarEl.removeAttribute('data-loaded');
-        avatarEl.removeAttribute('onerror');
-        if (avatarUrl.startsWith('local_img_')) {
-            getImgFromDB(avatarUrl).then(base64 => { avatarEl.src = base64 || ''; }).catch(() => { avatarEl.src = ''; });
+        const isGroupChat = String(currentChatContactId).startsWith('group_');
+
+        if (isGroupChat) {
+            const group = getGroupInfo(currentChatContactId);
+            if (!group) return;
+            const avatarEl = document.getElementById('redpacket-target-avatar');
+            const avatarUrl = group.groupAvatar || '';
+            avatarEl.removeAttribute('data-loaded');
+            avatarEl.removeAttribute('onerror');
+            if (avatarUrl.startsWith('local_img_')) {
+                getImgFromDB(avatarUrl).then(base64 => { avatarEl.src = base64 || ''; }).catch(() => { avatarEl.src = ''; });
+            } else {
+                avatarEl.src = avatarUrl || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png';
+            }
+            avatarEl.onerror = function() { this.onerror = null; this.src = 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png'; };
+            document.getElementById('redpacket-target-name').textContent = '发给 ' + (group.groupName || '群聊') + ' 群聊';
+            document.getElementById('redpacket-amount-row') && (document.getElementById('redpacket-amount-row').style.display = '');
+            document.getElementById('redpacket-count-row') && (document.getElementById('redpacket-count-row').style.display = '');
         } else {
-            avatarEl.src = avatarUrl;
+            const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+            const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+            if (!contact) return;
+            const avatarEl = document.getElementById('redpacket-target-avatar');
+            const avatarUrl = contact.avatar || '';
+            avatarEl.removeAttribute('data-loaded');
+            avatarEl.removeAttribute('onerror');
+            if (avatarUrl.startsWith('local_img_')) {
+                getImgFromDB(avatarUrl).then(base64 => { avatarEl.src = base64 || ''; }).catch(() => { avatarEl.src = ''; });
+            } else {
+                avatarEl.src = avatarUrl;
+            }
+            avatarEl.onerror = function() { this.onerror = null; this.src = ''; };
+            document.getElementById('redpacket-target-name').textContent = '发给 ' + (contact.alias || contact.name);
+            document.getElementById('redpacket-count-row') && (document.getElementById('redpacket-count-row').style.display = 'none');
         }
-        avatarEl.onerror = function() { this.onerror = null; this.src = ''; };
-        document.getElementById('redpacket-target-name').textContent = '发给 ' + (contact.alias || contact.name);
 
         // 清空输入
         document.getElementById('redpacket-amount-input').value = '';
         document.getElementById('redpacket-greeting-input').value = '';
+        const countInput = document.getElementById('redpacket-count-input');
+        if (countInput) countInput.value = '';
 
         // 显示弹窗
         const overlay = document.getElementById('redpacket-overlay');
@@ -32797,23 +33112,42 @@ window.openTransferConfirmPopup = (amount) => {
             return;
         }
 
+        const isGroupChat = String(currentChatContactId).startsWith('group_');
+        let count = 1;
+        if (isGroupChat) {
+            const countInput = document.getElementById('redpacket-count-input');
+            count = parseInt(countInput.value) || 1;
+            if (count < 1) { showToast('红包个数至少为1'); return; }
+            const group = getGroupInfo(currentChatContactId);
+            const memberCount = (group ? (group.memberIds || []).length : 0) + 1;
+            if (count > memberCount) { showToast('红包个数不能超过群成员数'); return; }
+        }
+
         // 保存祝福语到上下文，关闭红包弹窗后仍可使用
         const greeting = document.getElementById('redpacket-greeting-input').value.trim() || '恭喜发财，大吉大利！';
 
-        // 关闭红包弹窗，打开支付密码确认页（与转账流程一致）
+        // 关闭红包弹窗，打开支付密码确认页
         closeRedPacketPage();
-        openRedPacketPaymentPopup(amount, greeting);
+        openRedPacketPaymentPopup(amount, greeting, count);
     };
 
     // 红包支付确认弹窗（复用转账的支付密码页面）
-    window.openRedPacketPaymentPopup = (amount, greeting) => {
-        currentPaymentContext = { type: 'redpacket', amount: amount, greeting: greeting };
+    window.openRedPacketPaymentPopup = (amount, greeting, count) => {
+        currentPaymentContext = { type: 'redpacket', amount: amount, greeting: greeting, count: count || 1 };
 
-        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
-        const contact = contacts.find(c => c.id === currentChatContactId);
-        const rawName = contact ? (contact.name || '未知') : '未知';
-        const displayName = contact ? (contact.alias || rawName) : '未知';
-        const lastChar = rawName.slice(-1);
+        const isGroupChat = String(currentChatContactId).startsWith('group_');
+        let displayName = '未知', lastChar = '?';
+        if (isGroupChat) {
+            const group = getGroupInfo(currentChatContactId);
+            displayName = group ? group.groupName : '群聊';
+            lastChar = displayName.slice(-1);
+        } else {
+            const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+            const contact = contacts.find(c => c.id === currentChatContactId);
+            const rawName = contact ? (contact.name || '未知') : '未知';
+            displayName = contact ? (contact.alias || rawName) : '未知';
+            lastChar = rawName.slice(-1);
+        }
 
         document.getElementById('confirm-transfer-target').style.display = 'block';
         document.getElementById('confirm-transfer-target').textContent = `红包发给 ${displayName} (**${lastChar})`;
@@ -32834,21 +33168,31 @@ window.openTransferConfirmPopup = (amount) => {
     // 密码验证通过后执行红包发送
     function executeRedPacket(amount) {
         const greeting = (currentPaymentContext && currentPaymentContext.greeting) || '恭喜发财，大吉大利！';
+        const count = (currentPaymentContext && currentPaymentContext.count) || 1;
 
         // 扣款
         const walletData = getWalletData();
         walletData.balance -= amount;
-        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
-        const contact = contacts.find(c => c.id === currentChatContactId);
         const myProfile = getUserProfile();
         const redPacketId = Date.now().toString();
+        const isGroupChat = String(currentChatContactId).startsWith('group_');
+
+        let descName = '好友';
+        if (isGroupChat) {
+            const group = getGroupInfo(currentChatContactId);
+            descName = group ? group.groupName : '群聊';
+        } else {
+            const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+            const contact = contacts.find(c => c.id === currentChatContactId);
+            descName = contact ? (contact.alias || contact.name) : '好友';
+        }
 
         // 记录交易
         walletData.transactions.push({
             id: redPacketId,
             type: 'redpacket_sent',
             amount: amount,
-            desc: `红包发给 ${contact.alias || contact.name}`,
+            desc: `红包发给 ${descName}`,
             timestamp: Date.now()
         });
         saveWalletData(walletData);
@@ -32856,28 +33200,50 @@ window.openTransferConfirmPopup = (amount) => {
         // 创建红包消息
         const key = getMessagesKey(currentChatContactId);
         let messages = JSON.parse(localStorage.getItem(key) || '[]');
+        const redPacketData = {
+            id: redPacketId,
+            amount: amount,
+            status: 'pending',
+            greeting: greeting,
+            senderName: myProfile.nickname || '我',
+            senderAvatar: isGroupChat ? ((getGroupInfo(currentChatContactId) || {}).userAvatar || myProfile.avatar || '') : (myProfile.avatar || ''),
+            receiverName: descName
+        };
+
+        if (isGroupChat) {
+            redPacketData.isGroupRedPacket = true;
+            redPacketData.totalCount = count;
+            redPacketData.remainCount = count;
+            redPacketData.grabbers = []; // { memberId, memberName, amount }
+        }
+
         messages.push({
             id: Date.now(),
             type: 'sent',
             isRedPacket: true,
-            redPacketData: {
-                id: redPacketId,
-                amount: amount,
-                status: 'pending',
-                greeting: greeting,
-                senderName: myProfile.nickname || '我',
-                receiverName: contact.alias || contact.name
-            },
+            isGroupMsg: isGroupChat,
+            redPacketData: redPacketData,
             timestamp: Date.now()
         });
         localStorage.setItem(key, JSON.stringify(messages));
 
-        // 更新联系人最后消息
-        const idx = contacts.findIndex(c => c.id === currentChatContactId);
-        if (idx > -1) {
-            contacts[idx].lastMsg = `[红包] ¥${amount.toFixed(2)}`;
-            contacts[idx].timestamp = Date.now();
-            localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts));
+        // 更新联系人/群聊最后消息
+        if (isGroupChat) {
+            let gl = getGroupChatList();
+            const gIdx = gl.findIndex(g => g.groupId === currentChatContactId);
+            if (gIdx > -1) {
+                gl[gIdx].lastMsg = `[红包] ¥${amount.toFixed(2)}`;
+                gl[gIdx].timestamp = Date.now();
+                saveGroupChatList(gl);
+            }
+        } else {
+            const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+            const idx = contacts.findIndex(c => c.id === currentChatContactId);
+            if (idx > -1) {
+                contacts[idx].lastMsg = `[红包] ¥${amount.toFixed(2)}`;
+                contacts[idx].timestamp = Date.now();
+                localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts));
+            }
         }
 
         closeTransferConfirmPopup();
@@ -33047,17 +33413,44 @@ window.openTransferConfirmPopup = (amount) => {
 
     // 红包消息卡片渲染
     function createRedPacketCard(msg) {
-        const { amount, status, greeting, id } = msg.redPacketData;
+        const { amount, status, greeting, id, isGroupRedPacket, totalCount, remainCount, grabbers } = msg.redPacketData;
         const formattedAmount = parseFloat(amount).toFixed(2);
         const senderName = msg.redPacketData.senderName || '好友';
         const receiverName = msg.redPacketData.receiverName || '好友';
 
         let statusText = '', bottomClass = '', clickHandler = '';
-        // 对方发的红包且未领取时，金额隐藏
         let amountDisplay = `¥${formattedAmount}`;
 
-        if (msg.type === 'sent') {
-            // 我发出的红包：始终显示金额
+        if (isGroupRedPacket) {
+            // 群聊红包
+            const grabbedCount = grabbers ? grabbers.length : 0;
+            clickHandler = `onclick="openGroupRedPacketDetail('${id}')" style="cursor:pointer;"`;
+
+            if (msg.type === 'sent') {
+                // 我发的群红包
+                if (remainCount > 0) {
+                    statusText = `${grabbedCount}/${totalCount}已领取`;
+                    bottomClass = '';
+                } else {
+                    statusText = `${totalCount}/${totalCount}已领取`;
+                    bottomClass = 'accepted';
+                }
+            } else {
+                // AI发的群红包
+                switch (status) {
+                    case 'pending':
+                        statusText = '查看红包'; bottomClass = '';
+                        amountDisplay = '查看红包';
+                        break;
+                    case 'accepted':
+                    case 'all_grabbed':
+                        statusText = '已领取'; bottomClass = 'accepted'; break;
+                    case 'rejected':
+                        statusText = '已过期'; bottomClass = 'expired'; break;
+                }
+            }
+        } else if (msg.type === 'sent') {
+            // 私聊我发出的红包
             switch (status) {
                 case 'pending':
                     statusText = '等对方领取'; bottomClass = ''; break;
@@ -33067,11 +33460,11 @@ window.openTransferConfirmPopup = (amount) => {
                     statusText = '已退还'; bottomClass = 'rejected'; break;
             }
         } else {
-            // 我收到的红包（AI发的）
+            // 私聊收到的红包（AI发的）
             switch (status) {
                 case 'pending':
                     statusText = '红包'; bottomClass = '';
-                    amountDisplay = '查看红包'; // 隐藏金额
+                    amountDisplay = '查看红包';
                     clickHandler = `onclick="openRedPacketOpen('${id}')" style="cursor:pointer;"`;
                     break;
                 case 'accepted':
@@ -33091,12 +33484,83 @@ window.openTransferConfirmPopup = (amount) => {
                     </div>
                 </div>
                 <div class="redpacket-card-bottom ${bottomClass}">
-                    <span>${msg.type === 'sent' ? '红包' : '收到红包'}</span>
+                    <span>${isGroupRedPacket ? '群红包' : (msg.type === 'sent' ? '红包' : '收到红包')}</span>
                     <span>${statusText}</span>
                 </div>
             </div>
         `;
     }
+
+    // 群红包详情弹窗
+    window.openGroupRedPacketDetail = (redPacketId) => {
+        if (!currentChatContactId) return;
+        const key = getMessagesKey(currentChatContactId);
+        let messages = JSON.parse(localStorage.getItem(key) || '[]');
+        const msg = messages.find(m => m.isRedPacket && m.redPacketData && m.redPacketData.isGroupRedPacket && String(m.redPacketData.id) === String(redPacketId));
+        if (!msg) return;
+
+        const rpData = msg.redPacketData;
+        const grabbers = rpData.grabbers || [];
+        const totalAmount = parseFloat(rpData.amount);
+        const senderAvatar = msg.type === 'sent' ? (getUserProfile().avatar || '') : (rpData.senderAvatar || '');
+
+        // 设置顶部信息
+        const avatarEl = document.getElementById('grp-detail-avatar');
+        avatarEl.removeAttribute('data-loaded');
+        if (senderAvatar.startsWith('local_img_')) {
+            getImgFromDB(senderAvatar).then(b64 => { avatarEl.src = b64 || ''; }).catch(() => { avatarEl.src = ''; });
+        } else {
+            avatarEl.src = senderAvatar;
+        }
+        avatarEl.onerror = function() { this.onerror = null; this.src = ''; };
+        document.getElementById('grp-detail-sender').textContent = (rpData.senderName || '好友') + '的红包';
+        document.getElementById('grp-detail-greeting').textContent = rpData.greeting || '恭喜发财，大吉大利！';
+        document.getElementById('grp-detail-amount').textContent = `¥${totalAmount.toFixed(2)}`;
+
+        // 找手气王
+        let luckiest = null;
+        if (grabbers.length > 0) {
+            luckiest = grabbers.reduce((max, g) => parseFloat(g.amount) > parseFloat(max.amount) ? g : max, grabbers[0]);
+        }
+
+        // 渲染领取列表
+        const listEl = document.getElementById('grp-detail-list');
+        let listHtml = '';
+
+        if (grabbers.length > 0) {
+            listHtml += `<div style="padding:12px 0 6px; font-size:13px; color:#999; border-bottom:1px solid #f0f0f0;">已领取 ${grabbers.length}/${rpData.totalCount} 个</div>`;
+            grabbers.forEach(g => {
+                const isLuckiest = luckiest && g.memberId === luckiest.memberId && grabbers.length > 1;
+                const memberAvatar = g.memberAvatar || '';
+                listHtml += `
+                    <div style="display:flex; align-items:center; padding:10px 0; border-bottom:1px solid #f5f5f5;">
+                        <img src="${memberAvatar}" onerror="this.src=''" style="width:36px; height:36px; border-radius:6px; object-fit:cover; margin-right:10px;">
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:14px; color:#333; font-weight:500;">${escapeHtml(g.memberName)}${isLuckiest ? '<span style="color:#fa5256; font-size:11px; margin-left:4px;">手气王</span>' : ''}</div>
+                            <div style="font-size:11px; color:#999;">${new Date(g.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                        <div style="font-size:16px; color:#333; font-weight:500;">¥${parseFloat(g.amount).toFixed(2)}</div>
+                    </div>
+                `;
+            });
+        } else {
+            listHtml += `<div style="padding:20px 0; text-align:center; font-size:14px; color:#999;">暂无人领取</div>`;
+        }
+
+        // 未领取提示
+        if (rpData.remainCount > 0) {
+            listHtml += `<div style="padding:10px 0; text-align:center; font-size:12px; color:#bbb;">还有${rpData.remainCount}个红包待领取</div>`;
+        }
+
+        listEl.innerHTML = listHtml;
+
+        // 显示弹窗
+        document.getElementById('group-redpacket-detail-overlay').style.display = 'flex';
+    };
+
+    window.closeGroupRedPacketDetail = () => {
+        document.getElementById('group-redpacket-detail-overlay').style.display = 'none';
+    };
 
     // 当前正在打开的红包ID
     let currentOpeningRedPacketId = null;
@@ -33786,7 +34250,7 @@ window.openTransferConfirmPopup = (amount) => {
     };
 
     window.triggerRoleBgUpload = () => { document.getElementById('input-role-chat-bg').click(); };
-    window.handleRoleChatBgUpload = (event) => { compressImage(event.target.files[0], 800, (base64) => { tempRoleBgUrl = base64; document.getElementById('role-bg-url-input').value = ""; document.getElementById('role-bg-preview').style.backgroundImage = `url(${base64})`; }); };
+    window.handleRoleChatBgUpload = (event) => { compressImage(event.target.files[0], 800, (base64) => { tempRoleBgUrl = base64; document.getElementById('role-bg-url-input').value = ""; const prev = document.getElementById('role-bg-preview'); prev.style.backgroundImage = `url(${base64})`; prev.removeAttribute('data-loaded'); if (typeof processLocalImages === 'function') processLocalImages(prev); }); };
     window.setRoleBgByUrl = () => { const url = document.getElementById('role-bg-url-input').value.trim(); if(url){ tempRoleBgUrl = url; document.getElementById('role-bg-preview').style.backgroundImage = `url(${url})`; showToast('已应用URL背景'); } };
     window.triggerRoleAvatarEdit = () => { const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); const contact = contacts.find(c => String(c.id) === String(currentChatContactId)); if (!contact) return; const currentUrl = contact.avatar; const newUrl = prompt('请输入新的头像URL (或取消以保持不变)', currentUrl); if (newUrl !== null && newUrl.trim() !== '') { contact.avatar = newUrl.trim(); localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); const avatarImg = document.getElementById('role-setting-avatar'); avatarImg.onerror = function() { this.onerror = null; this.src = ''; }; avatarImg.src = newUrl.trim(); showToast('头像已更新'); } };
     window.applyRoleAvatarUrl = () => { const url = document.getElementById('role-avatar-modal-input').value.trim(); const avatarImg = document.getElementById('role-setting-avatar'); if (!url) { avatarImg.src = ''; showToast('已清除头像'); } else { avatarImg.onerror = function() { this.onerror = null; this.src = ''; }; avatarImg.src = url; showToast('头像已应用'); } const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); const contact = contacts.find(c => String(c.id) === String(currentChatContactId)); if (contact) { contact.avatar = url; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); } closeRoleAvatarModal(); };
@@ -34395,11 +34859,11 @@ ${verifyHistory}
     window.editQQID = (e) => { e.stopPropagation(); const profile = getUserProfile(); const newId = prompt('修改QQ号', profile.qqId || ''); if (newId !== null) { profile.qqId = newId.trim(); saveUserProfile(profile); loadUserProfile(); } };
     window.editSignature = () => { const profile = getUserProfile(); const newSig = prompt('修改个性签名', profile.signature || ''); if (newSig !== null) { profile.signature = newSig.trim(); saveUserProfile(profile); loadUserProfile(); } };
     window.triggerProfileAvatarUpload = () => { document.getElementById('input-profile-avatar').click(); };
-    window.handleProfileAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { const settingsModalActive = document.getElementById('me-settings-modal').classList.contains('active'); if (settingsModalActive) { document.getElementById('me-settings-avatar-preview').src = base64; document.getElementById('me-settings-avatar-url').value = '（已上传本地图片）'; } else { const profile = getUserProfile(); profile.avatar = base64; saveUserProfile(profile); loadUserProfile(); showToast('头像已更新'); } }); };
+    window.handleProfileAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { const settingsModalActive = document.getElementById('me-settings-modal').classList.contains('active'); if (settingsModalActive) { const prev = document.getElementById('me-settings-avatar-preview'); prev.removeAttribute('data-loaded'); prev.src = base64; if (typeof processLocalImages === 'function') processLocalImages(prev); document.getElementById('me-settings-avatar-url').value = '（已上传本地图片）'; } else { const profile = getUserProfile(); profile.avatar = base64; saveUserProfile(profile); loadUserProfile(); showToast('头像已更新'); } }); };
     window.triggerMomentsAvatarUpload = () => { document.getElementById('input-moments-avatar').click(); };
-    window.handleMomentsAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { document.getElementById('me-settings-moments-avatar-preview').src = base64; document.getElementById('me-settings-moments-avatar-url').value = '（已上传本地图片）'; }); };
-    window.handleMomentsCoverUpload = (event) => { compressImage(event.target.files[0], 800, (base64) => { document.getElementById('me-settings-moments-cover-preview').src = base64; document.getElementById('me-settings-moments-cover-url').value = '（已上传本地图片）'; }); };
-    window.handleTakeoutMyAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { document.getElementById('takeout-my-avatar-preview').src = base64; document.getElementById('takeout-my-avatar-preview').style.display = 'block'; document.getElementById('takeout-my-avatar-placeholder').style.display = 'none'; document.getElementById('takeout-my-avatar-url-input').value = base64; }); };
+    window.handleMomentsAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { const el = document.getElementById('me-settings-moments-avatar-preview'); el.removeAttribute('data-loaded'); el.src = base64; if (typeof processLocalImages === 'function') processLocalImages(el); document.getElementById('me-settings-moments-avatar-url').value = '（已上传本地图片）'; }); };
+    window.handleMomentsCoverUpload = (event) => { compressImage(event.target.files[0], 800, (base64) => { const el = document.getElementById('me-settings-moments-cover-preview'); el.removeAttribute('data-loaded'); el.src = base64; if (typeof processLocalImages === 'function') processLocalImages(el); document.getElementById('me-settings-moments-cover-url').value = '（已上传本地图片）'; }); };
+    window.handleTakeoutMyAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { const el = document.getElementById('takeout-my-avatar-preview'); el.removeAttribute('data-loaded'); el.src = base64; el.style.display = 'block'; document.getElementById('takeout-my-avatar-placeholder').style.display = 'none'; document.getElementById('takeout-my-avatar-url-input').value = base64; if (typeof processLocalImages === 'function') processLocalImages(el); }); };
     window.takeoutPreviewAvatarUrl = (url) => { if (url.trim()) { document.getElementById('takeout-my-avatar-preview').src = url; document.getElementById('takeout-my-avatar-preview').style.display = 'block'; document.getElementById('takeout-my-avatar-placeholder').style.display = 'none'; } else { document.getElementById('takeout-my-avatar-preview').style.display = 'none'; document.getElementById('takeout-my-avatar-placeholder').style.display = 'block'; } };
 
 
