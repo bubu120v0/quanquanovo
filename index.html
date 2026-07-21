@@ -5740,8 +5740,8 @@
                 position: fixed !important;
                 bottom: 0 !important;
                 left: 5% !important;
-                top: 30vh !important;
                 width: 90% !important;
+                max-height: 70vh !important;
                 display: flex !important;
                 flex-direction: column !important;
                 overflow-y: auto !important;
@@ -5752,9 +5752,9 @@
             #transfer-confirm-overlay.active #transfer-confirm-popup {
                 transform: translateY(0) !important;
             }
-            /* 外卖付款弹窗高度66%（修改top值即可调整高度，top = 100% - 想要的弹窗高度%） */
+            /* 外卖付款弹窗高度66% */
             #transfer-confirm-popup.food-payment {
-                top: 33vh !important;
+                max-height: 67vh !important;
             }
             .confirm-popup-header {
                 padding: 8px 12px 4px;
@@ -6240,8 +6240,8 @@
             position: absolute !important;
             bottom: 0 !important;
             left: 0 !important;
-            top: 30% !important;
             width: 100% !important;
+            max-height: 70% !important;
             display: flex !important;
             flex-direction: column !important;
             overflow-y: auto !important;
@@ -6254,9 +6254,9 @@
             transform: translateY(0) !important;
         }
 
-        /* 外卖付款弹窗高度66%（修改top值即可调整高度，top = 100% - 想要的弹窗高度%） */
+        /* 外卖付款弹窗高度66% */
         body.phone-frame-active #transfer-confirm-popup.food-payment {
-            top: 33% !important;
+            max-height: 67% !important;
         }
 
         /* 手机框模式下通讯录页面适配 */
@@ -33615,17 +33615,28 @@ window.openTransferConfirmPopup = (amount) => {
         const rpData = msg.redPacketData;
         const grabbers = rpData.grabbers || [];
         const totalAmount = parseFloat(rpData.amount);
-        const senderAvatar = msg.type === 'sent' ? (getUserProfile().avatar || '') : (rpData.senderAvatar || '');
 
-        // 设置顶部信息
+        // 获取群聊中用户设置的头像
+        const group = getGroupInfo(currentChatContactId);
+        const globalProfile = getUserProfile();
+        const userAvatarInGroup = (group && group.userAvatar) || globalProfile.avatar || '';
+
+        // 设置发送者头像
+        let senderAvatar = '';
+        if (msg.type === 'sent') {
+            senderAvatar = userAvatarInGroup;
+        } else {
+            senderAvatar = rpData.senderAvatar || '';
+        }
+
         const avatarEl = document.getElementById('grp-detail-avatar');
         avatarEl.removeAttribute('data-loaded');
         if (senderAvatar.startsWith('local_img_')) {
-            getImgFromDB(senderAvatar).then(b64 => { avatarEl.src = b64 || ''; }).catch(() => { avatarEl.src = ''; });
+            getImgFromDB(senderAvatar).then(b64 => { avatarEl.src = b64 || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png'; }).catch(() => { avatarEl.src = 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png'; });
         } else {
-            avatarEl.src = senderAvatar;
+            avatarEl.src = senderAvatar || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png';
         }
-        avatarEl.onerror = function() { this.onerror = null; this.src = ''; };
+        avatarEl.onerror = function() { this.onerror = null; this.src = 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png'; };
         document.getElementById('grp-detail-sender').textContent = (rpData.senderName || '好友') + '的红包';
         document.getElementById('grp-detail-greeting').textContent = rpData.greeting || '恭喜发财，大吉大利！';
         document.getElementById('grp-detail-amount').textContent = `¥${totalAmount.toFixed(2)}`;
@@ -33644,10 +33655,15 @@ window.openTransferConfirmPopup = (amount) => {
             listHtml += `<div style="padding:12px 0 6px; font-size:13px; color:#999; border-bottom:1px solid #f0f0f0;">已领取 ${grabbers.length}/${rpData.totalCount} 个</div>`;
             grabbers.forEach(g => {
                 const isLuckiest = luckiest && g.memberId === luckiest.memberId && grabbers.length > 1;
-                const memberAvatar = g.memberAvatar || '';
+                // 获取成员头像：如果是用户则用群聊用户头像
+                let memberAvatar = g.memberAvatar || '';
+                if (g.memberId === 'user' || g.memberName === globalProfile.nickname) {
+                    memberAvatar = userAvatarInGroup;
+                }
+                const avatarSrc = memberAvatar.startsWith('local_img_') ? memberAvatar : (memberAvatar || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png');
                 listHtml += `
                     <div style="display:flex; align-items:center; padding:10px 0; border-bottom:1px solid #f5f5f5;">
-                        <img src="${memberAvatar}" onerror="this.src=''" style="width:36px; height:36px; border-radius:6px; object-fit:cover; margin-right:10px;">
+                        <img src="${avatarSrc}" data-loaded="false" onerror="this.onerror=null;this.src='https://img.heliar.top/file/1770068438490_添加人群_people-plus.png'" style="width:36px; height:36px; border-radius:6px; object-fit:cover; margin-right:10px;">
                         <div style="flex:1; min-width:0;">
                             <div style="font-size:14px; color:#333; font-weight:500;">${escapeHtml(g.memberName)}${isLuckiest ? '<span style="color:#fa5256; font-size:11px; margin-left:4px;">手气王</span>' : ''}</div>
                             <div style="font-size:11px; color:#999;">${new Date(g.timestamp).toLocaleTimeString()}</div>
@@ -33666,6 +33682,8 @@ window.openTransferConfirmPopup = (amount) => {
         }
 
         listEl.innerHTML = listHtml;
+        // 处理本地图片头像
+        if (typeof processLocalImages === 'function') processLocalImages(listEl);
 
         // 显示弹窗
         document.getElementById('group-redpacket-detail-overlay').style.display = 'flex';
