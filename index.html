@@ -4420,7 +4420,7 @@
         .forum-selector-wrapper {
             background: white; padding: 10px 15px; border-radius: 16px;
             display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02); box-sizing: border-box; width: 100%;
         }
         .forum-selector-label { font-size: 14px; color: #666; font-weight: 500; }
         .forum-selector-select {
@@ -8388,17 +8388,19 @@ body.phone-frame-active #mall-received-gifts-page .mall-favorite-header { paddin
         }
         #forum-post-detail-page.active { transform: translateX(0); }
         .forum-post-detail-header {
-            padding: 35px 20px 15px;
+            padding: 125px 20px 15px;
             display: flex; align-items: center; justify-content: space-between;
             background-color: #fff; flex-shrink: 0; border-bottom: 1px solid #f0f0f0;
             border-radius: 0 0 24px 24px; box-shadow: 0 4px 15px rgba(200, 150, 160, 0.08);
             position: relative;
         }
-        body.ios-mode-active .forum-post-detail-header { padding-top: calc(env(safe-area-inset-top, 20px) + 15px); }
-        body.phone-frame-active .forum-post-detail-header { padding-top: calc(15px + var(--status-bar-height)); }
+        body.ios-mode-active .forum-post-detail-header { padding-top: calc(env(safe-area-inset-top, 20px) + 105px); }
+        body.phone-frame-active .forum-post-detail-header { padding-top: calc(105px + var(--status-bar-height)); }
         
               .forum-post-detail-title { font-size: 17px; font-weight: 600; color: #333; position: absolute; left: 50%; transform: translateX(-50%); }
-             .forum-detail-main-scroll { flex: 1; overflow-y: auto; padding: 15px 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 80px; /* 新增：给底部的输入框留出空间 */ }
+             .forum-post-detail-header .forum-header-back-btn { margin-left: 22px; }
+             .forum-post-detail-header > div:last-child { margin-right: 18px; }
+             .forum-detail-main-scroll { flex: 1; overflow-y: auto; padding: 15px 45px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 80px; }
         .post-detail-comments-title { font-size: 15px; font-weight: bold; color: #333; padding-left: 5px; border-left: 4px solid var(--theme-pink-btn); margin-top: 5px; margin-bottom: 5px; }
 
               /* ========================= 新增：外卖订单发送到聊天的卡片样式 ========================= */
@@ -15325,20 +15327,20 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
 </div>
 <!-- 新增：编辑修改论坛页面 -->
 <div id="edit-forum-page" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #FFF5F7; z-index: 800; display: flex; flex-direction: column; transform: translateX(-100%) scale(var(--ps, 0.85)); transform-origin: center center; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.5, 1);">
-    <div class="forum-header-home" style="border-radius: 0 0 24px 24px;">
-        <img src="https://img.heliar.top/file/1770068142146_骨头_bone.png" class="forum-header-back-btn" onclick="closeEditForumPage()">
+    <div class="forum-header-home" style="border-radius: 0 0 24px 24px; padding-top: 95px;">
+        <img src="https://img.heliar.top/file/1770068142146_骨头_bone.png" class="forum-header-back-btn" onclick="closeEditForumPage()" style="margin-left: 20px;">
         <h1 class="forum-header-title">管理论坛</h1>
         <div style="width: 30px;"></div>
     </div>
-    <div style="flex: 1; overflow-y: auto; padding: 20px;">
-        <div class="forum-selector-wrapper" style="margin-bottom: 20px;">
+    <div style="flex: 1; overflow-y: auto; padding: 20px 37px 20px 47px; padding-bottom: 100px;">
+        <div class="forum-selector-wrapper" style="margin-bottom: 20px; width: 100%; box-sizing: border-box; border-radius: 20px;">
             <span class="forum-selector-label">选择修改的论坛</span>
             <select id="edit-forum-select" class="forum-selector-select" onchange="loadForumToEdit(this.value)">
-                <option value="">请选择...</option>
+                <option value="">请选择</option>
             </select>
         </div>
 
-            <div id="edit-forum-content" style="display: none; flex-direction: column; align-items: center; gap: 15px; background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(200, 150, 160, 0.08);">
+            <div id="edit-forum-content" style="display: none; flex-direction: column; align-items: stretch; gap: 15px; background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(200, 150, 160, 0.08); width: 100%; box-sizing: border-box;">
             <div class="create-forum-avatar-upload" onclick="triggerEditForumAvatarUpload()">
                 <span id="edit-forum-avatar-placeholder" style="display:none;">+</span>
                 <img id="edit-forum-avatar-preview" src="" style="width: 100%; height: 100%; object-fit: cover;">
@@ -23103,7 +23105,7 @@ window.toggleMallProductFavorite = (productId) => {
             }
 
             const tagsHtml = (post.tags && post.tags.length > 0) 
-                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join(' ')}</div>` 
+                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>#${escapeHtml(tag)}</span>`).join(' ')}</div>` 
                 : '';
 
             const userHasLiked = post.likes && post.likes.includes(mainProfile.qqId);
@@ -23422,7 +23424,7 @@ window.toggleMallProductFavorite = (productId) => {
 
     window.openEditForumPage = () => {
         const select = document.getElementById('edit-forum-select');
-        select.innerHTML = '<option value="">请选择要修改的论坛...</option>';
+        select.innerHTML = '<option value="">请选择要修改的论坛</option>';
         let forums = [];
         try { forums = JSON.parse(localStorage.getItem(FORUMS_DATA_KEY) || '[]'); } catch(e) {}
         
@@ -23971,7 +23973,7 @@ window.toggleMallProductFavorite = (productId) => {
             const likeIcon = userHasLiked ? "https://img.heliar.top/file/1770582836150_赞_thumbs-up_4.png" : "https://img.heliar.top/file/1770582828275_赞_thumbs-up_3.png";
 
             const tagsHtml = (post.tags && post.tags.length > 0) 
-                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join(' ')}</div>` 
+                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>#${escapeHtml(tag)}</span>`).join(' ')}</div>` 
                 : '';
 
             const card = document.createElement('div');
@@ -24068,7 +24070,7 @@ window.toggleMallProductFavorite = (productId) => {
             const likeIcon = userHasLiked ? "https://img.heliar.top/file/1770582836150_赞_thumbs-up_4.png" : "https://img.heliar.top/file/1770582828275_赞_thumbs-up_3.png";
 
             const tagsHtml = (post.tags && post.tags.length > 0) 
-                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join(' ')}</div>` 
+                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>#${escapeHtml(tag)}</span>`).join(' ')}</div>` 
                 : '';
 
             const card = document.createElement('div');
@@ -24395,7 +24397,7 @@ ${rolesContext ? `关注了该论坛的常驻角色：\n${rolesContext}\n请让�
         const likeIcon = userHasLiked ? "https://img.heliar.top/file/1770582836150_赞_thumbs-up_4.png" : "https://img.heliar.top/file/1770582828275_赞_thumbs-up_3.png";
 
         const tagsHtml = (post.tags && post.tags.length > 0) 
-            ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join(' ')}</div>` 
+            ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>#${escapeHtml(tag)}</span>`).join(' ')}</div>` 
             : '';
             
         const commentsCount = post.comments ? post.comments.length : 0;
@@ -24759,7 +24761,7 @@ ${rolesContext ? rolesContext : '无常驻角色。'}
             const likeIcon = userHasLiked ? "https://img.heliar.top/file/1770582836150_赞_thumbs-up_4.png" : "https://img.heliar.top/file/1770582828275_赞_thumbs-up_3.png";
 
             const tagsHtml = (post.tags && post.tags.length > 0) 
-                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join(' ')}</div>` 
+                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>#${escapeHtml(tag)}</span>`).join(' ')}</div>` 
                 : '';
 
             const card = document.createElement('div');
@@ -25007,7 +25009,7 @@ ${rolesContext ? rolesContext : '无常驻角色。'}
             const likeIcon = userHasLiked ? "https://img.heliar.top/file/1770582836150_赞_thumbs-up_4.png" : "https://img.heliar.top/file/1770582828275_赞_thumbs-up_3.png";
 
             const tagsHtml = (post.tags && post.tags.length > 0) 
-                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join(' ')}</div>` 
+                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>#${escapeHtml(tag)}</span>`).join(' ')}</div>` 
                 : '';
 
             const card = document.createElement('div');
@@ -25152,7 +25154,7 @@ ${rolesContext ? rolesContext : '无常驻角色。'}
             const likeIcon = "https://img.heliar.top/file/1770582836150_赞_thumbs-up_4.png";
 
             const tagsHtml = (post.tags && post.tags.length > 0) 
-                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join(' ')}</div>` 
+                ? `<div class="forum-post-tags">${post.tags.map(tag => `<span>#${escapeHtml(tag)}</span>`).join(' ')}</div>` 
                 : '';
 
             const card = document.createElement('div');
