@@ -1835,7 +1835,7 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 700; display: none; flex-direction: column;
             align-items: center; background: #000;
-            padding: 60px 20px 20px;
+            padding: 60px 20px 20px; overflow: hidden;
             transition: height 0.15s ease;
         }
         #voice-call-page.active { display: flex; }
@@ -1876,7 +1876,7 @@
         }
         /* 通话中对话区域 */
         .voice-call-conversation {
-            flex: 1; width: 100%; overflow-y: auto;
+            flex: 1; min-height: 0; width: 100%; overflow-y: auto;
             display: none; flex-direction: column;
             padding: 10px 0; gap: 10px;
             margin-top: 12px;
@@ -12845,7 +12845,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
                 <img src="https://i.postimg.cc/02BN9gm7/nai-lao-cheese-4.png" class="chat-menu-icon">
                 <span class="chat-menu-text">总结</span>
             </div>
-            <div class="chat-menu-item chat-menu-group-visible" onclick="startVoiceCall()">
+            <div class="chat-menu-item chat-menu-private-only" onclick="startVoiceCall()">
                 <img src="https://img.heliar.top/file/1781886503380_电话呼叫_phone-call.png" class="chat-menu-icon">
                 <span class="chat-menu-text">通话</span>
             </div>
@@ -12857,10 +12857,6 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
             <div class="chat-menu-item chat-menu-private-only" onclick="openSummaryFromChat()">
                 <img src="https://i.postimg.cc/02BN9gm7/nai-lao-cheese-4.png" class="chat-menu-icon">
                 <span class="chat-menu-text">总结</span>
-            </div>
-            <div class="chat-menu-item chat-menu-private-only" onclick="startVoiceCall()">
-                <img src="https://img.heliar.top/file/1781886503380_电话呼叫_phone-call.png" class="chat-menu-icon">
-                <span class="chat-menu-text">通话</span>
             </div>
 
         </div>
@@ -14353,6 +14349,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
                     <span class="slider round"></span>
                 </label>
             </div>
+            <p style="font-size: 11px; color: #999; margin: 4px 0 0 0; padding-left: 2px;">手机框模式下禁用锁屏</p>
             <div class="settings-row" id="lock-pwd-setting-row" style="display: none; padding-top: 10px; flex-direction: row; align-items: center; justify-content: space-between;">
                 <label for="lock-pwd-input" style="margin-bottom:0;">密码设置 (6位数字)</label>
                 <input type="text" id="lock-pwd-input" placeholder="默认: 123456" maxlength="6" inputmode="numeric" style="width: 100px; text-align: center;">
@@ -27805,6 +27802,9 @@ ${actionInstruction}
                         const rpSender = m.type === 'sent' ? uName : (m.senderName || '未知');
                         const grabbedInfo = (rpData.grabbers || []).map(g => `${g.memberName}(¥${parseFloat(g.amount).toFixed(2)})`).join('、');
                         chatContext += `${rpSender}: [红包] ¥${parseFloat(rpData.amount).toFixed(2)}（${rpData.greeting || ''}）${grabbedInfo ? '，已领：' + grabbedInfo : ''}\n`;
+                    } else if (m.isEmotionImage) {
+                        const emotionSender = m.type === 'sent' ? uName : (m.senderName || '未知');
+                        chatContext += `[系统提示：${emotionSender} 发送了一张【表情包】。画面内容/配字描述："${m.text}"。(这是网络聊天中的表情包，不是真实物理场景)]\n`;
                     } else if (m.type === 'sent') {
                         chatContext += `${uName}: ${m.text || '[非文本消息]'}\n`;
                     } else {
@@ -27865,6 +27865,47 @@ ${actionInstruction}
                 systemPrompt += `   - 不需要引用回复时，直接说内容即可，不要加标记。\n`;
                 systemPrompt += `7. 你是被${uName}拉进这个群的，如果是刚进群（群聊记录很少或只有系统消息），要自然地做出刚被拉进群的反应，比如打招呼、疑惑为什么被拉进来、对群名好奇等，反应要符合你的性格。\n`;
                 systemPrompt += `8. 你的回复必须是一个JSON对象，格式为{"reply":["消息1","消息2","消息3"]}，reply数组包含2到4条消息，每条消息作为一个独立的聊天气泡。将你的完整回复自然地拆分成多条消息，模拟真实聊天节奏。不要加任何前缀或角色名标记。不要超过4条消息。\n`;
+
+                // === 群聊表情包逻辑 ===
+                let groupEmotionFreq = member.emotionFrequency || 'none';
+                if (!member.boundAlbums || member.boundAlbums.length === 0) groupEmotionFreq = 'none';
+
+                let groupIsForceEmotionTurn = false;
+                if (groupEmotionFreq === 'high') {
+                    groupIsForceEmotionTurn = true;
+                } else if (groupEmotionFreq === 'medium' || groupEmotionFreq === 'low') {
+                    if (((member.emotionTurnCount || 0) + 1) >= (member.targetEmotionTurn || 1)) {
+                        groupIsForceEmotionTurn = true;
+                    }
+                }
+
+                let groupAlbumContext = '';
+                if (groupEmotionFreq !== 'none' && member.boundAlbums && member.boundAlbums.length > 0) {
+                    const galleryData = JSON.parse(localStorage.getItem('galleryApp_data_v1') || '[]');
+                    const activeAlbums = galleryData.filter(a => member.boundAlbums.includes(a.cover));
+                    let groupEmojiList = [];
+                    activeAlbums.forEach(album => {
+                        if (album.items) {
+                            album.items.forEach(item => {
+                                groupEmojiList.push(`[画面描述: ${item.desc}] 发送代码: <EMOJI:${item.url}>`);
+                            });
+                        }
+                    });
+                    if (groupEmojiList.length > 0) {
+                        groupAlbumContext = `\n【你的专属表情包库】(这是你用来表达情绪、撒娇、发脾气或斗图的工具)：\n${groupEmojiList.join('\n')}\n`;
+                    }
+                }
+
+                systemPrompt += `9. 如果聊天记录中有人发送了【表情包】，请明白这是网络互动方式，根据表情包描述做出文字反应（嘲笑、反击、斗图挑衅、表示无语等），不要死板地当作正在发生的事。\n`;
+
+                if (groupEmotionFreq !== 'none' && groupAlbumContext) {
+                    systemPrompt += groupAlbumContext;
+                    if (groupIsForceEmotionTurn) {
+                        systemPrompt += `10. **【极度重要：本轮必须发表情包】系统已经为你绑定了表情包库。结合刚才的群聊，你此刻**必须**在回复数组中，挑选一张最符合你当前情绪的表情包，作为独立的字符串输出它的"发送代码"（如 <EMOJI:https://...>）。不要只打字，用图表达你的情绪！**\n`;
+                    } else {
+                        systemPrompt += `10. **【禁止发表情包】虽然你有表情包库，但本轮聊天请你克制，绝对不要发送任何表情包代码，只能用纯文字回复！**\n`;
+                    }
+                }
 
                 // 世界书
                 if (member.worldbookIds && member.worldbookIds.length > 0) {
@@ -27993,7 +28034,7 @@ ${actionInstruction}
                 // 使用备注名（如果有）
                 const alias = (group.memberAliases && group.memberAliases[memberId]) || '';
 
-                // 预处理每条消息：解析引用和红包
+                // 预处理每条消息：解析引用、表情包和红包
                 const processedMessages = [];
                 for (let sIdx = 0; sIdx < sentences.length; sIdx++) {
                     let replyText = sentences[sIdx];
@@ -28020,6 +28061,16 @@ ${actionInstruction}
                         }
                     }
 
+                    // 解析表情包标记
+                    let isGroupEmotion = false;
+                    let groupEmotionUrl = '';
+                    const groupEmotionMatch = replyText.match(/<EMOJI:\s*([^>]+)\s*>/);
+                    if (groupEmotionMatch) {
+                        isGroupEmotion = true;
+                        groupEmotionUrl = groupEmotionMatch[1];
+                        replyText = replyText.replace(groupEmotionMatch[0], '').trim();
+                    }
+
                     // 解析抢红包标记（只在第一条消息中检查）
                     let grabbedRedPacket = false;
                     if (sIdx === 0 && replyText.includes('【抢红包】')) {
@@ -28027,8 +28078,11 @@ ${actionInstruction}
                         grabbedRedPacket = true;
                     }
 
-                    if (!replyText) continue;
-                    processedMessages.push({ text: replyText, replyToInfo, grabbedRedPacket });
+                    if (isGroupEmotion && groupEmotionUrl) {
+                        processedMessages.push({ text: replyText || '发送了一张表情', replyToInfo, grabbedRedPacket, isEmotionImage: true, emotionUrl: groupEmotionUrl });
+                    } else if (replyText) {
+                        processedMessages.push({ text: replyText, replyToInfo, grabbedRedPacket });
+                    }
                 }
 
                 return { memberId, alias, memberName: alias || member.alias || member.name, memberAvatar: member.avatar, messages: processedMessages };
@@ -28122,6 +28176,10 @@ ${actionInstruction}
                     senderName: result.memberName,
                     senderAvatar: result.memberAvatar
                 };
+                if (msg.isEmotionImage) {
+                    newMsg.isEmotionImage = true;
+                    newMsg.emotionUrl = msg.emotionUrl;
+                }
                 if (msg.replyToInfo) {
                     newMsg.replyTo = msg.replyToInfo;
                 }
@@ -28129,6 +28187,31 @@ ${actionInstruction}
                 lastMsgText = msg.text;
             }
             localStorage.setItem(msgKey, JSON.stringify(messages));
+
+            // 更新该角色的表情包轮数
+            try {
+                let endContacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+                const endIdx = endContacts.findIndex(c => c.id === result.memberId);
+                if (endIdx > -1) {
+                    const ec = endContacts[endIdx];
+                    const ef = ec.emotionFrequency || 'none';
+                    if (ef !== 'none' && ec.boundAlbums && ec.boundAlbums.length > 0) {
+                        ec.emotionTurnCount = (ec.emotionTurnCount || 0) + 1;
+                        const hasEmotion = result.messages.some(m => m.isEmotionImage);
+                        const isForceTurn = ef === 'high' || ((ec.emotionTurnCount) >= (ec.targetEmotionTurn || 1));
+                        if (hasEmotion || isForceTurn) {
+                            ec.emotionTurnCount = 0;
+                            if (ef === 'medium') {
+                                ec.targetEmotionTurn = Math.floor(Math.random() * (8 - 4 + 1)) + 4;
+                            } else if (ef === 'low') {
+                                ec.targetEmotionTurn = Math.floor(Math.random() * (15 - 10 + 1)) + 10;
+                            }
+                        }
+                        endContacts[endIdx] = ec;
+                        localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(endContacts));
+                    }
+                }
+            } catch(e) {}
         }
 
         // 更新群的lastMsg
