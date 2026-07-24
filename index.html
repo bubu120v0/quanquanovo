@@ -1944,6 +1944,100 @@
         .voice-call-minimize-btn:hover { background: rgba(255,255,255,0.22); }
         .voice-call-minimize-btn:active { transform: scale(0.9); }
 
+        /* 群通话页面 */
+        #group-voice-call-page {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 700; display: none; flex-direction: column;
+            align-items: center; background: #000;
+            padding: 0 16px 0; overflow: hidden;
+        }
+        #group-voice-call-page.active { display: flex; }
+        .gvc-header {
+            display: flex; align-items: flex-start;
+            width: 100%; flex-shrink: 0; margin-bottom: 6px;
+            padding-top: 110px; justify-content: center; position: relative;
+        }
+        .gvc-header-center {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+        }
+        .gvc-minimize-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.15); border: none;
+            color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            position: absolute; left: 24px; top: 120px;
+            transition: background 0.2s, transform 0.2s;
+            touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+        }
+        .gvc-minimize-btn:hover { background: rgba(255,255,255,0.22); }
+        .gvc-minimize-btn:active { transform: scale(0.9); }
+        .gvc-title { color: #fff; font-size: 16px; font-weight: 600; }
+        .gvc-status { color: #aaa; font-size: 13px; }
+        .gvc-duration { color: #aaa; font-size: 12px; display: none; font-variant-numeric: tabular-nums; }
+        .gvc-duration.visible { display: block; }
+        .gvc-members {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 18px; padding: 8px 20px 20px; flex-shrink: 0;
+            max-height: none; overflow: visible; width: 100%;
+        }
+        .gvc-member {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            width: calc(25% - 14px); min-width: 0; position: relative;
+        }
+        .gvc-member-avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            object-fit: cover; border: 2px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+        }
+        .gvc-member-name {
+            color: #ccc; font-size: 11px; max-width: 60px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .gvc-member-bubbles {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 3px; width: 100%; margin-top: 2px;
+            min-height: 0;
+        }
+        .gvc-bubble {
+            max-width: 100%; padding: 5px 10px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            font-size: 12px; color: #fff; line-height: 1.3;
+            word-break: break-word; text-align: center;
+            backdrop-filter: blur(10px);
+            opacity: 0; transform: translateY(-4px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .gvc-bubble.show { opacity: 1; transform: translateY(0); }
+        .gvc-bubble.user-bubble {
+            background: rgba(229, 138, 171, 0.3);
+        }
+        .gvc-conversation { display: none; }
+        .gvc-input-area {
+            width: 100%; display: flex; align-items: center;
+            gap: 8px; max-width: 85%;
+        }
+        .gvc-input {
+            flex: 1; padding: 7px 12px; border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: #1a1a1a; color: #fff; font-size: 13px; outline: none;
+        }
+        .gvc-input::placeholder { color: #666; }
+        .gvc-send-btn {
+            padding: 7px 14px; border-radius: 16px; border: none;
+            background: #4a4a4a; color: #eee; font-size: 13px;
+            cursor: pointer; white-space: nowrap;
+        }
+        .gvc-bottom-bar {
+            width: 100%; display: flex; flex-direction: column;
+            align-items: center; gap: 8px;
+            flex-shrink: 0; margin-top: auto; padding: 6px 12px 80px; box-sizing: border-box;
+        }
+        .gvc-hangup {
+            width: 38px; height: 38px; cursor: pointer;
+            filter: drop-shadow(0 2px 6px rgba(255,0,0,0.3)); flex-shrink: 0;
+        }
+
         /* iOS模式下通话页面整体下移 */
         body.ios-mode-active .voice-call-minimize-btn { top: calc(90px + env(safe-area-inset-top, 20px)); }
         body.ios-mode-active .voice-call-info { margin-top: calc(50px + env(safe-area-inset-top, 20px)); }
@@ -2003,6 +2097,136 @@
             from { opacity: 0; transform: scale(0.6); }
             to { opacity: 1; transform: scale(1); }
         }
+
+        /* 群通话悬浮窗 */
+        #group-voice-call-float {
+            position: fixed; top: 80px; right: 16px;
+            width: 72px; height: 72px; border-radius: 18px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 6px; gap: 4px; cursor: pointer; z-index: 10002;
+            user-select: none; -webkit-user-select: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            touch-action: none;
+        }
+        #group-voice-call-float.visible { display: flex; }
+        #group-voice-call-float.float-in { animation: vcFloatIn 0.28s ease forwards; }
+        #group-voice-call-float:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.1); }
+        .gvc-float-avatars {
+            display: flex; align-items: center; justify-content: center;
+            position: relative; width: 100%; height: 38px;
+        }
+        .gvc-float-avatars img {
+            width: 28px; height: 28px; border-radius: 50%;
+            object-fit: cover; border: 2px solid #1a1a1a;
+            position: absolute;
+        }
+        .gvc-float-avatars img:nth-child(1) { left: 2px; z-index: 3; }
+        .gvc-float-avatars img:nth-child(2) { left: 14px; z-index: 2; }
+        .gvc-float-avatars img:nth-child(3) { left: 26px; z-index: 1; }
+        .gvc-float-status {
+            color: #ccc; font-size: 10px; line-height: 1;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-variant-numeric: tabular-nums;
+            max-width: 60px; text-align: center;
+        }
+        .gvc-float-pulse {
+            position: absolute; top: 6px; right: 6px;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #4CAF50; flex-shrink: 0;
+            animation: vcFloatPulse 1.5s ease-in-out infinite;
+        }
+        /* 群通话收起/展开动画 */
+        #group-voice-call-page.collapsing { animation: vcCollapse 0.28s ease forwards; }
+        #group-voice-call-page.expanding { animation: vcExpand 0.28s ease forwards; }
+
+        /* 群通话挂断提示 */
+        .gvc-hangup-toast {
+            position: absolute; left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.75);
+            color: #fff; padding: 12px 24px;
+            border-radius: 12px; font-size: 14px;
+            backdrop-filter: blur(10px);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+        .gvc-hangup-toast.show { opacity: 1; }
+
+        /* 群通话记录小弹窗（聊天页面底部） */
+        .gvc-record-bar {
+            display: none;
+            align-items: center; gap: 6px;
+            justify-content: center;
+            padding: 8px 16px;
+            background: rgba(229, 138, 171, 0.12);
+            border-top: 1px solid rgba(229, 138, 171, 0.2);
+            color: #c25e7e;
+            font-size: 13px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        .gvc-record-bar:hover { background: rgba(229, 138, 171, 0.18); }
+        .gvc-record-bar.visible { display: flex; }
+        .gvc-record-arrow { transition: transform 0.3s; }
+        .gvc-record-bar.expanded .gvc-record-arrow { transform: rotate(180deg); }
+
+        /* 通话记录详情弹窗 */
+        .gvc-record-detail {
+            display: none;
+            position: fixed; bottom: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 100%; max-width: 420px;
+            max-height: 60vh;
+            background: #fff;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+            z-index: 10001;
+            flex-direction: column;
+            overflow: hidden;
+            animation: gvcRecordSlideUp 0.3s ease;
+        }
+        @keyframes gvcRecordSlideUp {
+            from { transform: translate(-50%, 100%); }
+            to { transform: translate(-50%, 0); }
+        }
+        .gvc-record-detail.visible { display: flex; }
+        .gvc-record-detail-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 15px; font-weight: 600; color: #333;
+        }
+        .gvc-record-detail-close {
+            font-size: 22px; color: #999; cursor: pointer;
+            line-height: 1; padding: 0 4px;
+        }
+        .gvc-record-detail-body {
+            padding: 12px 18px 20px;
+            overflow-y: auto;
+            font-size: 13px; color: #555; line-height: 1.6;
+        }
+        .gvc-record-msg {
+            margin-bottom: 8px; padding: 6px 0;
+        }
+        .gvc-record-msg-sender {
+            font-size: 12px; color: #999; margin-bottom: 2px;
+        }
+        .gvc-record-msg-text {
+            color: #333;
+        }
+        .gvc-record-msg.user .gvc-record-msg-sender { color: #c25e7e; }
+        .gvc-record-detail-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 10000;
+        }
+        .gvc-record-detail-overlay.visible { display: block; }
 
         /* 表情面板顶部导航栏 */
         .emotion-panel-top {
@@ -12777,6 +13001,65 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     font-size: 13px; width: 140px; text-align: center; outline: none; color: #5a3e3e;
 }
 .meet-settings-input:focus { border-color: #ffb6c1; }
+/* 预设管理样式 */
+.meet-preset-list { margin-top: 8px; }
+.meet-preset-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px; margin-bottom: 6px; border-radius: 10px;
+    background: rgba(255,182,193,0.08); border: 1px solid rgba(255,182,193,0.2);
+}
+.meet-preset-item-name { font-size: 13px; color: #5a3e3e; cursor: pointer; flex: 1; }
+.meet-preset-item-delete { font-size: 16px; color: #ccc; cursor: pointer; margin-left: 8px; }
+.meet-preset-item-delete:hover { color: #e88; }
+.meet-add-preset-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 6px 14px; border-radius: 16px; border: none;
+    background: linear-gradient(135deg, #ffb6c1, #ffc0cb); color: #fff;
+    font-size: 12px; cursor: pointer; margin-top: 8px;
+}
+/* 预设详情弹窗 */
+.meet-preset-detail-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.4); z-index: 1003;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.meet-preset-detail-overlay.active { display: flex; }
+.meet-preset-detail-modal {
+    background: #fff; border-radius: 20px; padding: 18px;
+    width: 320px; max-width: 90vw; max-height: 80vh;
+    overflow-y: auto; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.meet-preset-entry {
+    padding: 10px 0; border-bottom: 1px solid #fff0f3;
+}
+.meet-preset-entry:last-child { border-bottom: none; }
+.meet-preset-entry-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;
+}
+.meet-preset-entry-note {
+    font-size: 12px; color: #999; margin-bottom: 4px;
+}
+.meet-preset-entry-content {
+    font-size: 13px; color: #5a3e3e; line-height: 1.5;
+}
+.meet-preset-toggle {
+    width: 36px; height: 20px; border-radius: 10px; border: none;
+    background: #e0e0e0; cursor: pointer; position: relative; flex-shrink: 0;
+}
+.meet-preset-toggle.on { background: #ffb6c1; }
+.meet-preset-toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%; background: #fff;
+    transition: left 0.2s;
+}
+.meet-preset-toggle.on::after { left: 18px; }
+.meet-preset-entry-actions { display: flex; gap: 6px; align-items: center; }
+.meet-preset-entry-edit, .meet-preset-entry-del {
+    font-size: 12px; cursor: pointer; color: #ccc;
+}
+.meet-preset-entry-edit:hover { color: #5a3e3e; }
+.meet-preset-entry-del:hover { color: #e88; }
 
 /* 手机框模式适配 */
 body.phone-frame-active #meet-app-page {
@@ -13102,6 +13385,10 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
                 <img src="https://i.postimg.cc/02BN9gm7/nai-lao-cheese-4.png" class="chat-menu-icon">
                 <span class="chat-menu-text">总结</span>
             </div>
+            <div class="chat-menu-item chat-menu-group-visible" onclick="startGroupVoiceCall()">
+                <img src="https://img.heliar.top/file/1781886503380_电话呼叫_phone-call.png" class="chat-menu-icon">
+                <span class="chat-menu-text">群通话</span>
+            </div>
             <div class="chat-menu-item chat-menu-private-only" onclick="startVoiceCall()">
                 <img src="https://img.heliar.top/file/1781886503380_电话呼叫_phone-call.png" class="chat-menu-icon">
                 <span class="chat-menu-text">通话</span>
@@ -13149,6 +13436,26 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
                 </div>
             </div>
             <div class="reply-preview-cancel" id="reply-preview-cancel" onclick="cancelReply()">×</div>
+        </div>
+        <!-- 群通话记录小弹窗 -->
+        <div id="gvc-record-bar" class="gvc-record-bar" onclick="toggleGvcRecordDetail()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.36 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.34 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <span>纯语音通话结束</span>
+            <svg class="gvc-record-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+        <!-- 群通话记录详情遮罩 -->
+        <div id="gvc-record-detail-overlay" class="gvc-record-detail-overlay" onclick="closeGvcRecordDetail()"></div>
+        <!-- 群通话记录详情弹窗 -->
+        <div id="gvc-record-detail" class="gvc-record-detail">
+            <div class="gvc-record-detail-header">
+                <span>通话记录</span>
+                <span class="gvc-record-detail-close" onclick="closeGvcRecordDetail()">×</span>
+            </div>
+            <div class="gvc-record-detail-body" id="gvc-record-detail-body"></div>
         </div>
         <div class="chat-conv-footer">
             <button class="chat-conv-btn" onclick="toggleChatExtraMenu()"><img src="https://img.heliar.top/file/1770239041392_开关_power.png" style="width: 24px; height: 24px; object-fit: contain;"></button>
@@ -13325,11 +13632,47 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
         <img src="https://img.heliar.top/file/1781886601052_电话关闭_phone-off.png" class="voice-call-hangup" onclick="hangUpVoiceCall()">
     </div>
 </div>
+
+<!-- 群通话页面 -->
+<div id="group-voice-call-page">
+    <div class="gvc-header">
+        <button class="gvc-minimize-btn" onclick="minimizeGroupVoiceCall()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 14 10 14 10 20"></polyline>
+                <polyline points="20 10 14 10 14 4"></polyline>
+                <line x1="14" y1="10" x2="21" y2="3"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+        </button>
+        <div class="gvc-header-center">
+            <div class="gvc-title" id="gvc-title">群通话</div>
+            <div class="gvc-status" id="gvc-status">正在呼叫...</div>
+            <div class="gvc-duration" id="gvc-duration"></div>
+        </div>
+    </div>
+    <div class="gvc-members" id="gvc-members"></div>
+    <div class="gvc-conversation" id="gvc-conversation"></div>
+    <div class="gvc-bottom-bar">
+        <div class="gvc-input-area">
+            <input type="text" class="gvc-input" id="gvc-input" placeholder="输入你想说的话，回车发送..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendGroupVoiceCallMsg();}">
+            <button class="gvc-send-btn" onclick="triggerGvcAIReply()">角色回复</button>
+        </div>
+        <img src="https://img.heliar.top/file/1781886601052_电话关闭_phone-off.png" class="gvc-hangup" onclick="hangUpGroupVoiceCall()">
+    </div>
+    <div class="gvc-hangup-toast" id="gvc-hangup-toast">通话已结束</div>
+</div>
+
 <!-- 语音通话悬浮窗（收起状态，全局弹层） -->
 <div id="voice-call-float" onclick="expandVoiceCall(event)">
     <img id="vc-float-avatar" class="vc-float-avatar" src="">
     <div id="vc-float-status" class="vc-float-status">通话中</div>
     <div class="vc-float-pulse"></div>
+</div>
+<!-- 群通话悬浮窗（收起状态，全局弹层） -->
+<div id="group-voice-call-float" onclick="expandGroupVoiceCall(event)">
+    <div id="gvc-float-avatars" class="gvc-float-avatars"></div>
+    <div id="gvc-float-status" class="gvc-float-status">通话中</div>
+    <div class="gvc-float-pulse"></div>
 </div>
 <!-- 通话状态提示弹窗 -->
 <div id="call-status-toast"></div>
@@ -15133,19 +15476,15 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
             <span>🤝 见一面设置</span>
             <button class="meet-settings-close" onclick="closeMeetSettings()">✕</button>
         </div>
-        <div class="meet-settings-row">
-            <span class="meet-settings-label">默认见面地点</span>
-            <input class="meet-settings-input" id="meet-default-place" placeholder="如：咖啡馆">
-        </div>
-        <div class="meet-settings-row">
-            <span class="meet-settings-label">默认见面时长(分钟)</span>
-            <input class="meet-settings-input" id="meet-default-duration" type="number" placeholder="60">
-        </div>
-        <div class="meet-settings-row">
-            <span class="meet-settings-label">提醒提前量(分钟)</span>
-            <input class="meet-settings-input" id="meet-remind-before" type="number" placeholder="30">
-        </div>
+        <div class="meet-settings-label" style="margin-bottom:4px;">预设管理</div>
+        <div class="meet-preset-list" id="meet-preset-list"></div>
+        <button class="meet-add-preset-btn" onclick="addMeetPreset()">+ 添加预设</button>
     </div>
+</div>
+
+<!-- 预设详情弹窗 -->
+<div class="meet-preset-detail-overlay" id="meet-preset-detail-overlay" onclick="if(event.target===this)closeMeetPresetDetail()">
+    <div class="meet-preset-detail-modal" id="meet-preset-detail-modal"></div>
 </div>
 
 <!-- 漂浮宠物组件 -->
@@ -27661,6 +28000,17 @@ ${actionInstruction}
         renderConversationMessages();
         updateBlockedNotice();
         updateBlockedByCharNotice();
+
+        // 显示/隐藏通话记录小弹窗
+        const gvcBar = document.getElementById('gvc-record-bar');
+        if (gvcBar) {
+            if (gvcLastRecord && gvcLastRecord.groupId === groupId) {
+                gvcBar.classList.add('visible');
+            } else {
+                gvcBar.classList.remove('visible', 'expanded');
+                closeGvcRecordDetail();
+            }
+        }
     };
 
     // --- 群聊设置 ---
@@ -28124,6 +28474,18 @@ ${actionInstruction}
                 // 构建对话上下文
                 const recentMsgs = currentMsgs.slice(-30);
                 let chatContext = '';
+
+                // 注入通话记录（如果刚结束通话）
+                if (typeof gvcLastRecord !== 'undefined' && gvcLastRecord && gvcLastRecord.groupId === groupId) {
+                    chatContext += `[系统：刚刚进行了一次群语音通话，通话时长约${gvcLastRecord.duration}分钟]\n`;
+                    chatContext += `[通话内容记录：\n`;
+                    gvcLastRecord.messages.forEach(m => {
+                        chatContext += `${m.senderName}: ${m.text}\n`;
+                    });
+                    chatContext += `]\n`;
+                    chatContext += `[通话已结束，现在回到了文字聊天模式]\n`;
+                }
+
                 recentMsgs.forEach(m => {
                     if (m.isSystemMsg) {
                         chatContext += `[系统] ${m.text}\n`;
@@ -30063,6 +30425,13 @@ ${msgContext ? msgContext : '无'}
         renderConversationMessages();
         updateBlockedNotice();
         updateBlockedByCharNotice();
+
+        // 私聊时隐藏通话记录小弹窗
+        const gvcBar = document.getElementById('gvc-record-bar');
+        if (gvcBar) {
+            gvcBar.classList.remove('visible', 'expanded');
+            closeGvcRecordDetail();
+        }
     };
     
        window.closeChatConversation = () => {
@@ -30292,7 +30661,7 @@ ${msgContext ? msgContext : '无'}
         // 在默认图标右边添加"发图片"标签
         const imgTab = document.createElement('div');
         imgTab.className = 'emotion-send-img-tab' + (currentChatEmotionAlbumIndex === -1 ? ' active' : '');
-        imgTab.innerHTML = '🖼';
+        imgTab.innerHTML = '<img src="https://i.postimg.cc/D0mQ6pVv/xiang-ce-picture-album.png" style="width:24px;height:24px;object-fit:contain;">';
         imgTab.title = '发图片';
         imgTab.onclick = () => {
             currentChatEmotionAlbumIndex = -1; // -1表示发图片模式
@@ -30486,6 +30855,620 @@ ${msgContext ? msgContext : '无'}
         }
     };
     // --- 新增结束 ---
+
+    // ========================= 群通话逻辑 =========================
+    let gvcGroupId = null;    // 当前群通话的groupId
+    let gvcActive = false;
+    let gvcTimerInterval = null;
+    let gvcStartTime = null;
+    let gvcMinimized = false;
+    let gvcTempMessages = []; // 通话中的临时消息，不写入群聊
+    let gvcBubbleTimeouts = {}; // 存储每个气泡的超时ID
+
+    function showGvcBubble(memberId, text, isUser) {
+        const bubblesContainer = document.querySelector(`.gvc-member-bubbles[data-member-id="${memberId}"]`);
+        if (!bubblesContainer) return;
+        const bubble = document.createElement('div');
+        bubble.className = 'gvc-bubble' + (isUser ? ' user-bubble' : '');
+        bubble.textContent = text;
+        bubblesContainer.appendChild(bubble);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                bubble.classList.add('show');
+            });
+        });
+        const bubbleId = 'bubble_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        bubble.dataset.bubbleId = bubbleId;
+        gvcBubbleTimeouts[bubbleId] = setTimeout(() => {
+            bubble.classList.remove('show');
+            setTimeout(() => {
+                if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
+                delete gvcBubbleTimeouts[bubbleId];
+            }, 300);
+        }, 5000);
+    }
+
+    function clearAllGvcBubbles() {
+        Object.keys(gvcBubbleTimeouts).forEach(id => {
+            clearTimeout(gvcBubbleTimeouts[id]);
+            const bubble = document.querySelector(`.gvc-bubble[data-bubble-id="${id}"]`);
+            if (bubble && bubble.parentNode) bubble.parentNode.removeChild(bubble);
+        });
+        gvcBubbleTimeouts = {};
+    }
+
+    function startGvcTimer() {
+        gvcStartTime = Date.now();
+        const durEl = document.getElementById('gvc-duration');
+        durEl.classList.add('visible');
+        durEl.textContent = '00:00';
+        gvcTimerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - gvcStartTime) / 1000);
+            const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const s = (elapsed % 60).toString().padStart(2, '0');
+            const timeStr = `${m}:${s}`;
+            durEl.textContent = timeStr;
+            const floatStatus = document.getElementById('gvc-float-status');
+            if (floatStatus) floatStatus.textContent = timeStr;
+        }, 1000);
+    }
+    function stopGvcTimer() {
+        if (gvcTimerInterval) { clearInterval(gvcTimerInterval); gvcTimerInterval = null; }
+        const durEl = document.getElementById('gvc-duration');
+        durEl.classList.remove('visible');
+        durEl.textContent = '';
+        gvcStartTime = null;
+    }
+
+    window.startGroupVoiceCall = async () => {
+        if (!currentChatContactId || !currentChatContactId.startsWith('group_')) return;
+        // 关闭功能集菜单
+        document.getElementById('chat-extra-menu').classList.remove('active');
+        closeChatEmotionPanel();
+
+        gvcGroupId = currentChatContactId;
+        gvcActive = true;
+        gvcTempMessages = [];
+        clearAllGvcBubbles();
+
+        const groups = getGroupChatList();
+        const group = groups.find(g => g.groupId === gvcGroupId);
+        if (!group) return;
+
+        let contacts = [];
+        try { contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); } catch(e) {}
+
+        // 渲染成员头像+名字
+        const membersEl = document.getElementById('gvc-members');
+        membersEl.innerHTML = '';
+
+        // 添加用户自己
+        const globalProfile = getUserProfile();
+        const userAvatar = group.userAvatar || globalProfile.avatar || '';
+        const userAvatarImg = document.createElement('img');
+        userAvatarImg.className = 'gvc-member-avatar';
+        userAvatarImg.src = userAvatar;
+        userAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
+        const userNameDiv = document.createElement('div');
+        userNameDiv.className = 'gvc-member-name';
+        userNameDiv.textContent = globalProfile.nickname || '我';
+        const userBubbles = document.createElement('div');
+        userBubbles.className = 'gvc-member-bubbles';
+        userBubbles.dataset.memberId = 'user';
+        const userMember = document.createElement('div');
+        userMember.className = 'gvc-member';
+        userMember.appendChild(userAvatarImg);
+        userMember.appendChild(userNameDiv);
+        userMember.appendChild(userBubbles);
+        membersEl.appendChild(userMember);
+
+        // 添加所有群成员
+        for (const mid of (group.memberIds || [])) {
+            const c = contacts.find(x => String(x.id) === String(mid));
+            if (!c) continue;
+            const avatarUrl = c.avatar || '';
+            const mDiv = document.createElement('div');
+            mDiv.className = 'gvc-member';
+            const img = document.createElement('img');
+            img.className = 'gvc-member-avatar';
+            if (avatarUrl.startsWith('local_img_')) {
+                try { img.src = (await getImgFromDB(avatarUrl)) || ''; } catch(e) { img.src = ''; }
+            } else {
+                img.src = avatarUrl;
+            }
+            img.onerror = function() { this.onerror = null; this.src = ''; };
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'gvc-member-name';
+            nameDiv.textContent = c.alias || c.name || '未知';
+            const memberBubbles = document.createElement('div');
+            memberBubbles.className = 'gvc-member-bubbles';
+            memberBubbles.dataset.memberId = String(mid);
+            mDiv.appendChild(img);
+            mDiv.appendChild(nameDiv);
+            mDiv.appendChild(memberBubbles);
+            membersEl.appendChild(mDiv);
+        }
+
+        // 设置标题
+        document.getElementById('gvc-title').textContent = group.groupName || '群通话';
+        document.getElementById('gvc-status').textContent = '正在呼叫...';
+        document.getElementById('gvc-status').style.color = '#aaa';
+        document.getElementById('gvc-conversation').innerHTML = '';
+        document.getElementById('gvc-input').value = '';
+
+        // 显示页面
+        document.getElementById('group-voice-call-page').classList.add('active');
+
+        // 模拟接通（1.5秒后）
+        setTimeout(() => {
+            if (!gvcActive) return;
+            document.getElementById('gvc-status').textContent = '';
+            document.getElementById('gvc-status').style.color = '#4ade80';
+            startGvcTimer();
+        }, 1500);
+    };
+
+    window.sendGroupVoiceCallMsg = () => {
+        if (!gvcActive || !gvcGroupId) return;
+        const input = document.getElementById('gvc-input');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+
+        // 在用户头像下方显示气泡
+        showGvcBubble('user', text, true);
+
+        // 存储到临时消息数组
+        const globalProfile = getUserProfile();
+        const uName = globalProfile.nickname || '用户';
+        gvcTempMessages.push({
+            id: Date.now(), type: 'sent', text: text, timestamp: Date.now(),
+            senderName: uName
+        });
+    };
+
+    // 点击"角色回复"按钮触发AI回复
+    window.triggerGvcAIReply = () => {
+        if (!gvcActive || !gvcGroupId) return;
+        // 显示"成员正在回复中"
+        const statusEl = document.getElementById('gvc-status');
+        statusEl.textContent = '成员正在回复中...';
+        statusEl.style.color = '#aaa';
+        // 触发群聊AI回复（通话模式）
+        triggerGvcGroupAIReply();
+    };
+
+    // 触发群通话AI回复（使用临时消息，不写入群聊）
+    let gvcAiReplyAbortController = null;
+    async function triggerGvcGroupAIReply() {
+        if (!gvcActive || !gvcGroupId) return;
+        const groupId = gvcGroupId;
+
+        if (gvcAiReplyAbortController) {
+            gvcAiReplyAbortController.abort();
+        }
+        gvcAiReplyAbortController = new AbortController();
+        const abortSignal = gvcAiReplyAbortController.signal;
+
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY));
+        if (!settings?.api?.url || !settings?.api?.key) return;
+
+        let groups = getGroupChatList();
+        const group = groups.find(g => g.groupId === groupId);
+        if (!group) return;
+
+        let contacts = [];
+        try { contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); } catch(e) {}
+
+        const globalProfile = getUserProfile();
+        const uName = globalProfile.nickname || '用户';
+
+        // 随机打乱回复顺序
+        const shuffledIds = [...group.memberIds].sort(() => Math.random() - 0.5);
+
+        // 构建群成员信息表
+        const memberInfoMap = {};
+        const allMembers = [];
+        group.memberIds.forEach(mid => {
+            const c = contacts.find(x => String(x.id) === String(mid));
+            if (c) {
+                memberInfoMap[mid] = c;
+                allMembers.push({ id: mid, name: c.alias || c.name, persona: c.persona || '' });
+            }
+        });
+
+        const firstMember = memberInfoMap[group.memberIds[0]];
+        const uPersona = (firstMember && firstMember.userPersona) || '一个普通用户';
+
+        // 使用临时消息构建上下文
+        const tempMsgs = gvcTempMessages.slice();
+        const recentMsgs = tempMsgs.slice(-30);
+        let chatContext = '';
+        recentMsgs.forEach(m => {
+            if (m.isSystemMsg) {
+                chatContext += `[系统] ${m.text}\n`;
+            } else if (m.isEmotionImage) {
+                const sender = m.type === 'sent' ? uName : (m.senderName || '未知');
+                chatContext += `[系统提示：${sender} 发送了一张【表情包】。画面内容/配字描述："${m.text}"]\n`;
+            } else if (m.type === 'sent') {
+                chatContext += `${uName}: ${m.text || ''}\n`;
+            } else {
+                chatContext += `${m.senderName || '未知'}: ${m.text || ''}\n`;
+            }
+        });
+
+        // 并行调用所有角色API
+        const apiPromises = shuffledIds.map(async (memberId) => {
+            const member = memberInfoMap[memberId];
+            if (!member) return null;
+
+            try {
+                let systemPrompt = `你是${member.name}，正在一个群语音通话中。群名是"${group.groupName}"。\n`;
+                systemPrompt += `这个群是用户"${uName}"创建的，你正在和大家进行语音通话。\n`;
+
+                if (member.persona) {
+                    systemPrompt += `\n【你的人设】\n${member.persona}\n`;
+                }
+                if (member.signature) {
+                    systemPrompt += `你的个性签名是：${member.signature}\n`;
+                }
+
+                systemPrompt += `\n【用户信息】\n用户的名字是"${uName}"。\n用户人设：${uPersona}\n`;
+
+                const otherMembers = allMembers.filter(m => m.id !== memberId);
+                if (otherMembers.length > 0) {
+                    systemPrompt += `\n【群聊中的其他成员】\n`;
+                    otherMembers.forEach(om => {
+                        const memberName = om.name;
+                        const personaMentionsOther = member.persona && member.persona.includes(memberName);
+                        const otherMentionsMe = om.persona && om.persona.includes(member.name);
+                        if (personaMentionsOther || otherMentionsMe) {
+                            systemPrompt += `- ${memberName}：你认识这个人。`;
+                        } else {
+                            systemPrompt += `- ${memberName}：你不认识这个人。`;
+                        }
+                        systemPrompt += `\n`;
+                    });
+                }
+
+                systemPrompt += `\n【重要规则】\n`;
+                systemPrompt += `1. 你正在群语音通话中，说话要自然口语化，就像平时打电话聊天一样。\n`;
+                systemPrompt += `2. 只回复消息内容本身，不要加任何前缀、引号或角色名标记。\n`;
+                systemPrompt += `3. 回复要符合你的性格和语境，保持角色一致性。\n`;
+                systemPrompt += `4. 你的回复必须是一个JSON对象，格式为{"reply":["消息1","消息2","消息3"]}，reply数组包含1到5条消息。像正常聊天一样，可以把想说的话拆成多条消息发送，模拟真实说话节奏和语气。不要超过5条消息。\n`;
+                systemPrompt += `5. 你可以回复用户，也可以回复其他成员，或同时对多人说话。\n`;
+                systemPrompt += `6. 如果你不认识某个人，不要假装认识，要自然地表现出陌生感。\n`;
+
+                systemPrompt += `\n【通话记录】\n${chatContext}`;
+
+                const apiMessages = [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `请以${member.name}的身份，在群语音通话中回复。严格按JSON格式输出。` }
+                ];
+
+                let fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
+                const isGemini = settings.api.url.includes('generativelanguage');
+                let bodyData, headers = { 'Content-Type': 'application/json' };
+
+                if (isGemini) {
+                    fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model}:generateContent?key=${settings.api.key}`;
+                    bodyData = JSON.stringify({
+                        contents: [{ parts: [{ text: systemPrompt + "\n\n通话记录:\n" + chatContext + "\n\n请以" + member.name + "的身份，在群语音通话中回复。严格按JSON格式输出。" }] }],
+                        generationConfig: { temperature: 0.8, maxOutputTokens: 600, response_mime_type: "application/json" }
+                    });
+                } else {
+                    headers['Authorization'] = `Bearer ${settings.api.key}`;
+                    bodyData = JSON.stringify({ model: settings.api.model || 'gpt-3.5-turbo', messages: apiMessages, max_tokens: 600, temperature: 0.8, response_format: { type: "json_object" } });
+                }
+
+                const response = await fetch(fetchUrl, {
+                    method: 'POST',
+                    headers: headers,
+                    body: bodyData,
+                    signal: abortSignal
+                });
+
+                if (!response.ok) return null;
+                const data = await response.json();
+
+                let replyContent = '';
+                if (isGemini) {
+                    replyContent = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                } else {
+                    replyContent = data.choices?.[0]?.message?.content?.trim();
+                }
+                if (!replyContent) return null;
+
+                let sentences = [];
+                try {
+                    const parsed = JSON.parse(replyContent);
+                    if (Array.isArray(parsed.reply)) {
+                        sentences = parsed.reply.map(s => String(s).trim()).filter(s => s);
+                    } else {
+                        sentences = [String(replyContent).replace(/[{}\[\]"]/g, '').trim()];
+                    }
+                } catch(e) {
+                    sentences = [replyContent.replace(/["\[\]{}]/g, '').trim()];
+                }
+
+                if (sentences.length > 5) sentences = sentences.slice(0, 5);
+
+                return {
+                    memberId,
+                    memberName: member.alias || member.name,
+                    messages: sentences
+                };
+            } catch(e) {
+                console.error(`GVC AI reply error for member ${memberId}:`, e);
+                return null;
+            }
+        });
+
+        try {
+            const results = await Promise.all(apiPromises);
+
+            // 按随机顺序依次显示回复（模拟真实通话的时间差）
+            let delay = 0;
+            for (const result of results) {
+                if (!result || !result.messages || result.messages.length === 0) continue;
+
+                // 每条消息逐条显示，模拟真实聊天节奏
+                for (const msgText of result.messages) {
+                    if (!msgText) continue;
+                    const msgDelay = delay;
+                    const memberId = String(result.memberId);
+                    const memberName = result.memberName;
+                    setTimeout(() => {
+                        if (!gvcActive) return;
+                        // 在头像下方显示气泡
+                        showGvcBubble(memberId, msgText, false);
+                        // 添加到临时消息
+                        gvcTempMessages.push({
+                            id: Date.now() + Math.random(),
+                            type: 'received',
+                            text: msgText,
+                            timestamp: Date.now(),
+                            senderId: memberId,
+                            senderName: memberName
+                        });
+                    }, msgDelay);
+                    delay += 600 + Math.random() * 800;
+                }
+                // 角色之间额外间隔
+                delay += 400 + Math.random() * 600;
+            }
+
+            // 所有回复完成后更新状态
+            setTimeout(() => {
+                if (!gvcActive) return;
+                const statusEl = document.getElementById('gvc-status');
+                if (statusEl) {
+                    statusEl.textContent = '';
+                    statusEl.style.color = '#4ade80';
+                }
+            }, delay + 500);
+
+        } catch(e) {
+            if (e.name !== 'AbortError') {
+                console.error('GVC AI reply error:', e);
+            }
+        }
+    }
+
+    // 轮询群聊新消息同步到通话界面
+    function pollGroupVoiceCallMessages(lastCount) {
+        if (!gvcActive || !gvcGroupId) return;
+        const msgKey = getMessagesKey(gvcGroupId);
+        let msgs = [];
+        try { msgs = JSON.parse(localStorage.getItem(msgKey) || '[]'); } catch(e) {}
+
+        if (msgs.length > lastCount) {
+            // 有新消息，检查是否有AI回复
+            const newMsgs = msgs.slice(lastCount);
+            const conv = document.getElementById('gvc-conversation');
+            newMsgs.forEach(m => {
+                if (m.type === 'received' && !m.isSystemMsg) {
+                    const msgEl = document.createElement('div');
+                    msgEl.className = 'gvc-msg character';
+                    const senderEl = document.createElement('div');
+                    senderEl.className = 'gvc-msg-sender';
+                    senderEl.textContent = m.senderName || '成员';
+                    msgEl.appendChild(senderEl);
+                    const textEl = document.createElement('div');
+                    textEl.textContent = m.text || '';
+                    msgEl.appendChild(textEl);
+                    conv.appendChild(msgEl);
+                }
+            });
+            conv.scrollTop = conv.scrollHeight;
+            // 更新状态
+            document.getElementById('gvc-status').textContent = '已接通';
+            document.getElementById('gvc-status').style.color = '#4ade80';
+        }
+        // 继续轮询，直到通话结束或超时
+        if (gvcActive && newMsgs.length === 0) {
+            setTimeout(() => pollGroupVoiceCallMessages(lastCount), 500);
+        } else if (gvcActive) {
+            // 等一下再继续轮询，看还有没有更多回复
+            setTimeout(() => pollGroupVoiceCallMessages(msgs.length), 1000);
+        }
+    }
+
+    window.minimizeGroupVoiceCall = () => {
+        const callPage = document.getElementById('group-voice-call-page');
+        if (!callPage.classList.contains('active')) return;
+        const floatEl = document.getElementById('group-voice-call-float');
+
+        const avatarsEl = document.getElementById('gvc-float-avatars');
+        avatarsEl.innerHTML = '';
+        const memberAvatars = document.querySelectorAll('.gvc-member-avatar');
+        let count = 0;
+        memberAvatars.forEach((img, idx) => {
+            if (idx === 0) return;
+            if (count >= 3) return;
+            count++;
+            const floatImg = document.createElement('img');
+            floatImg.src = img.src;
+            floatImg.onerror = function() { this.onerror = null; this.src = ''; };
+            avatarsEl.appendChild(floatImg);
+        });
+
+        const statusEl = document.getElementById('gvc-status');
+        const durationEl = document.getElementById('gvc-duration');
+        const floatStatus = document.getElementById('gvc-float-status');
+        if (durationEl.classList.contains('visible') && durationEl.textContent) {
+            floatStatus.textContent = durationEl.textContent;
+        } else if (statusEl.textContent) {
+            floatStatus.textContent = statusEl.textContent;
+        } else {
+            floatStatus.textContent = '通话中';
+        }
+
+        callPage.classList.add('collapsing');
+        setTimeout(() => {
+            callPage.classList.remove('active', 'collapsing');
+            floatEl.classList.add('visible', 'float-in');
+            setTimeout(() => floatEl.classList.remove('float-in'), 300);
+        }, 260);
+
+        gvcMinimized = true;
+    };
+
+    window.expandGroupVoiceCall = (e) => {
+        if (!gvcMinimized) return;
+        const callPage = document.getElementById('group-voice-call-page');
+        const floatEl = document.getElementById('group-voice-call-float');
+
+        floatEl.classList.remove('visible', 'float-in');
+        callPage.classList.add('active', 'expanding');
+        setTimeout(() => callPage.classList.remove('expanding'), 280);
+
+        gvcMinimized = false;
+
+        if (gvcGroupId) {
+            if (typeof openChatApp === 'function') openChatApp();
+            if (String(currentChatContactId) !== String(gvcGroupId)) {
+                if (typeof openChatWindow === 'function') openChatWindow(gvcGroupId);
+            }
+        }
+    };
+
+    // 保存通话记录供点击查看
+    let gvcLastRecord = null;
+
+    window.hangUpGroupVoiceCall = () => {
+        stopGvcTimer();
+        const floatEl = document.getElementById('group-voice-call-float');
+        if (floatEl) floatEl.classList.remove('visible', 'float-in');
+        gvcMinimized = false;
+
+        // 中止正在进行的AI回复
+        if (gvcAiReplyAbortController) {
+            gvcAiReplyAbortController.abort();
+            gvcAiReplyAbortController = null;
+        }
+
+        // 清除所有气泡
+        clearAllGvcBubbles();
+
+        // 显示挂断提示弹窗
+        const toastEl = document.getElementById('gvc-hangup-toast');
+        if (toastEl) {
+            toastEl.classList.add('show');
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+            }, 2000);
+        }
+
+        // 保存通话记录供点击查看
+        if (gvcGroupId && gvcTempMessages.length > 0) {
+            const globalProfile = getUserProfile();
+            const uName = globalProfile.nickname || '用户';
+            const duration = gvcStartTime ? Math.floor((Date.now() - gvcStartTime) / 60000) : 0;
+
+            gvcLastRecord = {
+                groupId: gvcGroupId,
+                groupName: '',
+                duration: duration,
+                messages: gvcTempMessages.map(m => ({
+                    type: m.type,
+                    senderName: m.type === 'sent' ? uName : (m.senderName || '未知'),
+                    text: m.text || '',
+                    timestamp: m.timestamp
+                }))
+            };
+
+            // 获取群名
+            try {
+                const groups = getGroupChatList();
+                const g = groups.find(x => x.groupId === gvcGroupId);
+                if (g) gvcLastRecord.groupName = g.groupName || '';
+            } catch(e) {}
+
+            // 显示聊天页面底部的小弹窗
+            showGvcRecordBar();
+        }
+
+        gvcActive = false;
+        gvcGroupId = null;
+        gvcTempMessages = [];
+
+        // 延迟关闭页面，让弹窗先显示
+        setTimeout(() => {
+            document.getElementById('group-voice-call-page').classList.remove('active');
+        }, 300);
+    };
+
+    // 显示通话记录小弹窗
+    function showGvcRecordBar() {
+        if (!gvcLastRecord) return;
+        const barEl = document.getElementById('gvc-record-bar');
+        if (barEl) {
+            barEl.classList.add('visible');
+            barEl.classList.remove('expanded');
+        }
+    }
+
+    // 切换通话记录详情显示
+    window.toggleGvcRecordDetail = () => {
+        const detailEl = document.getElementById('gvc-record-detail');
+        const overlayEl = document.getElementById('gvc-record-detail-overlay');
+        const barEl = document.getElementById('gvc-record-bar');
+        if (!detailEl) return;
+
+        if (detailEl.classList.contains('visible')) {
+            closeGvcRecordDetail();
+        } else {
+            // 填充通话记录内容
+            const bodyEl = document.getElementById('gvc-record-detail-body');
+            if (bodyEl && gvcLastRecord) {
+                let html = '';
+                html += `<div style="color:#999;font-size:12px;margin-bottom:10px;">通话时长：约${gvcLastRecord.duration}分钟</div>`;
+                gvcLastRecord.messages.forEach(m => {
+                    const isUser = m.type === 'sent';
+                    html += `<div class="gvc-record-msg ${isUser ? 'user' : ''}">`;
+                    html += `<div class="gvc-record-msg-sender">${m.senderName}</div>`;
+                    html += `<div class="gvc-record-msg-text">${m.text}</div>`;
+                    html += `</div>`;
+                });
+                bodyEl.innerHTML = html;
+            }
+            detailEl.classList.add('visible');
+            if (overlayEl) overlayEl.classList.add('visible');
+            if (barEl) barEl.classList.add('expanded');
+        }
+    };
+
+    window.closeGvcRecordDetail = () => {
+        const detailEl = document.getElementById('gvc-record-detail');
+        const overlayEl = document.getElementById('gvc-record-detail-overlay');
+        const barEl = document.getElementById('gvc-record-bar');
+        if (detailEl) detailEl.classList.remove('visible');
+        if (overlayEl) overlayEl.classList.remove('visible');
+        if (barEl) barEl.classList.remove('expanded');
+    };
+
+    // ========================= 群通话逻辑结束 =========================
 
     function getMessagesKey(contactId) { return `chat_msgs_${contactId}`; }
 
@@ -41686,17 +42669,6 @@ window.executeDisableLock = () => {
         // 清空小说区域
         meetNovelLines = [];
         document.getElementById('meet-novel-area').innerHTML = '';
-        // 写入开场段落
-        const name = meetCurrentContact.alias || meetCurrentContact.name || 'TA';
-        let opening = '';
-        if (meetPov === '1') {
-            opening = `*我走进了${meetPlace}*，${name}已经在角落的位置坐下了。`;
-        } else if (meetPov === '2') {
-            opening = `*你走进了${meetPlace}*，${name}已经在角落的位置坐下了。`;
-        } else {
-            opening = `*${name}坐在${meetPlace}的角落*，目光投向门口的方向。`;
-        }
-        meetAppendNovel(opening, 'ai');
     };
 
     function updateMeetPovBtns() {
@@ -41828,6 +42800,28 @@ ${persona}
             systemPrompt += `\n\n【你们最近的聊天记录（线上聊天，供你参考你们的关系和最近发生的事）】\n${chatHistoryContext}`;
         }
 
+        // 读取预设中已开启的条目
+        let presetContext = '';
+        try {
+            const presets = getMeetPresets();
+            const enabledEntries = [];
+            presets.forEach(p => {
+                (p.entries || []).forEach(e => {
+                    if (e.enabled && e.content) enabledEntries.push(e);
+                });
+            });
+            if (enabledEntries.length > 0) {
+                presetContext = enabledEntries.map(e => {
+                    let s = e.content;
+                    if (e.note) s = `（${e.note}）${s}`;
+                    return s;
+                }).join('\n');
+            }
+        } catch(e) {}
+        if (presetContext) {
+            systemPrompt += `\n\n【预设/剧情设定（必须遵守和融入演绎中）】\n${presetContext}`;
+        }
+
         systemPrompt += `\n\n【人称视角规则】${povRule}
 
 【输出格式要求——极其重要】
@@ -41913,19 +42907,154 @@ ${persona}
     }
 
     window.openMeetSettings = () => {
-        const settings = getMeetSettings();
-        document.getElementById('meet-default-place').value = settings.defaultPlace || '';
-        document.getElementById('meet-default-duration').value = settings.defaultDuration || '';
-        document.getElementById('meet-remind-before').value = settings.remindBefore || '';
+        renderMeetPresetList();
         document.getElementById('meet-settings-overlay').classList.add('active');
     };
     window.closeMeetSettings = () => {
-        const settings = getMeetSettings();
-        settings.defaultPlace = document.getElementById('meet-default-place').value.trim();
-        settings.defaultDuration = parseInt(document.getElementById('meet-default-duration').value) || 60;
-        settings.remindBefore = parseInt(document.getElementById('meet-remind-before').value) || 30;
-        saveMeetSettings(settings);
         document.getElementById('meet-settings-overlay').classList.remove('active');
+    };
+
+    // ---- 预设管理 ----
+    function getMeetPresets() {
+        const settings = getMeetSettings();
+        return settings.presets || [];
+    }
+    function saveMeetPresets(presets) {
+        const settings = getMeetSettings();
+        settings.presets = presets;
+        saveMeetSettings(settings);
+    }
+
+    function renderMeetPresetList() {
+        const list = document.getElementById('meet-preset-list');
+        const presets = getMeetPresets();
+        list.innerHTML = '';
+        if (presets.length === 0) {
+            list.innerHTML = '<div style="font-size:12px;color:#ccc;padding:8px 0;">暂无预设，点击下方添加</div>';
+            return;
+        }
+        presets.forEach((p, i) => {
+            const item = document.createElement('div');
+            item.className = 'meet-preset-item';
+            item.innerHTML = `<span class="meet-preset-item-name" onclick="openMeetPresetDetail(${i})">${escapeHtml(p.name || '预设' + (i+1))}</span><span class="meet-preset-item-delete" onclick="deleteMeetPreset(${i})">✕</span>`;
+            list.appendChild(item);
+        });
+    }
+
+    window.addMeetPreset = () => {
+        const presets = getMeetPresets();
+        presets.push({ name: '预设' + (presets.length + 1), entries: [] });
+        saveMeetPresets(presets);
+        renderMeetPresetList();
+    };
+
+    window.deleteMeetPreset = (index) => {
+        const presets = getMeetPresets();
+        presets.splice(index, 1);
+        saveMeetPresets(presets);
+        renderMeetPresetList();
+    };
+
+    // 预设详情弹窗
+    let currentMeetPresetIndex = -1;
+
+    window.openMeetPresetDetail = (index) => {
+        currentMeetPresetIndex = index;
+        const presets = getMeetPresets();
+        const preset = presets[index];
+        const modal = document.getElementById('meet-preset-detail-modal');
+        let html = `<div class="meet-settings-title">
+            <input class="meet-settings-input" id="meet-preset-name-input" value="${escapeHtml(preset.name)}" style="width:160px;text-align:left;font-weight:bold;font-size:15px;" placeholder="预设名称">
+            <button class="meet-settings-close" onclick="closeMeetPresetDetail()">✕</button>
+        </div>
+        <div class="meet-preset-entry-list" id="meet-preset-entry-list">`;
+
+        if (preset.entries.length === 0) {
+            html += '<div style="font-size:12px;color:#ccc;padding:8px 0;">暂无条目</div>';
+        }
+        preset.entries.forEach((entry, ei) => {
+            html += `<div class="meet-preset-entry">
+                <div class="meet-preset-entry-header">
+                    <div class="meet-preset-entry-actions">
+                        <button class="meet-preset-toggle ${entry.enabled ? 'on' : ''}" onclick="toggleMeetPresetEntry(${ei})"></button>
+                        <span class="meet-preset-entry-edit" onclick="editMeetPresetEntry(${ei})">✎</span>
+                        <span class="meet-preset-entry-del" onclick="deleteMeetPresetEntry(${ei})">✕</span>
+                    </div>
+                </div>
+                ${entry.note ? '<div class="meet-preset-entry-note">备注：' + escapeHtml(entry.note) + '</div>' : ''}
+                <div class="meet-preset-entry-content">${escapeHtml(entry.content)}</div>
+            </div>`;
+        });
+
+        html += `</div>
+        <button class="meet-add-preset-btn" onclick="addMeetPresetEntry()">+ 添加条目</button>`;
+        modal.innerHTML = html;
+        document.getElementById('meet-preset-detail-overlay').classList.add('active');
+    };
+
+    window.closeMeetPresetDetail = () => {
+        // 保存预设名称
+        const presets = getMeetPresets();
+        if (currentMeetPresetIndex >= 0 && currentMeetPresetIndex < presets.length) {
+            const nameInput = document.getElementById('meet-preset-name-input');
+            if (nameInput) presets[currentMeetPresetIndex].name = nameInput.value.trim() || '预设';
+            saveMeetPresets(presets);
+        }
+        document.getElementById('meet-preset-detail-overlay').classList.remove('active');
+        renderMeetPresetList();
+    };
+
+    window.toggleMeetPresetEntry = (entryIndex) => {
+        const presets = getMeetPresets();
+        if (currentMeetPresetIndex < 0) return;
+        presets[currentMeetPresetIndex].entries[entryIndex].enabled = !presets[currentMeetPresetIndex].entries[entryIndex].enabled;
+        saveMeetPresets(presets);
+        openMeetPresetDetail(currentMeetPresetIndex);
+    };
+
+    window.addMeetPresetEntry = () => {
+        const presets = getMeetPresets();
+        if (currentMeetPresetIndex < 0) return;
+        presets[currentMeetPresetIndex].entries.push({ note: '', content: '', enabled: true });
+        saveMeetPresets(presets);
+        openMeetPresetDetail(currentMeetPresetIndex);
+    };
+
+    window.deleteMeetPresetEntry = (entryIndex) => {
+        const presets = getMeetPresets();
+        if (currentMeetPresetIndex < 0) return;
+        presets[currentMeetPresetIndex].entries.splice(entryIndex, 1);
+        saveMeetPresets(presets);
+        openMeetPresetDetail(currentMeetPresetIndex);
+    };
+
+    window.editMeetPresetEntry = (entryIndex) => {
+        const presets = getMeetPresets();
+        if (currentMeetPresetIndex < 0) return;
+        const entry = presets[currentMeetPresetIndex].entries[entryIndex];
+        // 用一个简单的内联编辑弹窗
+        const modal = document.getElementById('meet-preset-detail-modal');
+        const noteInput = `<input class="meet-settings-input" id="meet-entry-note-edit" value="${escapeHtml(entry.note)}" style="width:100%;text-align:left;margin-bottom:6px;" placeholder="备注（可选）">`;
+        const contentInput = `<textarea class="meet-settings-input" id="meet-entry-content-edit" style="width:100%;height:80px;text-align:left;resize:vertical;" placeholder="预设内容">${escapeHtml(entry.content)}</textarea>`;
+        modal.innerHTML = `<div class="meet-settings-title">
+            <span>编辑条目</span>
+            <button class="meet-settings-close" onclick="saveMeetPresetEntryEdit(${entryIndex})">✓</button>
+        </div>
+        <div style="margin-bottom:6px;font-size:12px;color:#999;">备注</div>
+        ${noteInput}
+        <div style="margin-bottom:6px;font-size:12px;color:#999;">内容</div>
+        ${contentInput}`;
+    };
+
+    window.saveMeetPresetEntryEdit = (entryIndex) => {
+        const presets = getMeetPresets();
+        if (currentMeetPresetIndex < 0) return;
+        const noteInput = document.getElementById('meet-entry-note-edit');
+        const contentInput = document.getElementById('meet-entry-content-edit');
+        presets[currentMeetPresetIndex].entries[entryIndex].note = noteInput ? noteInput.value.trim() : '';
+        presets[currentMeetPresetIndex].entries[entryIndex].content = contentInput ? contentInput.value.trim() : '';
+        saveMeetPresets(presets);
+        openMeetPresetDetail(currentMeetPresetIndex);
     };
 
     function renderPetDisplay() {
