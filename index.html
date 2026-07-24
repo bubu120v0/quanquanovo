@@ -521,7 +521,7 @@
         #takeout-shop-detail-page, #forum-post-detail-page, #forum-user-profile-page,
         #forum-my-posts-page, #forum-all-forums-page, #forum-favorite-posts-page,
         #forum-all-liked-posts-page, #forum-following-page, #edit-forum-page,
-        #recollection-color-page, #worldbook-entry-fullscreen-page, #pet-app-page {
+        #recollection-color-page, #worldbook-entry-fullscreen-page, #pet-app-page, #meet-app-page {
             transform-origin: center center;
         }
                 body.settings-active #home-screen,
@@ -2058,6 +2058,45 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             cursor: pointer;
             border: 1px solid #eee;
+        }
+        /* 发图片标签按钮 */
+        .emotion-send-img-tab {
+            width: 40px; height: 40px; border-radius: 10px; background: #fff;
+            flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer;
+            border: 1px solid #eee; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: #e08aaa;
+        }
+        .emotion-send-img-tab.active {
+            border-color: var(--theme-pink-btn); background: #fff5f8;
+        }
+        /* 发图片面板 */
+        .emotion-img-send-panel {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 12px 16px; width: 100%; height: 100%; gap: 8px;
+        }
+        .emotion-img-send-panel .img-preview-area {
+            width: 100px; height: 100px; border-radius: 12px; background: #f9f3f5;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border: 1px dashed #e0c0c8; cursor: pointer; position: relative;
+        }
+        .emotion-img-send-panel .img-preview-area img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .emotion-img-send-panel .img-preview-area .img-preview-placeholder {
+            font-size: 28px; color: #e0c0c8;
+        }
+        .emotion-img-send-panel .img-desc-input {
+            width: 80%; padding: 6px 10px; border-radius: 8px; border: 1px solid #e8d5d9;
+            font-size: 13px; outline: none; background: #fff; color: #5a3e3e;
+        }
+        .emotion-img-send-panel .img-desc-input::placeholder { color: #ccc; }
+        .emotion-img-send-panel .img-send-btn {
+            padding: 6px 24px; border-radius: 18px; border: none;
+            background: linear-gradient(135deg, #ffb6c1, #ffc0cb); color: #fff;
+            font-size: 13px; cursor: pointer; box-shadow: 0 2px 6px rgba(255,182,193,0.3);
+        }
+        .emotion-img-send-panel .img-send-btn:disabled {
+            opacity: 0.5; cursor: not-allowed;
         }
 
               /* 表情面板下方的内容主体区 */
@@ -12532,6 +12571,223 @@ body.phone-frame-active .pet-task-bonus-text { font-size: 10px !important; }
 body.phone-frame-active .pet-task-bonus-btn { padding: 5px 10px !important; font-size: 10px !important; }
 body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7px !important; font-size: 12px !important; border-radius: 10px !important; }
 
+/* ========================= 见一面 App 样式 ========================= */
+#meet-app-page {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(180deg, #fff5f7, #fff0f3);
+    z-index: 60; display: none; flex-direction: column;
+    transform: translateY(100%) scale(var(--ps, 0.85));
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+}
+#meet-app-page.active { display: flex; transform: translateY(0) scale(var(--ps, 0.85)); }
+
+/* 角色选择页 */
+.meet-select-page {
+    flex: 1; display: flex; flex-direction: column; overflow: hidden;
+}
+.meet-select-header {
+    display: flex; align-items: center; padding: 50px 20px 15px; flex-shrink: 0;
+}
+.meet-back-btn {
+    font-size: 28px; color: #ffb6c1; background: none; border: none; cursor: pointer; font-weight: 300;
+}
+.meet-select-title {
+    flex: 1; text-align: center; font-size: 20px; font-weight: 700; color: #5a3e3e;
+    margin-right: 28px;
+}
+.meet-select-body {
+    flex: 1; overflow-y: auto; padding: 10px 20px 20px;
+}
+.meet-select-empty {
+    text-align: center; color: #c9a0a0; font-size: 14px; margin-top: 40vh;
+    transform: translateY(-50%);
+}
+.meet-select-empty .meet-empty-icon { font-size: 48px; margin-bottom: 12px; }
+.meet-card {
+    background: rgba(255,255,255,0.7); border-radius: 16px;
+    padding: 16px; box-shadow: 0 2px 12px rgba(255,182,193,0.15);
+    display: flex; align-items: center; gap: 14px;
+    backdrop-filter: blur(8px); cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 12px;
+}
+.meet-card:active { transform: scale(0.97); box-shadow: 0 1px 6px rgba(255,182,193,0.25); }
+.meet-card-avatar {
+    width: 50px; height: 50px; border-radius: 50%;
+    object-fit: cover; border: 2px solid rgba(255,182,193,0.3); flex-shrink: 0;
+}
+.meet-card-info { flex: 1; min-width: 0; }
+.meet-card-name { font-size: 15px; font-weight: 600; color: #5a3e3e; margin-bottom: 3px; }
+.meet-card-desc { font-size: 12px; color: #b08a8a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 剧情页面 */
+.meet-scene-page {
+    flex: 1; display: none; flex-direction: column; overflow: hidden;
+}
+.meet-scene-page.active { display: flex; }
+.meet-scene-header {
+    display: flex; align-items: center; padding: 50px 15px 12px; flex-shrink: 0;
+    gap: 10px; background: rgba(255,255,255,0.5); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,182,193,0.15);
+}
+.meet-scene-back {
+    font-size: 28px; color: #ffb6c1; background: none; border: none; cursor: pointer; font-weight: 300;
+    flex-shrink: 0;
+}
+.meet-scene-place {
+    flex: 1; font-size: 16px; font-weight: 600; color: #5a3e3e;
+    text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.meet-pov-group {
+    display: flex; gap: 4px; flex-shrink: 0;
+}
+.meet-pov-btn {
+    padding: 4px 10px; border: 1px solid rgba(255,182,193,0.4); border-radius: 12px;
+    background: rgba(255,255,255,0.6); color: #b08a8a; font-size: 12px; cursor: pointer;
+    transition: all 0.2s;
+}
+.meet-pov-btn.active {
+    background: linear-gradient(135deg, #ffb6c1, #ffc8d6); color: #fff; border-color: #ffb6c1;
+}
+.meet-scene-settings {
+    background: none; border: none; cursor: pointer; opacity: 0.5; flex-shrink: 0;
+    transition: opacity 0.2s; padding: 0;
+}
+.meet-scene-settings:hover { opacity: 0.8; }
+
+/* 小说阅读区 */
+.meet-novel-area {
+    flex: 1; overflow-y: auto; padding: 15px 12px 10px;
+    -webkit-overflow-scrolling: touch;
+}
+.meet-novel-p {
+    margin-bottom: 12px; line-height: 1.8; font-size: 15px; color: #5a3e3e;
+    word-break: break-word; max-width: 88%; margin-left: auto; margin-right: auto;
+}
+.meet-novel-p.user-action {
+    padding: 10px 16px; border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255,182,193,0.18), rgba(255,192,203,0.12));
+    border: 1px solid rgba(255,182,193,0.25);
+    color: #9a5a6a; font-style: italic;
+    text-align: right; margin-left: auto; margin-right: 0;
+}
+.meet-novel-p.ai-reply {
+    padding: 12px 18px; border-radius: 16px;
+    background: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 2px 10px rgba(255,182,193,0.1);
+    backdrop-filter: blur(6px);
+    text-align: left; margin-left: 0; margin-right: auto;
+}
+.meet-novel-p.meet-typing {
+    color: #ffb6c1; font-style: italic; font-size: 13px;
+    background: none; border: none; box-shadow: none; backdrop-filter: none;
+    padding: 4px 0;
+}
+
+/* 底部输入区 */
+.meet-input-area {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 15px 25px; background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(12px); border-top: 1px solid rgba(255,182,193,0.15);
+    flex-shrink: 0;
+}
+.meet-input {
+    flex: 1; border: 1px solid rgba(255,182,193,0.4); border-radius: 20px;
+    padding: 10px 16px; font-size: 14px; outline: none; background: rgba(255,255,255,0.8);
+    color: #5a3e3e;
+}
+.meet-input::placeholder { color: #d4b0b0; }
+.meet-input:focus { border-color: #ffb6c1; }
+.meet-trigger-btn {
+    width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
+    background: linear-gradient(135deg, #ffb6c1, #ffc8d6); color: #fff; font-size: 18px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(255,182,193,0.4); transition: transform 0.2s;
+}
+.meet-trigger-btn:active { transform: scale(0.9); }
+
+/* 地点输入弹窗 */
+.meet-place-modal {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.4); z-index: 1001;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.meet-place-modal.active { display: flex; }
+.meet-place-modal-content {
+    background: #fff; border-radius: 20px; padding: 24px;
+    width: 320px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.meet-place-title {
+    font-size: 17px; color: #5a3e3e; font-weight: bold; margin-bottom: 16px; text-align: center;
+}
+.meet-place-input {
+    width: 100%; padding: 10px 14px; border: 1px solid rgba(255,182,193,0.4);
+    border-radius: 12px; font-size: 14px; outline: none; box-sizing: border-box;
+    color: #5a3e3e; margin-bottom: 16px;
+}
+.meet-place-input::placeholder { color: #d4b0b0; }
+.meet-place-input:focus { border-color: #ffb6c1; }
+.meet-place-pov-label {
+    font-size: 13px; color: #b08a8a; margin-bottom: 8px;
+}
+.meet-place-pov-group {
+    display: flex; gap: 8px; margin-bottom: 18px;
+}
+.meet-place-pov-group .meet-pov-btn {
+    flex: 1; text-align: center; padding: 8px 6px; font-size: 12px;
+}
+.meet-place-confirm {
+    width: 100%; padding: 12px; border: none; border-radius: 16px;
+    background: linear-gradient(135deg, #ffb6c1, #ffc8d6); color: #fff;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(255,182,193,0.4); transition: transform 0.2s;
+}
+.meet-place-confirm:active { transform: scale(0.97); }
+
+/* 见一面设置弹窗 */
+.meet-settings-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.4); z-index: 1002;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.meet-settings-overlay.active { display: flex; }
+.meet-settings-modal {
+    background: #fff; border-radius: 20px; padding: 20px;
+    width: 320px; max-width: 90vw; max-height: 80vh;
+    overflow-y: auto; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.meet-settings-title {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; font-size: 17px; color: #5a3e3e; font-weight: bold;
+}
+.meet-settings-close {
+    width: 28px; height: 28px; border: none; background: rgba(255,182,193,0.15);
+    border-radius: 50%; font-size: 16px; cursor: pointer; color: #5a3e3e;
+    display: flex; align-items: center; justify-content: center;
+}
+.meet-settings-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid #fff0f3;
+}
+.meet-settings-row:last-child { border-bottom: none; }
+.meet-settings-label { font-size: 14px; color: #5a3e3e; }
+.meet-settings-input {
+    padding: 6px 10px; border: 1px solid rgba(255,182,193,0.4); border-radius: 8px;
+    font-size: 13px; width: 140px; text-align: center; outline: none; color: #5a3e3e;
+}
+.meet-settings-input:focus { border-color: #ffb6c1; }
+
+/* 手机框模式适配 */
+body.phone-frame-active #meet-app-page {
+    width: var(--phone-w, 375px); height: var(--phone-h, 812px);
+    top: var(--phone-top, 0); left: var(--phone-left, 0);
+}
+body.phone-frame-active .meet-select-header,
+body.phone-frame-active .meet-scene-header { padding-top: 35px; }
+body.phone-frame-active .meet-settings-modal { width: 260px; padding: 15px; }
+body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px; }
+
 </style>
 
 <script>
@@ -12695,6 +12951,7 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
         <div class="home-page-slide">
             <div class="second-page-grid">
                 <div class="app-item" onclick="openPetApp()"><div class="app-icon" id="icon-app-pet">🐾</div><span class="app-name" data-app-name="圈圈窝">圈圈窝</span></div>
+                <div class="app-item" onclick="openMeetApp()"><div class="app-icon" id="icon-app-meet">🤝</div><span class="app-name" data-app-name="见一面">见一面</span></div>
             </div>
         </div>
 
@@ -14818,6 +15075,75 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
         <div class="pet-settings-actions">
             <button class="pet-settings-btn-action pet-settings-close" onclick="closePetSettings()">关闭</button>
             <button class="pet-settings-btn-action pet-settings-save" onclick="savePetSettings()">保存设置</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================= 见一面 App 页面 ========================= -->
+<div id="meet-app-page">
+  <!-- 角色选择页 -->
+  <div class="meet-select-page" id="meet-select-page">
+    <div class="meet-select-header">
+      <button class="meet-back-btn" onclick="closeMeetApp()">‹</button>
+      <div class="meet-select-title">🤝 邀请谁见面？</div>
+    </div>
+    <div class="meet-select-body" id="meet-select-body">
+      <!-- 动态生成角色卡片 -->
+    </div>
+  </div>
+
+  <!-- 剧情页面 -->
+  <div class="meet-scene-page" id="meet-scene-page" style="display:none;">
+    <div class="meet-scene-header">
+      <button class="meet-scene-back" onclick="meetBackToSelect()">‹</button>
+      <div class="meet-scene-place" id="meet-scene-place">咖啡馆</div>
+      <button class="meet-scene-settings" onclick="openMeetSettings()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b08a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <div class="meet-novel-area" id="meet-novel-area">
+      <!-- 小说段落动态追加 -->
+    </div>
+    <div class="meet-input-area">
+      <input type="text" class="meet-input" id="meet-input" placeholder="输入动作或对话推动剧情..." onkeydown="if(event.key==='Enter')meetSendAction()">
+      <button class="meet-trigger-btn" onclick="meetTriggerAI()">✨</button>
+    </div>
+  </div>
+</div>
+
+<!-- 地点输入弹窗 -->
+<div class="meet-place-modal" id="meet-place-modal">
+  <div class="meet-place-modal-content">
+    <div class="meet-place-title">📍 见面地点</div>
+    <input class="meet-place-input" id="meet-place-input" placeholder="如：咖啡馆、公园长椅…">
+    <div class="meet-place-pov-label">叙述视角</div>
+    <div class="meet-place-pov-group">
+      <button class="meet-pov-btn active" data-pov="1" onclick="meetModalSelectPov('1')">第一人称(我)</button>
+      <button class="meet-pov-btn" data-pov="2" onclick="meetModalSelectPov('2')">第二人称(你)</button>
+      <button class="meet-pov-btn" data-pov="3" onclick="meetModalSelectPov('3')">第三人称(TA)</button>
+    </div>
+    <button class="meet-place-confirm" onclick="confirmMeetPlace()">开始见面</button>
+  </div>
+</div>
+
+<!-- 见一面设置弹窗 -->
+<div class="meet-settings-overlay" id="meet-settings-overlay" onclick="if(event.target===this)closeMeetSettings()">
+    <div class="meet-settings-modal">
+        <div class="meet-settings-title">
+            <span>🤝 见一面设置</span>
+            <button class="meet-settings-close" onclick="closeMeetSettings()">✕</button>
+        </div>
+        <div class="meet-settings-row">
+            <span class="meet-settings-label">默认见面地点</span>
+            <input class="meet-settings-input" id="meet-default-place" placeholder="如：咖啡馆">
+        </div>
+        <div class="meet-settings-row">
+            <span class="meet-settings-label">默认见面时长(分钟)</span>
+            <input class="meet-settings-input" id="meet-default-duration" type="number" placeholder="60">
+        </div>
+        <div class="meet-settings-row">
+            <span class="meet-settings-label">提醒提前量(分钟)</span>
+            <input class="meet-settings-input" id="meet-remind-before" type="number" placeholder="30">
         </div>
     </div>
 </div>
@@ -21794,7 +22120,11 @@ ${roleDetails}\n`;
             } else if (msg.isPasswordReject) {
                 contentHtml = createPasswordRejectCard(msg);
             } else if (msg.isEmotionImage) {
-                contentHtml = `<div class="msg-bubble-content" style="padding: 0; background: transparent; box-shadow: none;"><img src="${msg.emotionUrl}" style="width: 130px; height: 130px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onclick="showEmojiImageDesc('🖼️', '${escapeHtml(msg.text)}')"></div>`;
+                if (msg.isUserImage) {
+                    contentHtml = `<img src="${msg.emotionUrl}" style="max-width: 180px; max-height: 260px; border-radius: 6px; object-fit: contain; cursor: pointer; display: block;" onclick="showEmojiImageDesc('📷', '${escapeHtml(msg.text)}')">`;
+                } else {
+                    contentHtml = `<div class="msg-bubble-content" style="padding: 0; background: transparent; box-shadow: none;"><img src="${msg.emotionUrl}" style="width: 130px; height: 130px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onclick="showEmojiImageDesc('🖼️', '${escapeHtml(msg.text)}')"></div>`;
+                }
             } else if (msg.isVoice) {
                 contentHtml = createVoiceCard(msg);
             } else {
@@ -27804,7 +28134,11 @@ ${actionInstruction}
                         chatContext += `${rpSender}: [红包] ¥${parseFloat(rpData.amount).toFixed(2)}（${rpData.greeting || ''}）${grabbedInfo ? '，已领：' + grabbedInfo : ''}\n`;
                     } else if (m.isEmotionImage) {
                         const emotionSender = m.type === 'sent' ? uName : (m.senderName || '未知');
-                        chatContext += `[系统提示：${emotionSender} 发送了一张【表情包】。画面内容/配字描述："${m.text}"。(这是网络聊天中的表情包，不是真实物理场景)]\n`;
+                        if (m.isUserImage) {
+                            chatContext += `[系统提示：${emotionSender} 发送了一张【图片】。图片描述："${m.text}"。请根据这张图片的内容和描述来理解和回应]\n`;
+                        } else {
+                            chatContext += `[系统提示：${emotionSender} 发送了一张【表情包】。画面内容/配字描述："${m.text}"。(这是网络聊天中的表情包，不是真实物理场景)]\n`;
+                        }
                     } else if (m.type === 'sent') {
                         chatContext += `${uName}: ${m.text || '[非文本消息]'}\n`;
                     } else {
@@ -29955,6 +30289,18 @@ ${msgContext ? msgContext : '无'}
             };
         }
 
+        // 在默认图标右边添加"发图片"标签
+        const imgTab = document.createElement('div');
+        imgTab.className = 'emotion-send-img-tab' + (currentChatEmotionAlbumIndex === -1 ? ' active' : '');
+        imgTab.innerHTML = '🖼';
+        imgTab.title = '发图片';
+        imgTab.onclick = () => {
+            currentChatEmotionAlbumIndex = -1; // -1表示发图片模式
+            renderEmotionPanelCategories();
+            renderImageSendPanel();
+        };
+        container.appendChild(imgTab);
+
         // 渲染图库里后续建立的所有相册图标（从索引 1 开始）
         if (window.galleryData && Array.isArray(window.galleryData)) {
             window.galleryData.slice(1).forEach((album, sliceIndex) => {
@@ -29977,6 +30323,73 @@ ${msgContext ? msgContext : '无'}
             });
         }
     }
+
+    // 发图片面板
+    let pendingChatImageData = null; // {dataUrl, desc}
+
+    function renderImageSendPanel() {
+        const contentArea = document.querySelector('.emotion-panel-content');
+        if (!contentArea) return;
+        contentArea.innerHTML = '';
+        contentArea.style.display = 'flex';
+
+        const panel = document.createElement('div');
+        panel.className = 'emotion-img-send-panel';
+        panel.innerHTML = `
+            <div class="img-preview-area" onclick="document.getElementById('chat-img-file-input').click()">
+                <span class="img-preview-placeholder">+</span>
+            </div>
+            <input type="file" id="chat-img-file-input" accept="image/*" style="display:none" onchange="onChatImageFileSelected(this)">
+            <input type="text" class="img-desc-input" id="chat-img-desc-input" placeholder="输入图片描述" maxlength="200">
+            <button class="img-send-btn" id="chat-img-send-btn" disabled onclick="sendChatImage()">发送图片</button>
+        `;
+        contentArea.appendChild(panel);
+        pendingChatImageData = null;
+    }
+
+    window.onChatImageFileSelected = (input) => {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const dataUrl = e.target.result;
+            pendingChatImageData = { dataUrl: dataUrl, desc: '' };
+            // 显示预览
+            const previewArea = document.querySelector('.emotion-img-send-panel .img-preview-area');
+            if (previewArea) {
+                previewArea.innerHTML = `<img src="${dataUrl}">`;
+            }
+            // 启用发送按钮
+            const btn = document.getElementById('chat-img-send-btn');
+            if (btn) btn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    window.sendChatImage = () => {
+        if (!pendingChatImageData || !currentChatContactId) return;
+        const descInput = document.getElementById('chat-img-desc-input');
+        const desc = descInput ? descInput.value.trim() : '';
+        
+        const key = getMessagesKey(currentChatContactId);
+        let messages = JSON.parse(localStorage.getItem(key) || '[]');
+        
+        messages.push({
+            id: Date.now(),
+            type: 'sent',
+            isEmotionImage: true,
+            isUserImage: true, // 标记为用户发送的图片（非表情包）
+            emotionUrl: pendingChatImageData.dataUrl,
+            text: desc || '一张图片',
+            timestamp: Date.now()
+        });
+        
+        localStorage.setItem(key, JSON.stringify(messages));
+        updateContactLastMsg(currentChatContactId);
+        renderConversationMessages();
+        closeChatEmotionPanel();
+        pendingChatImageData = null;
+    };
 
     function renderEmotionPanelItems(albumIndex) {
         const contentArea = document.querySelector('.emotion-panel-content');
@@ -30297,8 +30710,11 @@ ${msgContext ? msgContext : '无'}
                 // 新增：如果是密码拒绝卡片，渲染密码拒绝卡片
                 contentHtml = createPasswordRejectCard(msg);
                      } else if (msg.isEmotionImage) {
-                // 新增：如果是表情包/图片（强制正方形展示）
-                contentHtml = `<div class="msg-bubble-content" style="padding: 0; background: transparent; box-shadow: none;"><img src="${msg.emotionUrl}" style="width: 130px; height: 130px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onclick="showEmojiImageDesc('🖼️', '${escapeHtml(msg.text)}')"></div>`;
+                if (msg.isUserImage) {
+                    contentHtml = `<img src="${msg.emotionUrl}" style="max-width: 180px; max-height: 260px; border-radius: 6px; object-fit: contain; cursor: pointer; display: block;" onclick="showEmojiImageDesc('📷', '${escapeHtml(msg.text)}')">`;
+                } else {
+                    contentHtml = `<div class="msg-bubble-content" style="padding: 0; background: transparent; box-shadow: none;"><img src="${msg.emotionUrl}" style="width: 130px; height: 130px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 8px rgba(0,0,0,0.05);" onclick="showEmojiImageDesc('🖼️', '${escapeHtml(msg.text)}')"></div>`;
+                }
             } else if (msg.isVoice) {
                 // 只有打上语音标记的消息才渲染为语音条
                 contentHtml = createVoiceCard(msg);
@@ -34834,7 +35250,10 @@ window.openTransferConfirmPopup = (amount) => {
         }
         let historyStr = recentMsgs.map(m => {
             let sender = m.type === 'sent' ? uName : charName;
-            if (m.isEmotionImage) return `[${sender} 发送了一张表情包: ${m.text}]`;
+            if (m.isEmotionImage) {
+                if (m.isUserImage) return `[${sender} 发送了一张图片: ${m.text}]`;
+                return `[${sender} 发送了一张表情包: ${m.text}]`;
+            }
             if (m.isTransfer) return m.type === 'sent' ? `[${sender}向${charName}转账了 ¥${m.transferData.amount}]` : `[${charName}向${uName}转账了 ¥${m.transferData.amount}]`;
             if (m.isRedPacket) return m.type === 'sent' ? `[${sender}给${charName}发了一个红包]` : `[${charName}给${uName}发了一个红包]`;
             if (m.isGift) return m.type === 'sent' ? `[${sender}送给${charName}礼物]` : `[${charName}送给${uName}礼物]`;
@@ -36075,6 +36494,9 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
             
                       // --- 新增：让 AI 看到表情包图片描述 ---
             if (m.isEmotionImage) {
+                if (m.isUserImage) {
+                    return `[系统提示：${sender} 发送了一张【图片】。图片描述：“${m.text}”。请根据这张图片的内容和描述来理解和回应]`;
+                }
                 return `[系统提示：${sender} 发送了一张【表情包】。这张表情包的画面内容/配字描述是：“${m.text}”。(注意：这是表情包，不是真实的物理场景，而是对方在网络聊天中斗图或表达某种情绪)]`;
             }
 
@@ -41166,6 +41588,344 @@ window.executeDisableLock = () => {
         document.body.classList.remove('pet-active');
         stopPetStatsDecay();
         updateFloatingPetVisibility();
+    };
+
+    // ========================= 见一面 App 逻辑 =========================
+    const MEET_SETTINGS_KEY = 'meetApp_settings_v1';
+    let meetCurrentContact = null;  // 当前角色对象
+    let meetPlace = '';             // 地点
+    let meetPov = '1';             // 人称：1=第一人称，2=第二人称，3=第三人称
+    let meetNovelLines = [];       // 剧情段落数组 [{text, type:'user'|'ai'}]
+    let meetModalPov = '1';        // 弹窗中临时选择的人称
+
+    function getMeetSettings() {
+        try { return JSON.parse(localStorage.getItem(MEET_SETTINGS_KEY) || '{}'); } catch(e) { return {}; }
+    }
+    function saveMeetSettings(s) {
+        localStorage.setItem(MEET_SETTINGS_KEY, JSON.stringify(s));
+    }
+
+    window.openMeetApp = () => {
+        const page = document.getElementById('meet-app-page');
+        page.classList.add('active');
+        // 显示角色选择页，隐藏剧情页
+        document.getElementById('meet-select-page').style.display = '';
+        document.getElementById('meet-scene-page').style.display = 'none';
+        renderMeetContactList();
+    };
+
+    window.closeMeetApp = () => {
+        document.getElementById('meet-app-page').classList.remove('active');
+        // 重置状态
+        meetCurrentContact = null;
+        meetPlace = '';
+        meetPov = '1';
+        meetNovelLines = [];
+    };
+
+    function renderMeetContactList() {
+        const body = document.getElementById('meet-select-body');
+        let contacts = [];
+        try { contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); } catch(e) {}
+
+        if (contacts.length === 0) {
+            body.innerHTML = '<div class="meet-select-empty"><div class="meet-empty-icon">🤝</div>还没有角色<br>先去聊天添加一个吧</div>';
+            return;
+        }
+
+        body.innerHTML = contacts.map(c => {
+            const name = c.alias || c.name || '未知';
+            const avatar = c.avatar || '';
+            const desc = c.desc || c.greeting || '';
+            return `<div class="meet-card" onclick="selectMeetContact('${c.id || ''}')">
+                <img class="meet-card-avatar" src="${avatar}" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2228%22 x=%228%22 font-size=%2224%22>👤</text></svg>'">
+                <div class="meet-card-info">
+                    <div class="meet-card-name">${name}</div>
+                    <div class="meet-card-desc">${desc}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    window.selectMeetContact = (contactId) => {
+        let contacts = [];
+        try { contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); } catch(e) {}
+        const contact = contacts.find(c => String(c.id) === String(contactId));
+        if (!contact) return;
+        meetCurrentContact = contact;
+        // 弹出地点输入弹窗
+        const settings = getMeetSettings();
+        document.getElementById('meet-place-input').value = settings.defaultPlace || '';
+        meetModalPov = '1';
+        // 重置弹窗人称按钮
+        const povBtns = document.querySelectorAll('#meet-place-modal .meet-pov-btn');
+        povBtns.forEach(b => b.classList.toggle('active', b.dataset.pov === '1'));
+        document.getElementById('meet-place-modal').classList.add('active');
+        setTimeout(() => document.getElementById('meet-place-input').focus(), 100);
+    };
+
+    window.meetModalSelectPov = (pov) => {
+        meetModalPov = pov;
+        const povBtns = document.querySelectorAll('#meet-place-modal .meet-pov-btn');
+        povBtns.forEach(b => b.classList.toggle('active', b.dataset.pov === pov));
+    };
+
+    window.confirmMeetPlace = () => {
+        const placeInput = document.getElementById('meet-place-input').value.trim();
+        if (!placeInput) { showToast('请输入见面地点~'); return; }
+        meetPlace = placeInput;
+        meetPov = meetModalPov;
+        // 隐藏弹窗和选择页，显示剧情页
+        document.getElementById('meet-place-modal').classList.remove('active');
+        document.getElementById('meet-select-page').style.display = 'none';
+        document.getElementById('meet-scene-page').style.display = 'flex';
+        // 设置地点名
+        document.getElementById('meet-scene-place').textContent = meetPlace;
+        // 设置人称按钮
+        updateMeetPovBtns();
+        // 清空小说区域
+        meetNovelLines = [];
+        document.getElementById('meet-novel-area').innerHTML = '';
+        // 写入开场段落
+        const name = meetCurrentContact.alias || meetCurrentContact.name || 'TA';
+        let opening = '';
+        if (meetPov === '1') {
+            opening = `*我走进了${meetPlace}*，${name}已经在角落的位置坐下了。`;
+        } else if (meetPov === '2') {
+            opening = `*你走进了${meetPlace}*，${name}已经在角落的位置坐下了。`;
+        } else {
+            opening = `*${name}坐在${meetPlace}的角落*，目光投向门口的方向。`;
+        }
+        meetAppendNovel(opening, 'ai');
+    };
+
+    function updateMeetPovBtns() {
+        const btns = document.querySelectorAll('#meet-scene-page .meet-pov-btn');
+        btns.forEach(b => b.classList.toggle('active', b.dataset.pov === meetPov));
+    }
+
+    window.switchMeetPov = (pov) => {
+        meetPov = pov;
+        updateMeetPovBtns();
+    };
+
+    window.meetBackToSelect = () => {
+        document.getElementById('meet-scene-page').style.display = 'none';
+        document.getElementById('meet-select-page').style.display = '';
+        meetNovelLines = [];
+        meetCurrentContact = null;
+    };
+
+    window.meetSendAction = () => {
+        const input = document.getElementById('meet-input');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        meetAppendNovel(text, 'user');
+    };
+
+    window.meetTriggerAI = async () => {
+        // 先把输入框内容作为用户动作发送
+        const input = document.getElementById('meet-input');
+        const text = input.value.trim();
+        if (text) {
+            input.value = '';
+            meetAppendNovel(text, 'user');
+        }
+
+        // 读取API设置
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        if (!settings.api || !settings.api.url || !settings.api.key) {
+            showToast('请先在系统设置中配置API');
+            return;
+        }
+
+        // 添加"正在书写…"提示
+        const typingId = 'meet-typing-' + Date.now();
+        const novelArea = document.getElementById('meet-novel-area');
+        const typingEl = document.createElement('div');
+        typingEl.className = 'meet-novel-p meet-typing';
+        typingEl.id = typingId;
+        typingEl.textContent = '正在书写…';
+        novelArea.appendChild(typingEl);
+        novelArea.scrollTop = novelArea.scrollHeight;
+
+        // 构建prompt
+        const contact = meetCurrentContact;
+        const name = contact.alias || contact.name || 'TA';
+        const persona = contact.persona || contact.desc || contact.greeting || '';
+        const globalProfile = getUserProfile();
+        const uName = globalProfile.nickname || '用户';
+        const uPersona = contact.userPersona || '一个普通用户';
+
+        // 世界书
+        let worldbookContext = '';
+        if (contact.worldbookIds && contact.worldbookIds.length > 0) {
+            try {
+                const allWb = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]');
+                const lastUserLine = [...meetNovelLines].reverse().find(l => l.type === 'user');
+                const userText = lastUserLine ? lastUserLine.text : '';
+                worldbookContext = buildWorldbookContext(allWb, contact.worldbookIds, userText);
+            } catch(e) {}
+        }
+
+        // 回忆总结
+        let recollectionContext = '';
+        try {
+            const recollectionData = getRecollections(String(contact.id));
+            const items = recollectionData.items || [];
+            if (items.length > 0) {
+                recollectionContext = items.map(item => item.text).join('\n');
+            }
+        } catch(e) {}
+
+        // 最近20条聊天消息
+        let chatHistoryContext = '';
+        try {
+            const msgKey = getMessagesKey(contact.id);
+            const msgs = JSON.parse(localStorage.getItem(msgKey) || '[]');
+            const recentMsgs = msgs.slice(-20);
+            chatHistoryContext = recentMsgs.map(m => {
+                if (m.isSystemMsg) return `[系统] ${m.text}`;
+                if (m.isEmotionImage) {
+                    const sender = m.type === 'sent' ? uName : name;
+                    if (m.isUserImage) return `[系统提示：${sender} 发送了一张图片，描述："${m.text}"]`;
+                    return `[系统提示：${sender} 发送了一张表情包，描述："${m.text}"]`;
+                }
+                if (m.type === 'sent') return `${uName}: ${m.text || '[非文本消息]'}`;
+                return `${name}: ${m.text || '[非文本消息]'}`;
+            }).join('\n');
+        } catch(e) {}
+
+        let povRule = '';
+        if (meetPov === '1') {
+            povRule = `用第一人称"我"来叙述你的动作和反应。例如：*我看着你*，心跳漏了一拍。`;
+        } else if (meetPov === '2') {
+            povRule = `用第二人称"你"来叙述。例如：*你低下头*，声音轻轻的。`;
+        } else {
+            povRule = `用第三人称叙述，用角色的名字"${name}"。例如：*${name}低下头*，耳尖泛红。`;
+        }
+
+        let systemPrompt = `你是一个沉浸式角色扮演AI，正在扮演"${name}"与用户"${uName}"在线下面对面见面。你输出的是小说式的叙事文本，不是聊天消息。
+
+【你的人设】
+${persona}
+
+【用户信息】
+用户名字：${uName}
+用户人设：${uPersona}
+
+【见面场景】
+你们现在正在"${meetPlace}"见面。这是一个线下的真实见面场景，请根据场景氛围来演绎。`;
+
+        if (worldbookContext) {
+            systemPrompt += `\n\n【世界书/背景设定】\n${worldbookContext}`;
+        }
+        if (recollectionContext) {
+            systemPrompt += `\n\n【回忆总结（你们之间曾发生过的事）】\n${recollectionContext}`;
+        }
+        if (chatHistoryContext) {
+            systemPrompt += `\n\n【你们最近的聊天记录（线上聊天，供你参考你们的关系和最近发生的事）】\n${chatHistoryContext}`;
+        }
+
+        systemPrompt += `\n\n【人称视角规则】${povRule}
+
+【输出格式要求——极其重要】
+你必须输出一段完整的小说式叙事，像写小说一样，包含以下元素：
+1. 用*星号*包裹动作和神态描写，如*低下头*、*嘴角微微上扬*、*手指无意识地绕着发梢*
+2. 对话用引号""包裹
+3. 内心独白用（）包裹，如（心跳好快…）
+4. 适当加入环境描写，如*窗外的光影在TA脸上流转*
+5. 每次输出3-6句话的连贯段落，像一个小说片段
+6. 不要输出JSON，不要加任何前缀标记，直接输出纯文学文本
+7. 文字要细腻、有画面感、有情绪张力，符合角色性格`;
+
+        // 构建上下文：最近10条见面互动
+        const recentLines = meetNovelLines.slice(-10);
+        const contextText = recentLines.map(l => l.type === 'user' ? `[${uName}] ${l.text}` : `[${name}] ${l.text}`).join('\n');
+
+        const userPrompt = contextText || '（见面刚开始）';
+
+        try {
+            const isGemini = settings.api.url.includes('generativelanguage');
+            let fetchUrl, bodyData, headers = { 'Content-Type': 'application/json' };
+
+            if (isGemini) {
+                fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model || 'gemini-2.0-flash'}:generateContent?key=${settings.api.key}`;
+                bodyData = JSON.stringify({
+                    contents: [
+                        { role: 'user', parts: [{ text: systemPrompt + '\n\n---\n' + userPrompt }] }
+                    ],
+                    generationConfig: { temperature: 0.9, maxOutputTokens: 1500 }
+                });
+            } else {
+                fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
+                headers['Authorization'] = `Bearer ${settings.api.key}`;
+                bodyData = JSON.stringify({
+                    model: settings.api.model || 'gpt-3.5-turbo',
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userPrompt }
+                    ],
+                    temperature: 0.9,
+                    max_tokens: 1500
+                });
+            }
+
+            const resp = await fetch(fetchUrl, { method: 'POST', headers, body: bodyData });
+            const data = await resp.json();
+
+            let reply = '';
+            if (isGemini) {
+                reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            } else {
+                reply = data?.choices?.[0]?.message?.content || data?.response || '';
+            }
+
+            // 移除"正在书写…"
+            const typingEl2 = document.getElementById(typingId);
+            if (typingEl2) typingEl2.remove();
+
+            if (reply) {
+                // 将回复按段落拆分
+                const paragraphs = reply.split(/\n\n+/).filter(p => p.trim());
+                paragraphs.forEach(p => meetAppendNovel(p.trim(), 'ai'));
+            } else {
+                meetAppendNovel('（沉默了一会儿…）', 'ai');
+            }
+        } catch(e) {
+            const typingEl2 = document.getElementById(typingId);
+            if (typingEl2) typingEl2.remove();
+            meetAppendNovel('（似乎走神了，没有回应…）', 'ai');
+            console.error('Meet AI error:', e);
+        }
+    };
+
+    function meetAppendNovel(text, type) {
+        const novelArea = document.getElementById('meet-novel-area');
+        const p = document.createElement('div');
+        p.className = 'meet-novel-p ' + (type === 'user' ? 'user-action' : 'ai-reply');
+        p.textContent = text;
+        novelArea.appendChild(p);
+        novelArea.scrollTop = novelArea.scrollHeight;
+        // 记录到数组
+        meetNovelLines.push({ text, type });
+    }
+
+    window.openMeetSettings = () => {
+        const settings = getMeetSettings();
+        document.getElementById('meet-default-place').value = settings.defaultPlace || '';
+        document.getElementById('meet-default-duration').value = settings.defaultDuration || '';
+        document.getElementById('meet-remind-before').value = settings.remindBefore || '';
+        document.getElementById('meet-settings-overlay').classList.add('active');
+    };
+    window.closeMeetSettings = () => {
+        const settings = getMeetSettings();
+        settings.defaultPlace = document.getElementById('meet-default-place').value.trim();
+        settings.defaultDuration = parseInt(document.getElementById('meet-default-duration').value) || 60;
+        settings.remindBefore = parseInt(document.getElementById('meet-remind-before').value) || 30;
+        saveMeetSettings(settings);
+        document.getElementById('meet-settings-overlay').classList.remove('active');
     };
 
     function renderPetDisplay() {
