@@ -12888,34 +12888,35 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
 /* 总结弹窗 */
 .meet-summary-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.4); z-index: 1003;
-    display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
+    background: #fff; z-index: 1003;
+    display: none; flex-direction: column;
 }
 .meet-summary-overlay.active { display: flex; }
 .meet-summary-modal {
-    background: #fff; border-radius: 20px; padding: 20px;
-    width: 360px; max-width: 90vw; max-height: 80vh;
-    overflow-y: auto; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    background: #fff; padding: 20px;
+    width: 100%; height: 100%;
+    overflow-y: auto; padding-top: 90px;
 }
 .meet-summary-header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 16px; position: relative;
+}
+.meet-summary-back {
+    width: 32px; height: 32px; border: none; background: rgba(255,182,193,0.15);
+    border-radius: 50%; font-size: 20px; cursor: pointer; color: #5a3e3e;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    margin-left: 14px;
 }
 .meet-summary-title { font-size: 17px; color: #5a3e3e; font-weight: bold; }
-.meet-summary-close {
-    width: 28px; height: 28px; border: none; background: rgba(255,182,193,0.15);
-    border-radius: 50%; font-size: 16px; cursor: pointer; color: #5a3e3e;
-    display: flex; align-items: center; justify-content: center;
-}
 .meet-summary-stats {
     display: flex; gap: 12px; margin-bottom: 12px; font-size: 12px; color: #b08a8a;
+    padding-left: 20px;
 }
 .meet-summary-stats span { background: rgba(255,182,193,0.12); padding: 3px 10px; border-radius: 10px; }
-.meet-summary-action { display: flex; gap: 8px; margin-bottom: 14px; }
 .meet-summary-btn {
-    flex: 1; padding: 8px 0; border: none; border-radius: 12px; cursor: pointer;
-    font-size: 13px; color: #fff; font-weight: 500;
+    padding: 6px 14px; border: none; border-radius: 12px; cursor: pointer;
+    font-size: 13px; color: #fff; font-weight: 500; flex-shrink: 0;
+    margin-right: 16px;
 }
 .meet-summary-btn-primary { background: linear-gradient(135deg, #ffb6c1, #ffc0cb); }
 .meet-summary-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -12933,6 +12934,34 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
 .meet-summary-item-btn:hover { background: rgba(255,182,193,0.25); }
 .meet-summary-item-btn.del:hover { color: #e88; }
 .meet-summary-empty { font-size: 12px; color: #b08a8a; text-align: center; padding: 12px 0; }
+
+/* 演绎段落编辑弹窗 */
+.meet-edit-line-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 1011; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.meet-edit-line-overlay.active { display: flex; }
+.meet-edit-line-modal { background: #fff; border-radius: 20px; padding: 20px; width: 360px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+.meet-edit-line-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.meet-edit-line-title { font-size: 16px; color: #5a3e3e; font-weight: bold; }
+.meet-edit-line-close { width: 28px; height: 28px; border: none; background: rgba(255,182,193,0.15); border-radius: 50%; font-size: 16px; cursor: pointer; color: #5a3e3e; display: flex; align-items: center; justify-content: center; }
+.meet-edit-line-textarea { width: 100%; min-height: 120px; border: 1px solid rgba(255,182,193,0.3); border-radius: 12px; padding: 10px; font-size: 14px; color: #5a3e3e; outline: none; resize: vertical; box-sizing: border-box; line-height: 1.6; }
+.meet-edit-line-textarea:focus { border-color: #ffb6c1; }
+.meet-edit-line-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
+.meet-edit-line-btn { padding: 8px 20px; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; }
+.meet-edit-line-btn.cancel { background: #f0f0f0; color: #999; }
+.meet-edit-line-btn.confirm { background: linear-gradient(135deg, #ffb6c1, #ffc0cb); color: #fff; }
+
+/* 总结项编辑弹窗 */
+.meet-edit-summary-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 1011; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.meet-edit-summary-overlay.active { display: flex; }
+.meet-edit-summary-modal { background: #fff; border-radius: 20px; padding: 20px; width: 360px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+.meet-edit-summary-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.meet-edit-summary-title { font-size: 16px; color: #5a3e3e; font-weight: bold; }
+.meet-edit-summary-close { width: 28px; height: 28px; border: none; background: rgba(255,182,193,0.15); border-radius: 50%; font-size: 16px; cursor: pointer; color: #5a3e3e; display: flex; align-items: center; justify-content: center; }
+.meet-edit-summary-textarea { width: 100%; min-height: 120px; border: 1px solid rgba(255,182,193,0.3); border-radius: 12px; padding: 10px; font-size: 14px; color: #5a3e3e; outline: none; resize: vertical; box-sizing: border-box; line-height: 1.6; }
+.meet-edit-summary-textarea:focus { border-color: #ffb6c1; }
+.meet-edit-summary-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
+.meet-edit-summary-btn { padding: 8px 20px; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; }
+.meet-edit-summary-btn.cancel { background: #f0f0f0; color: #999; }
+.meet-edit-summary-btn.confirm { background: linear-gradient(135deg, #ffb6c1, #ffc0cb); color: #fff; }
 
 /* 气泡操作菜单 */
 .meet-line-action-menu {
@@ -15596,17 +15625,45 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 </div>
 
 <!-- 总结弹窗 -->
-<div class="meet-summary-overlay" id="meet-summary-overlay" onclick="if(event.target===this)closeMeetSummary()">
+<div class="meet-summary-overlay" id="meet-summary-overlay">
     <div class="meet-summary-modal">
         <div class="meet-summary-header">
-            <span class="meet-summary-title">📋 对话总结</span>
-            <button class="meet-summary-close" onclick="closeMeetSummary()">✕</button>
+            <button class="meet-summary-back" onclick="closeMeetSummary()">‹</button>
+            <span class="meet-summary-title">对话总结</span>
+            <button class="meet-summary-btn meet-summary-btn-primary" id="meet-summary-gen-btn" onclick="generateMeetSummary()">总结</button>
         </div>
         <div class="meet-summary-stats" id="meet-summary-stats"></div>
-        <div class="meet-summary-action">
-            <button class="meet-summary-btn meet-summary-btn-primary" id="meet-summary-gen-btn" onclick="generateMeetSummary()">总结对话</button>
-        </div>
         <div class="meet-summary-list" id="meet-summary-list"></div>
+    </div>
+</div>
+
+<!-- 演绎段落编辑弹窗 -->
+<div class="meet-edit-line-overlay" id="meet-edit-line-overlay" onclick="if(event.target===this)closeMeetEditLine()">
+    <div class="meet-edit-line-modal">
+        <div class="meet-edit-line-header">
+            <span class="meet-edit-line-title">编辑内容</span>
+            <button class="meet-edit-line-close" onclick="closeMeetEditLine()">✕</button>
+        </div>
+        <textarea class="meet-edit-line-textarea" id="meet-edit-line-textarea"></textarea>
+        <div class="meet-edit-line-actions">
+            <button class="meet-edit-line-btn cancel" onclick="closeMeetEditLine()">取消</button>
+            <button class="meet-edit-line-btn confirm" onclick="confirmMeetEditLine()">确定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 总结项编辑弹窗 -->
+<div class="meet-edit-summary-overlay" id="meet-edit-summary-overlay" onclick="if(event.target===this)closeMeetEditSummary()">
+    <div class="meet-edit-summary-modal">
+        <div class="meet-edit-summary-header">
+            <span class="meet-edit-summary-title">编辑总结</span>
+            <button class="meet-edit-summary-close" onclick="closeMeetEditSummary()">✕</button>
+        </div>
+        <textarea class="meet-edit-summary-textarea" id="meet-edit-summary-textarea"></textarea>
+        <div class="meet-edit-summary-actions">
+            <button class="meet-edit-summary-btn cancel" onclick="closeMeetEditSummary()">取消</button>
+            <button class="meet-edit-summary-btn confirm" onclick="confirmMeetEditSummary()">确定</button>
+        </div>
     </div>
 </div>
 
@@ -43441,6 +43498,15 @@ window.executeDisableLock = () => {
             }
         } catch(e) {}
 
+        // 演绎对话总结
+        let meetSummaryContext = '';
+        try {
+            const summaries = getMeetSummaries(meetCurrentSaveId);
+            if (summaries.length > 0) {
+                meetSummaryContext = summaries.map(s => s.text).join('\n');
+            }
+        } catch(e) {}
+
         // 最近20条聊天消息
         let chatHistoryContext = '';
         try {
@@ -43508,6 +43574,9 @@ ${persona}
         }
         if (recollectionContext) {
             systemPrompt += `\n\n【回忆总结（你们之间曾发生过的事）】\n${recollectionContext}`;
+        }
+        if (meetSummaryContext) {
+            systemPrompt += `\n\n【演绎对话总结（你们线下见面的对话总结）】\n${meetSummaryContext}`;
         }
         if (chatHistoryContext) {
             systemPrompt += `\n\n【你们最近的聊天记录（线上聊天，供你参考你们的关系和最近发生的事）】\n${chatHistoryContext}`;
@@ -43655,6 +43724,13 @@ ${povRule}
             menu.appendChild(regenBtn);
         }
 
+        // 编辑按钮
+        const editBtn = document.createElement('button');
+        editBtn.className = 'meet-line-action-item';
+        editBtn.textContent = '编辑';
+        editBtn.onclick = () => { closeMeetLineAction(); meetEditLine(index); };
+        menu.appendChild(editBtn);
+
         // 删除按钮
         const delBtn = document.createElement('button');
         delBtn.className = 'meet-line-action-item danger';
@@ -43689,6 +43765,58 @@ ${povRule}
             document.addEventListener('touchstart', closeHandler);
         }, 50);
     }
+
+    // --- 演绎段落编辑 ---
+    let meetEditLineIndex = null;
+    window.meetEditLine = (index) => {
+        if (index < 0 || index >= meetNovelLines.length) return;
+        meetEditLineIndex = index;
+        document.getElementById('meet-edit-line-textarea').value = meetNovelLines[index].text;
+        document.getElementById('meet-edit-line-overlay').classList.add('active');
+        setTimeout(() => document.getElementById('meet-edit-line-textarea').focus(), 100);
+    };
+    window.closeMeetEditLine = () => {
+        document.getElementById('meet-edit-line-overlay').classList.remove('active');
+        meetEditLineIndex = null;
+    };
+    window.confirmMeetEditLine = () => {
+        if (meetEditLineIndex === null || meetEditLineIndex < 0 || meetEditLineIndex >= meetNovelLines.length) return;
+        const newText = document.getElementById('meet-edit-line-textarea').value.trim();
+        if (!newText) { showToast('内容不能为空'); return; }
+        meetNovelLines[meetEditLineIndex].text = newText;
+        refreshMeetNovelDisplay();
+        saveMeetStory();
+        closeMeetEditLine();
+        showToast('已修改');
+    };
+
+    // --- 总结项编辑 ---
+    let meetEditSummaryIndex = null;
+    window.editMeetSummary = (index) => {
+        if (!meetCurrentSaveId) return;
+        const summaries = getMeetSummaries(meetCurrentSaveId);
+        if (!summaries[index]) return;
+        meetEditSummaryIndex = index;
+        document.getElementById('meet-edit-summary-textarea').value = summaries[index].text;
+        document.getElementById('meet-edit-summary-overlay').classList.add('active');
+        setTimeout(() => document.getElementById('meet-edit-summary-textarea').focus(), 100);
+    };
+    window.closeMeetEditSummary = () => {
+        document.getElementById('meet-edit-summary-overlay').classList.remove('active');
+        meetEditSummaryIndex = null;
+    };
+    window.confirmMeetEditSummary = () => {
+        if (meetEditSummaryIndex === null || !meetCurrentSaveId) return;
+        const summaries = getMeetSummaries(meetCurrentSaveId);
+        if (!summaries[meetEditSummaryIndex]) return;
+        const newText = document.getElementById('meet-edit-summary-textarea').value.trim();
+        if (!newText) { showToast('内容不能为空'); return; }
+        summaries[meetEditSummaryIndex].text = newText;
+        saveMeetSummaries(meetCurrentSaveId, summaries);
+        renderMeetSummaryList();
+        closeMeetEditSummary();
+        showToast('总结已修改');
+    };
 
     window.meetDeleteLine = (index) => {
         if (index < 0 || index >= meetNovelLines.length) return;
@@ -43997,6 +44125,7 @@ ${povRule}
                 <div class="meet-summary-item-text">${s.text}</div>
                 <div class="meet-summary-item-actions">
                     <span style="font-size:10px;color:#cbb;">${date} · ${s.rounds}轮</span>
+                    <button class="meet-summary-item-btn" onclick="editMeetSummary(${i})">编辑</button>
                     <button class="meet-summary-item-btn" onclick="copyMeetSummary(${i})">复制</button>
                     <button class="meet-summary-item-btn del" onclick="deleteMeetSummary(${i})">删除</button>
                 </div>
