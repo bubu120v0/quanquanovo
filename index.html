@@ -31847,6 +31847,104 @@ ${msgContext ? msgContext : '无'}
         return `${dateStr} ${timeStr}`;
     }
 
+    // ---- 通话记录长按删除 ----
+    let callRecordLongPressTimer = null;
+
+    function addCallRecordLongPress(containerEl, triggerEl, msgId) {
+        let startX = 0, startY = 0;
+
+        function onStart(e) {
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            callRecordLongPressTimer = setTimeout(() => {
+                showCallRecordContextMenu(containerEl, msgId);
+            }, 600);
+        }
+        function onMove(e) {
+            if (callRecordLongPressTimer) {
+                const touch = e.touches ? e.touches[0] : e;
+                if (Math.abs(touch.clientX - startX) > 8 || Math.abs(touch.clientY - startY) > 8) {
+                    clearTimeout(callRecordLongPressTimer);
+                    callRecordLongPressTimer = null;
+                }
+            }
+        }
+        function onEnd() {
+            if (callRecordLongPressTimer) {
+                clearTimeout(callRecordLongPressTimer);
+                callRecordLongPressTimer = null;
+            }
+        }
+
+        triggerEl.addEventListener('mousedown', onStart);
+        triggerEl.addEventListener('mousemove', onMove);
+        triggerEl.addEventListener('mouseup', onEnd);
+        triggerEl.addEventListener('mouseleave', onEnd);
+        triggerEl.addEventListener('touchstart', onStart, { passive: true });
+        triggerEl.addEventListener('touchmove', onMove, { passive: true });
+        triggerEl.addEventListener('touchend', onEnd);
+    }
+
+    function showCallRecordContextMenu(anchorEl, msgId) {
+        // 移除已有的菜单
+        document.querySelectorAll('.call-record-ctx-menu').forEach(el => el.remove());
+
+        const menu = document.createElement('div');
+        menu.className = 'call-record-ctx-menu bubble-context-menu active';
+        menu.style.left = '50%';
+        menu.style.top = '-8px';
+        menu.style.transform = 'translate(-50%, -100%)';
+
+        const delBtn = document.createElement('div');
+        delBtn.className = 'bubble-menu-item';
+        delBtn.style.color = '#e74c3c';
+        delBtn.innerText = '删除';
+        delBtn.onclick = (e) => {
+            e.stopPropagation();
+            menu.remove();
+            deleteCallRecordMsg(msgId);
+        };
+
+        const cancelBtn = document.createElement('div');
+        cancelBtn.className = 'bubble-menu-item';
+        cancelBtn.innerText = '取消';
+        cancelBtn.onclick = (e) => {
+            e.stopPropagation();
+            menu.remove();
+        };
+
+        menu.appendChild(delBtn);
+        menu.appendChild(cancelBtn);
+        anchorEl.appendChild(menu);
+
+        // 点击其他区域关闭
+        const closeHandler = (e) => {
+            if (!menu.contains(e.target)) {
+                menu.remove();
+                document.removeEventListener('click', closeHandler);
+                document.removeEventListener('touchstart', closeHandler);
+            }
+        };
+        setTimeout(() => {
+            document.addEventListener('click', closeHandler);
+            document.addEventListener('touchstart', closeHandler);
+        }, 100);
+    }
+
+    function deleteCallRecordMsg(msgId) {
+        const key = getMessagesKey(currentChatContactId);
+        let messages = [];
+        try { messages = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+        const idx = messages.findIndex(m => String(m.id) === String(msgId));
+        if (idx !== -1) {
+            messages.splice(idx, 1);
+            localStorage.setItem(key, JSON.stringify(messages));
+            renderConversationMessages();
+            showToast('通话记录已删除');
+        }
+    }
+
     window.renderConversationMessages = () => {
         if (!currentChatContactId) return;
         const container = document.getElementById('chat-conv-messages');
@@ -31894,6 +31992,7 @@ ${msgContext ? msgContext : '无'}
                 callDiv.style.userSelect = 'none';
                 callDiv.style.webkitUserSelect = 'none';
                 callDiv.innerText = msg.callSummary;
+                callDiv.setAttribute('data-msg-id', msg.id);
 
                 if (msg.callTranscript) {
                     const detailDiv = document.createElement('div');
@@ -31908,12 +32007,15 @@ ${msgContext ? msgContext : '无'}
                     });
 
                     const wrapper = document.createElement('div');
-                    wrapper.style.cssText = 'display:flex; flex-direction:column; align-items:center; margin:5px 0;';
+                    wrapper.style.cssText = 'display:flex; flex-direction:column; align-items:center; margin:5px 0; position:relative;';
                     wrapper.appendChild(callDiv);
                     wrapper.appendChild(detailDiv);
                     fragment.appendChild(wrapper);
+                    addCallRecordLongPress(wrapper, callDiv, msg.id);
                 } else {
+                    callDiv.style.position = 'relative';
                     fragment.appendChild(callDiv);
+                    addCallRecordLongPress(callDiv, callDiv, msg.id);
                 }
                 return;
             }
@@ -31944,6 +32046,7 @@ ${msgContext ? msgContext : '无'}
                 wrapper.style.flexDirection = 'column';
                 wrapper.style.alignItems = 'center';
                 wrapper.style.margin = '5px 0';
+                wrapper.style.position = 'relative';
 
                 const tipDiv = document.createElement('div');
                 tipDiv.className = 'msg-recalled-tip';
@@ -31971,6 +32074,7 @@ ${msgContext ? msgContext : '无'}
                 wrapper.appendChild(tipDiv);
                 wrapper.appendChild(detailDiv);
                 fragment.appendChild(wrapper);
+                addCallRecordLongPress(wrapper, tipDiv, msg.id);
                 return;
             }
 
