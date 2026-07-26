@@ -2113,6 +2113,7 @@
         #group-voice-call-float.visible { display: flex; }
         #group-voice-call-float.float-in { animation: vcFloatIn 0.28s ease forwards; }
         #group-voice-call-float:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.1); }
+        #group-voice-call-float.dragging { transition: none; cursor: grabbing; transform: scale(1.03); }
         .gvc-float-avatars {
             display: flex; align-items: center; justify-content: center;
             position: relative; width: 100%; height: 38px;
@@ -12840,7 +12841,8 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     object-fit: cover; border: 2px solid rgba(255,182,193,0.3); flex-shrink: 0;
 }
 .meet-card-info { flex: 1; min-width: 0; }
-.meet-card-name { font-size: 15px; font-weight: 600; color: #5a3e3e; margin-bottom: 3px; }
+.meet-card-name { font-size: 15px; font-weight: 600; color: #5a3e3e; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+.meet-card-badge { display: inline-block; font-size: 10px; font-weight: 500; color: #fff; background: #f0a0a0; padding: 1px 6px; border-radius: 8px; line-height: 16px; }
 .meet-card-desc { font-size: 12px; color: #b08a8a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* 剧情页面 */
@@ -12877,6 +12879,72 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     transition: opacity 0.2s; padding: 0;
 }
 .meet-scene-settings:hover { opacity: 0.8; }
+.meet-scene-summary-btn {
+    background: none; border: none; cursor: pointer; font-size: 18px;
+    opacity: 0.5; flex-shrink: 0; transition: opacity 0.2s; padding: 0; margin-right: 8px;
+}
+.meet-scene-summary-btn:hover { opacity: 0.8; }
+
+/* 总结弹窗 */
+.meet-summary-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.4); z-index: 1003;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.meet-summary-overlay.active { display: flex; }
+.meet-summary-modal {
+    background: #fff; border-radius: 20px; padding: 20px;
+    width: 360px; max-width: 90vw; max-height: 80vh;
+    overflow-y: auto; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.meet-summary-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+}
+.meet-summary-title { font-size: 17px; color: #5a3e3e; font-weight: bold; }
+.meet-summary-close {
+    width: 28px; height: 28px; border: none; background: rgba(255,182,193,0.15);
+    border-radius: 50%; font-size: 16px; cursor: pointer; color: #5a3e3e;
+    display: flex; align-items: center; justify-content: center;
+}
+.meet-summary-stats {
+    display: flex; gap: 12px; margin-bottom: 12px; font-size: 12px; color: #b08a8a;
+}
+.meet-summary-stats span { background: rgba(255,182,193,0.12); padding: 3px 10px; border-radius: 10px; }
+.meet-summary-action { display: flex; gap: 8px; margin-bottom: 14px; }
+.meet-summary-btn {
+    flex: 1; padding: 8px 0; border: none; border-radius: 12px; cursor: pointer;
+    font-size: 13px; color: #fff; font-weight: 500;
+}
+.meet-summary-btn-primary { background: linear-gradient(135deg, #ffb6c1, #ffc0cb); }
+.meet-summary-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.meet-summary-list { display: flex; flex-direction: column; gap: 8px; }
+.meet-summary-item {
+    background: rgba(255,182,193,0.08); border: 1px solid rgba(255,182,193,0.15);
+    border-radius: 10px; padding: 10px 12px; position: relative;
+}
+.meet-summary-item-text { font-size: 13px; color: #5a3e3e; line-height: 1.5; }
+.meet-summary-item-actions { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
+.meet-summary-item-btn {
+    font-size: 11px; padding: 2px 8px; border: none; border-radius: 6px;
+    cursor: pointer; color: #b08a8a; background: rgba(255,182,193,0.1);
+}
+.meet-summary-item-btn:hover { background: rgba(255,182,193,0.25); }
+.meet-summary-item-btn.del:hover { color: #e88; }
+.meet-summary-empty { font-size: 12px; color: #b08a8a; text-align: center; padding: 12px 0; }
+
+/* 气泡操作菜单 */
+.meet-line-action-menu {
+    position: fixed; z-index: 1010; background: #fff; border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15); overflow: hidden; min-width: 100px;
+}
+.meet-line-action-item {
+    display: block; width: 100%; padding: 10px 18px; border: none; background: none;
+    font-size: 14px; color: #5a3e3e; cursor: pointer; text-align: left;
+}
+.meet-line-action-item:hover { background: rgba(255,182,193,0.12); }
+.meet-line-action-item.danger { color: #e88; }
 
 /* 小说阅读区 */
 .meet-novel-area {
@@ -12942,8 +13010,13 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
     width: 320px; max-width: 90vw; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
 }
 .meet-place-title {
-    font-size: 17px; color: #5a3e3e; font-weight: bold; margin-bottom: 16px; text-align: center;
+    font-size: 17px; color: #5a3e3e; font-weight: bold; margin-bottom: 16px; text-align: center; position: relative;
 }
+.meet-place-close {
+    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    background: none; border: none; font-size: 18px; color: #c0a0a0; cursor: pointer; padding: 4px 8px; line-height: 1;
+}
+.meet-place-close:hover { color: #5a3e3e; }
 .meet-place-input {
     width: 100%; padding: 10px 14px; border: 1px solid rgba(255,182,193,0.4);
     border-radius: 12px; font-size: 14px; outline: none; box-sizing: border-box;
@@ -13002,6 +13075,20 @@ body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7
 }
 .meet-settings-input:focus { border-color: #ffb6c1; }
 /* 预设管理样式 */
+.meet-saves-list { margin-top: 6px; margin-bottom: 4px; }
+.meet-save-item {
+    display: flex; align-items: center; padding: 10px; margin-bottom: 6px; border-radius: 10px;
+    background: rgba(255,182,193,0.08); border: 1px solid rgba(255,182,193,0.2); cursor: pointer; gap: 10px;
+}
+.meet-save-item:hover { background: rgba(255,182,193,0.15); }
+.meet-save-item-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.meet-save-item-info { flex: 1; min-width: 0; }
+.meet-save-item-name { font-size: 13px; color: #5a3e3e; font-weight: 600; }
+.meet-save-item-meta { font-size: 11px; color: #b08a8a; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meet-save-item-delete {
+    font-size: 16px; color: #ccc; cursor: pointer; padding: 4px 6px; flex-shrink: 0; background: none; border: none;
+}
+.meet-save-item-delete:hover { color: #e88; }
 .meet-preset-list { margin-top: 8px; }
 .meet-preset-item {
     display: flex; align-items: center; justify-content: space-between;
@@ -13655,7 +13742,7 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
     <div class="gvc-bottom-bar">
         <div class="gvc-input-area">
             <input type="text" class="gvc-input" id="gvc-input" placeholder="输入你想说的话，回车发送..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendGroupVoiceCallMsg();}">
-            <button class="gvc-send-btn" onclick="triggerGvcAIReply()">角色回复</button>
+            <button class="gvc-send-btn" onclick="triggerGvcAIReply()">对方回复</button>
         </div>
         <img src="https://img.heliar.top/file/1781886601052_电话关闭_phone-off.png" class="gvc-hangup" onclick="hangUpGroupVoiceCall()">
     </div>
@@ -15440,6 +15527,7 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
     <div class="meet-scene-header">
       <button class="meet-scene-back" onclick="meetBackToSelect()">‹</button>
       <div class="meet-scene-place" id="meet-scene-place">咖啡馆</div>
+      <button class="meet-scene-summary-btn" onclick="openMeetSummary()" title="总结">📋</button>
       <button class="meet-scene-settings" onclick="openMeetSettings()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b08a8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -15457,13 +15545,13 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 <!-- 地点输入弹窗 -->
 <div class="meet-place-modal" id="meet-place-modal">
   <div class="meet-place-modal-content">
-    <div class="meet-place-title">📍 见面地点</div>
+    <div class="meet-place-title">📍 见面地点 <button class="meet-place-close" onclick="document.getElementById('meet-place-modal').classList.remove('active')">✕</button></div>
     <input class="meet-place-input" id="meet-place-input" placeholder="如：咖啡馆、公园长椅…">
     <div class="meet-place-pov-label">叙述视角</div>
     <div class="meet-place-pov-group">
-      <button class="meet-pov-btn active" data-pov="1" onclick="meetModalSelectPov('1')">第一人称(我)</button>
-      <button class="meet-pov-btn" data-pov="2" onclick="meetModalSelectPov('2')">第二人称(你)</button>
-      <button class="meet-pov-btn" data-pov="3" onclick="meetModalSelectPov('3')">第三人称(TA)</button>
+      <button class="meet-pov-btn active" data-pov="1" onclick="meetModalSelectPov('1')">第一人称</button>
+      <button class="meet-pov-btn" data-pov="2" onclick="meetModalSelectPov('2')">第二人称</button>
+      <button class="meet-pov-btn" data-pov="3" onclick="meetModalSelectPov('3')">第三人称</button>
     </div>
     <button class="meet-place-confirm" onclick="confirmMeetPlace()">开始见面</button>
   </div>
@@ -15476,7 +15564,27 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
             <span>🤝 见一面设置</span>
             <button class="meet-settings-close" onclick="closeMeetSettings()">✕</button>
         </div>
-        <div class="meet-settings-label" style="margin-bottom:4px;">预设管理</div>
+        <div class="meet-settings-label" style="margin-bottom:4px;">存档管理</div>
+        <div class="meet-saves-list" id="meet-saves-list"></div>
+        <button class="meet-add-preset-btn" onclick="createNewMeetSave()" style="margin-bottom:14px;">+ 新建见面</button>
+        <div class="meet-settings-label" style="margin-bottom:4px;">总结设置</div>
+        <div class="meet-settings-row">
+            <span class="meet-settings-label">每次总结轮数</span>
+            <input class="meet-settings-input" id="meet-summary-rounds" type="number" min="1" max="50" value="10" style="width:60px;" onchange="saveMeetSummarySettings()">
+        </div>
+        <div class="meet-settings-label" style="margin:8px 0 4px;">总结预设</div>
+        <textarea id="meet-summary-preset" style="width:100%;height:80px;border:1px solid rgba(255,182,193,0.4);border-radius:10px;padding:8px;font-size:12px;color:#5a3e3e;outline:none;resize:vertical;box-sizing:border-box;" placeholder="如：用第一人称总结，语气要文艺、感性地描述…" oninput="saveMeetSummarySettings()"></textarea>
+        <div class="meet-settings-label" style="margin:8px 0 4px;">回复设置</div>
+        <div class="meet-settings-row">
+            <span class="meet-settings-label">最少回复字数</span>
+            <input class="meet-settings-input" id="meet-min-length" type="number" min="0" max="2000" value="0" style="width:60px;" onchange="saveMeetReplySettings()">
+        </div>
+        <div style="font-size:11px;color:#b08a8a;margin-bottom:4px;">设为0则不限制</div>
+        <div class="meet-settings-label" style="margin:8px 0 4px;">自定义CSS</div>
+        <div style="font-size:11px;color:#b08a8a;margin-bottom:6px;">可修改用户气泡(.meet-novel-p.user-action)和角色气泡(.meet-novel-p.ai-reply)的样式</div>
+        <textarea id="meet-custom-css" style="width:100%;height:120px;border:1px solid rgba(255,182,193,0.4);border-radius:10px;padding:8px;font-size:11px;color:#5a3e3e;outline:none;resize:vertical;box-sizing:border-box;font-family:monospace;" placeholder="/* 例：修改用户气泡颜色 */&#10;.meet-novel-p.user-action {&#10;  background: #e8f4ff;&#10;  color: #333;&#10;  border-radius: 18px;&#10;}&#10;&#10;/* 修改角色气泡 */&#10;.meet-novel-p.ai-reply {&#10;  background: #fff8e1;&#10;  border: 1px solid #ffe082;&#10;}" oninput="saveMeetCustomCss()"></textarea>
+        <button class="meet-add-preset-btn" onclick="resetMeetCustomCss()" style="margin-top:6px;background:linear-gradient(135deg, #ffd6e0, #ffe4ec);color:#9a5a6a;">恢复默认</button>
+        <div class="meet-settings-label" style="margin:14px 0 4px;">预设管理</div>
         <div class="meet-preset-list" id="meet-preset-list"></div>
         <button class="meet-add-preset-btn" onclick="addMeetPreset()">+ 添加预设</button>
     </div>
@@ -15485,6 +15593,33 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 <!-- 预设详情弹窗 -->
 <div class="meet-preset-detail-overlay" id="meet-preset-detail-overlay" onclick="if(event.target===this)closeMeetPresetDetail()">
     <div class="meet-preset-detail-modal" id="meet-preset-detail-modal"></div>
+</div>
+
+<!-- 总结弹窗 -->
+<div class="meet-summary-overlay" id="meet-summary-overlay" onclick="if(event.target===this)closeMeetSummary()">
+    <div class="meet-summary-modal">
+        <div class="meet-summary-header">
+            <span class="meet-summary-title">📋 对话总结</span>
+            <button class="meet-summary-close" onclick="closeMeetSummary()">✕</button>
+        </div>
+        <div class="meet-summary-stats" id="meet-summary-stats"></div>
+        <div class="meet-summary-action">
+            <button class="meet-summary-btn meet-summary-btn-primary" id="meet-summary-gen-btn" onclick="generateMeetSummary()">总结对话</button>
+        </div>
+        <div class="meet-summary-list" id="meet-summary-list"></div>
+    </div>
+</div>
+
+<!-- 删除存档确认弹窗 -->
+<div class="meet-summary-overlay" id="meet-delete-confirm-overlay" onclick="if(event.target===this)cancelMeetDelete()">
+    <div class="meet-summary-modal" style="width:280px;text-align:center;">
+        <div style="font-size:16px;color:#5a3e3e;font-weight:bold;margin-bottom:16px;">确定删除这个存档吗？</div>
+        <div style="font-size:12px;color:#b08a8a;margin-bottom:20px;">删除后无法恢复</div>
+        <div style="display:flex;gap:10px;">
+            <button class="meet-summary-btn" style="background:#e0d0d0;color:#5a3e3e;flex:1;" onclick="cancelMeetDelete()">取消</button>
+            <button class="meet-summary-btn meet-summary-btn-primary" style="flex:1;" onclick="confirmMeetDelete()">删除</button>
+        </div>
+    </div>
 </div>
 
 <!-- 漂浮宠物组件 -->
@@ -28672,11 +28807,11 @@ ${actionInstruction}
                     fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model}:generateContent?key=${settings.api.key}`;
                     bodyData = JSON.stringify({
                         contents: [{ parts: [{ text: systemPrompt + "\n\n群聊记录:\n" + chatContext + "\n\n请以" + member.name + "的身份，在群聊中回复。严格按JSON格式输出。" }] }],
-                        generationConfig: { temperature: 0.8, maxOutputTokens: 1000, response_mime_type: "application/json" }
+                        generationConfig: { temperature: 0.8, maxOutputTokens: 1500, response_mime_type: "application/json" }
                     });
                 } else {
                     headers['Authorization'] = `Bearer ${settings.api.key}`;
-                    bodyData = JSON.stringify({ model: settings.api.model || 'gpt-3.5-turbo', messages: apiMessages, max_tokens: 1000, temperature: 0.8, response_format: { type: "json_object" } });
+                    bodyData = JSON.stringify({ model: settings.api.model || 'gpt-3.5-turbo', messages: apiMessages, max_tokens: 1500, temperature: 0.8, response_format: { type: "json_object" } });
                 }
 
                 const response = await fetch(fetchUrl, {
@@ -30864,6 +30999,7 @@ ${msgContext ? msgContext : '无'}
     let gvcMinimized = false;
     let gvcTempMessages = []; // 通话中的临时消息，不写入群聊
     let gvcBubbleTimeouts = {}; // 存储每个气泡的超时ID
+    let gvcReplyTimeouts = []; // 存储AI回复显示的setTimeout ID，用于取消
 
     function showGvcBubble(memberId, text, isUser) {
         const bubblesContainer = document.querySelector(`.gvc-member-bubbles[data-member-id="${memberId}"]`);
@@ -30885,7 +31021,7 @@ ${msgContext ? msgContext : '无'}
                 if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
                 delete gvcBubbleTimeouts[bubbleId];
             }, 300);
-        }, 5000);
+        }, 15000);
     }
 
     function clearAllGvcBubbles() {
@@ -31040,6 +31176,236 @@ ${msgContext ? msgContext : '无'}
 
     // 触发群通话AI回复（使用临时消息，不写入群聊）
     let gvcAiReplyAbortController = null;
+    
+    // 生成单个角色回复的辅助函数
+    async function generateMemberReply(memberId, memberInfoMap, group, allMembers, uName, uPersona, chatContext, settings, abortSignal) {
+        const member = memberInfoMap[memberId];
+        if (!member) return null;
+
+        try {
+            let systemPrompt = `你是${member.name}，正在一个群语音通话中。群名是"${group.groupName}"。\n`;
+            systemPrompt += `这个群是用户"${uName}"创建的，群里有${allMembers.length + 1}个人在一起聊天（包括你、用户和其他成员）。\n`;
+            systemPrompt += `你们正在进行一场多人语音通话，所有人都能听到彼此的发言，可以互相交流。\n`;
+
+            if (member.persona) {
+                systemPrompt += `\n【你的人设】\n${member.persona}\n`;
+            }
+            if (member.signature) {
+                systemPrompt += `你的个性签名是：${member.signature}\n`;
+            }
+
+            systemPrompt += `\n【用户信息】\n用户的名字是"${uName}"。\n用户人设：${uPersona}\n`;
+
+            const otherMembers = allMembers.filter(m => m.id !== memberId);
+            if (otherMembers.length > 0) {
+                systemPrompt += `\n【群聊中的其他成员】\n`;
+                otherMembers.forEach(om => {
+                    const memberName = om.name;
+                    const personaMentionsOther = member.persona && member.persona.includes(memberName);
+                    const otherMentionsMe = om.persona && om.persona.includes(member.name);
+                    if (personaMentionsOther || otherMentionsMe) {
+                        systemPrompt += `- ${memberName}：你认识这个人。`;
+                    } else {
+                        systemPrompt += `- ${memberName}：你不认识这个人。`;
+                    }
+                    systemPrompt += `\n`;
+                });
+            }
+
+            systemPrompt += `\n【重要规则】\n`;
+            systemPrompt += `1. 你正在群语音通话中，说话要自然口语化，就像平时打电话聊天一样。\n`;
+            systemPrompt += `2. 只回复消息内容本身，不要加任何前缀、引号或角色名标记。\n`;
+            systemPrompt += `3. 回复要符合你的性格和语境，保持角色一致性。\n`;
+            systemPrompt += `4. 你的回复必须是一个JSON对象，格式为{\"reply\":[\"消息1\",\"消息2\",\"消息3\"]}，reply数组包含1到3条消息。每条消息必须简短，像微信语音通话一样，每条不超过20个字。把你想说的话拆成多条短消息，模拟真实说话节奏。不要超过3条消息。\n`;
+            systemPrompt += `5. 你可以回复用户，也可以回复其他成员，或同时对多人说话。可以主动发起话题。\n`;
+            systemPrompt += `6. 如果你不认识某个人，不要假装认识，要自然地表现出陌生感。\n`;
+            systemPrompt += `7. 这是一个群聊，不是一对一聊天！你要意识到所有人都在同一个通话中，可以互相听到。\n`;
+            systemPrompt += `8. 你应该根据之前的聊天记录和其他成员的发言来回复，可以引用或回应其他人说的话。\n`;
+            systemPrompt += `9. 不要只是被动地回复用户，要主动参与群聊，与其他成员互动。\n`;
+            systemPrompt += `10. 如果其他成员提到你或问你问题，一定要回应。\n`;
+            systemPrompt += `11. 绝对禁止输出思维链、推理过程、内心独白，不要使用<think>、<thinking>、<reasoning>等任何标签。直接输出JSON结果。\n`;
+            systemPrompt += `12. 你必须全程使用中文回复，绝对不要在回复中夹杂任何英文、日文或其他外语。不要在括号内添加英文翻译或注释。纯中文回复。\n`;
+
+            systemPrompt += `\n【通话记录】\n${chatContext}`;
+
+            const apiMessages = [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: `请以${member.name}的身份，在群语音通话中回复。严格按JSON格式输出。` }
+            ];
+
+            let fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
+            const isGemini = settings.api.url.includes('generativelanguage');
+            let bodyData, headers = { 'Content-Type': 'application/json' };
+
+            if (isGemini) {
+                fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model}:generateContent?key=${settings.api.key}`;
+                bodyData = JSON.stringify({
+                    contents: [{ parts: [{ text: systemPrompt + "\n\n通话记录:\n" + chatContext + "\n\n请以" + member.name + "的身份，在群语音通话中回复。严格按JSON格式输出。" }] }],
+                    generationConfig: { temperature: 0.8, maxOutputTokens: 800, response_mime_type: "application/json" }
+                });
+            } else {
+                headers['Authorization'] = `Bearer ${settings.api.key}`;
+                bodyData = JSON.stringify({ model: settings.api.model || 'gpt-3.5-turbo', messages: apiMessages, max_tokens: 800, temperature: 0.8, response_format: { type: "json_object" } });
+            }
+
+            const response = await fetch(fetchUrl, {
+                method: 'POST',
+                headers: headers,
+                body: bodyData,
+                signal: abortSignal
+            });
+
+            if (!response.ok) return null;
+            const data = await response.json();
+
+            let replyContent = '';
+            let wasTruncated = false;
+            if (isGemini) {
+                replyContent = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                if (data.candidates?.[0]?.finishReason === 'MAX_TOKENS' || data.candidates?.[0]?.finishReason === 'SAFETY') wasTruncated = true;
+            } else {
+                // 只使用 content；reasoning_content 是思维链，绝不作为回复使用
+                replyContent = data.choices?.[0]?.message?.content?.trim();
+                if (data.choices?.[0]?.message?.reasoning_content) {
+                    console.log('GVC: 检测到思维链（reasoning_content），已自动过滤');
+                }
+                if (data.choices?.[0]?.finish_reason === 'length') wasTruncated = true;
+                if (!replyContent) return null;
+            }
+            if (!replyContent) return null;
+
+            // 使用 stripThinkingContent 彻底去除思维链
+            if (typeof stripThinkingContent === 'function') {
+                replyContent = stripThinkingContent(replyContent);
+            } else {
+                replyContent = replyContent.replace(/<think(?:ing|reasoning)?>[\s\S]*?<\/think(?:ing|reasoning)?>/gi, '');
+                replyContent = replyContent.replace(/<think(?:ing|reasoning)?>[\s\S]*$/gi, '');
+                replyContent = replyContent.replace(/<\/think(?:ing|reasoning)?>/gi, '');
+                replyContent = replyContent.replace(/<reflection>[\s\S]*?<\/reflection>/gi, '');
+                replyContent = replyContent.replace(/<reflection>[\s\S]*$/gi, '');
+                replyContent = replyContent.replace(/<\/reflection>/gi, '');
+            }
+            replyContent = replyContent.trim();
+            if (!replyContent) return null;
+
+            // 使用 cleanAIResponse 清洗内容并修复截断
+            if (typeof cleanAIResponse === 'function') {
+                replyContent = cleanAIResponse(replyContent, wasTruncated);
+            }
+            if (!replyContent) return null;
+
+            let sentences = [];
+            try {
+                const parsed = JSON.parse(replyContent);
+                if (Array.isArray(parsed.reply)) {
+                    sentences = parsed.reply.map(s => {
+                        let text = String(s).trim();
+                        // 清除reply前缀
+                        text = text.replace(/^["']?reply["']?\s*[:：]\s*/i, '');
+                        return text;
+                    }).filter(s => s);
+                } else if (typeof parsed === 'object' && parsed.reply !== undefined) {
+                    if (Array.isArray(parsed.reply)) {
+                        sentences = parsed.reply.map(s => String(s).trim()).filter(s => s);
+                    } else {
+                        sentences = [String(parsed.reply).trim()];
+                    }
+                } else if (typeof parsed === 'string') {
+                    sentences = [parsed.trim()];
+                } else {
+                    // 尝试取对象的第一个数组值
+                    const firstVal = Object.values(parsed).find(v => typeof v === 'string' || Array.isArray(v));
+                    if (Array.isArray(firstVal)) {
+                        sentences = firstVal.map(s => String(s).trim()).filter(s => s);
+                    } else if (typeof firstVal === 'string') {
+                        sentences = [firstVal.trim()];
+                    } else {
+                        let text = String(replyContent).replace(/[{}\[\]"]/g, '').trim();
+                        text = text.replace(/^reply\s*[:：]\s*/i, '');
+                        sentences = [text];
+                    }
+                }
+            } catch(e) {
+                // JSON解析失败，尝试直接提取文本
+                let text = replyContent;
+                // 尝试从类JSON中提取
+                const replyMatch = text.match(/"reply"\s*[:：]\s*\[([\s\S]*?)\]/);
+                if (replyMatch) {
+                    try {
+                        const arr = JSON.parse('[' + replyMatch[1] + ']');
+                        sentences = arr.map(s => String(s).trim()).filter(s => s);
+                    } catch(e2) {
+                        text = text.replace(/["\[\]{}]/g, '').trim();
+                        text = text.replace(/^reply\s*[:：]\s*/i, '');
+                        sentences = [text];
+                    }
+                } else {
+                    text = text.replace(/["\[\]{}]/g, '').trim();
+                    text = text.replace(/^reply\s*[:：]\s*/i, '');
+                    sentences = [text];
+                }
+            }
+
+            if (sentences.length > 3) sentences = sentences.slice(0, 3);
+
+            // 清理每条消息中的英文括号注释（如"你好(Hello)"→"你好"）
+            sentences = sentences.map(s => {
+                // 去除全英文的括号内容，如(Hello)、（hi there）
+                s = s.replace(/[（(][\sA-Za-z0-9.,!?;:'"\-+*/=<>@#$%^&*_~\[\]{}|\\\/\s]+[）)]/g, '');
+                // 去除括号内以英文为主的内容（中文字符少于英文字符）
+                s = s.replace(/[（(]([^）)]*?[A-Za-z][^）)]*?)[）)]/g, (match, inner) => {
+                    const chineseChars = (inner.match(/[\u4e00-\u9fff]/g) || []).length;
+                    const englishChars = (inner.match(/[A-Za-z]/g) || []).length;
+                    return englishChars > chineseChars ? '' : match;
+                });
+                // 截断过长的消息，群通话中每条消息不超过30字
+                if (s.length > 30) {
+                    // 优先在标点处截断
+                    const puncts = ['。', '！', '？', '，', '…', '、', '；', '~', '！', '?', ',', '!'];
+                    let cutIdx = 30;
+                    for (const p of puncts) {
+                        const idx = s.indexOf(p, 15);
+                        if (idx > 0 && idx < 30) { cutIdx = idx + 1; break; }
+                    }
+                    s = s.substring(0, cutIdx);
+                }
+                return s.trim();
+            }).filter(s => s);
+
+            return {
+                memberId,
+                memberName: member.alias || member.name,
+                messages: sentences
+            };
+        } catch(e) {
+            console.error(`GVC AI reply error for member ${memberId}:`, e);
+            return null;
+        }
+    }
+
+    // 构建当前聊天上下文
+    function buildChatContext(gvcTempMessages, historyContext, uName) {
+        let chatContext = '';
+        if (historyContext) {
+            chatContext += `【群聊历史记录（之前的聊天内容）】\n${historyContext}\n\n`;
+        }
+        chatContext += `【本次通话聊天记录】\n`;
+        const recentMsgs = gvcTempMessages.slice(-50);
+        recentMsgs.forEach(m => {
+            if (m.isSystemMsg) {
+                chatContext += `[系统] ${m.text}\n`;
+            } else if (m.isEmotionImage) {
+                const sender = m.type === 'sent' ? uName : (m.senderName || '未知');
+                chatContext += `[系统提示：${sender} 发送了一张【表情包】。画面内容/配字描述："${m.text}"]\n`;
+            } else if (m.type === 'sent') {
+                chatContext += `${uName}: ${m.text || ''}\n`;
+            } else {
+                chatContext += `${m.senderName || '未知'}: ${m.text || ''}\n`;
+            }
+        });
+        return chatContext;
+    }
+
     async function triggerGvcGroupAIReply() {
         if (!gvcActive || !gvcGroupId) return;
         const groupId = gvcGroupId;
@@ -31047,6 +31413,11 @@ ${msgContext ? msgContext : '无'}
         if (gvcAiReplyAbortController) {
             gvcAiReplyAbortController.abort();
         }
+        
+        // 清除之前待处理的AI回复超时
+        gvcReplyTimeouts.forEach(tid => clearTimeout(tid));
+        gvcReplyTimeouts = [];
+        
         gvcAiReplyAbortController = new AbortController();
         const abortSignal = gvcAiReplyAbortController.signal;
 
@@ -31063,9 +31434,6 @@ ${msgContext ? msgContext : '无'}
         const globalProfile = getUserProfile();
         const uName = globalProfile.nickname || '用户';
 
-        // 随机打乱回复顺序
-        const shuffledIds = [...group.memberIds].sort(() => Math.random() - 0.5);
-
         // 构建群成员信息表
         const memberInfoMap = {};
         const allMembers = [];
@@ -31077,182 +31445,86 @@ ${msgContext ? msgContext : '无'}
             }
         });
 
+        if (allMembers.length === 0) return;
+
         const firstMember = memberInfoMap[group.memberIds[0]];
         const uPersona = (firstMember && firstMember.userPersona) || '一个普通用户';
 
-        // 使用临时消息构建上下文
-        const tempMsgs = gvcTempMessages.slice();
-        const recentMsgs = tempMsgs.slice(-30);
-        let chatContext = '';
-        recentMsgs.forEach(m => {
-            if (m.isSystemMsg) {
-                chatContext += `[系统] ${m.text}\n`;
-            } else if (m.isEmotionImage) {
-                const sender = m.type === 'sent' ? uName : (m.senderName || '未知');
-                chatContext += `[系统提示：${sender} 发送了一张【表情包】。画面内容/配字描述："${m.text}"]\n`;
-            } else if (m.type === 'sent') {
-                chatContext += `${uName}: ${m.text || ''}\n`;
-            } else {
-                chatContext += `${m.senderName || '未知'}: ${m.text || ''}\n`;
-            }
-        });
-
-        // 并行调用所有角色API
-        const apiPromises = shuffledIds.map(async (memberId) => {
-            const member = memberInfoMap[memberId];
-            if (!member) return null;
-
-            try {
-                let systemPrompt = `你是${member.name}，正在一个群语音通话中。群名是"${group.groupName}"。\n`;
-                systemPrompt += `这个群是用户"${uName}"创建的，你正在和大家进行语音通话。\n`;
-
-                if (member.persona) {
-                    systemPrompt += `\n【你的人设】\n${member.persona}\n`;
-                }
-                if (member.signature) {
-                    systemPrompt += `你的个性签名是：${member.signature}\n`;
-                }
-
-                systemPrompt += `\n【用户信息】\n用户的名字是"${uName}"。\n用户人设：${uPersona}\n`;
-
-                const otherMembers = allMembers.filter(m => m.id !== memberId);
-                if (otherMembers.length > 0) {
-                    systemPrompt += `\n【群聊中的其他成员】\n`;
-                    otherMembers.forEach(om => {
-                        const memberName = om.name;
-                        const personaMentionsOther = member.persona && member.persona.includes(memberName);
-                        const otherMentionsMe = om.persona && om.persona.includes(member.name);
-                        if (personaMentionsOther || otherMentionsMe) {
-                            systemPrompt += `- ${memberName}：你认识这个人。`;
-                        } else {
-                            systemPrompt += `- ${memberName}：你不认识这个人。`;
-                        }
-                        systemPrompt += `\n`;
-                    });
-                }
-
-                systemPrompt += `\n【重要规则】\n`;
-                systemPrompt += `1. 你正在群语音通话中，说话要自然口语化，就像平时打电话聊天一样。\n`;
-                systemPrompt += `2. 只回复消息内容本身，不要加任何前缀、引号或角色名标记。\n`;
-                systemPrompt += `3. 回复要符合你的性格和语境，保持角色一致性。\n`;
-                systemPrompt += `4. 你的回复必须是一个JSON对象，格式为{"reply":["消息1","消息2","消息3"]}，reply数组包含1到5条消息。像正常聊天一样，可以把想说的话拆成多条消息发送，模拟真实说话节奏和语气。不要超过5条消息。\n`;
-                systemPrompt += `5. 你可以回复用户，也可以回复其他成员，或同时对多人说话。\n`;
-                systemPrompt += `6. 如果你不认识某个人，不要假装认识，要自然地表现出陌生感。\n`;
-
-                systemPrompt += `\n【通话记录】\n${chatContext}`;
-
-                const apiMessages = [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `请以${member.name}的身份，在群语音通话中回复。严格按JSON格式输出。` }
-                ];
-
-                let fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
-                const isGemini = settings.api.url.includes('generativelanguage');
-                let bodyData, headers = { 'Content-Type': 'application/json' };
-
-                if (isGemini) {
-                    fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model}:generateContent?key=${settings.api.key}`;
-                    bodyData = JSON.stringify({
-                        contents: [{ parts: [{ text: systemPrompt + "\n\n通话记录:\n" + chatContext + "\n\n请以" + member.name + "的身份，在群语音通话中回复。严格按JSON格式输出。" }] }],
-                        generationConfig: { temperature: 0.8, maxOutputTokens: 600, response_mime_type: "application/json" }
-                    });
-                } else {
-                    headers['Authorization'] = `Bearer ${settings.api.key}`;
-                    bodyData = JSON.stringify({ model: settings.api.model || 'gpt-3.5-turbo', messages: apiMessages, max_tokens: 600, temperature: 0.8, response_format: { type: "json_object" } });
-                }
-
-                const response = await fetch(fetchUrl, {
-                    method: 'POST',
-                    headers: headers,
-                    body: bodyData,
-                    signal: abortSignal
-                });
-
-                if (!response.ok) return null;
-                const data = await response.json();
-
-                let replyContent = '';
-                if (isGemini) {
-                    replyContent = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-                } else {
-                    replyContent = data.choices?.[0]?.message?.content?.trim();
-                }
-                if (!replyContent) return null;
-
-                let sentences = [];
-                try {
-                    const parsed = JSON.parse(replyContent);
-                    if (Array.isArray(parsed.reply)) {
-                        sentences = parsed.reply.map(s => String(s).trim()).filter(s => s);
-                    } else {
-                        sentences = [String(replyContent).replace(/[{}\[\]"]/g, '').trim()];
-                    }
-                } catch(e) {
-                    sentences = [replyContent.replace(/["\[\]{}]/g, '').trim()];
-                }
-
-                if (sentences.length > 5) sentences = sentences.slice(0, 5);
-
-                return {
-                    memberId,
-                    memberName: member.alias || member.name,
-                    messages: sentences
-                };
-            } catch(e) {
-                console.error(`GVC AI reply error for member ${memberId}:`, e);
-                return null;
-            }
-        });
-
+        // 读取群聊历史记录，供角色了解之前的聊天内容
+        let historyContext = '';
+        const msgKey = getMessagesKey(groupId);
         try {
-            const results = await Promise.all(apiPromises);
+            const historyMsgs = JSON.parse(localStorage.getItem(msgKey) || '[]');
+            const recentHistory = historyMsgs.slice(-20);
+            recentHistory.forEach(m => {
+                if (m.isSystemMsg || m.isSystemEvent || m.isCallRecord || m.isTransfer || m.isRedPacket || m.isGift) return;
+                const senderName = m.type === 'sent' ? uName : (m.senderName || '未知');
+                if (m.isEmotionImage) {
+                    historyContext += `[系统提示：${senderName} 发送了一张【表情包】]\n`;
+                } else {
+                    historyContext += `${senderName}: ${m.text || ''}\n`;
+                }
+            });
+        } catch(e) {}
 
-            // 按随机顺序依次显示回复（模拟真实通话的时间差）
-            let delay = 0;
-            for (const result of results) {
+        // 所有成员都参与回复，打乱顺序模拟真实群聊
+        const replyingMembers = allMembers.slice().sort(() => Math.random() - 0.5);
+
+        // 顺序调用，每个角色回复后更新临时消息，后续角色能看到
+        for (let i = 0; i < replyingMembers.length; i++) {
+            if (!gvcActive) break;
+
+            const member = replyingMembers[i];
+            const currentContext = buildChatContext(gvcTempMessages, historyContext, uName);
+            
+            try {
+                const result = await generateMemberReply(member.id, memberInfoMap, group, allMembers, uName, uPersona, currentContext, settings, abortSignal);
+                
                 if (!result || !result.messages || result.messages.length === 0) continue;
 
-                // 每条消息逐条显示，模拟真实聊天节奏
+                // 显示回复并添加到临时消息
                 for (const msgText of result.messages) {
                     if (!msgText) continue;
-                    const msgDelay = delay;
                     const memberId = String(result.memberId);
                     const memberName = result.memberName;
-                    setTimeout(() => {
+                    
+                    // 立即添加到临时消息，让下一个角色能看到
+                    gvcTempMessages.push({
+                        id: Date.now() + Math.random(),
+                        type: 'received',
+                        text: msgText,
+                        timestamp: Date.now(),
+                        senderId: memberId,
+                        senderName: memberName
+                    });
+                    
+                    // 延迟显示气泡
+                    const bubbleDelay = i * 600;
+                    const tid = setTimeout(() => {
                         if (!gvcActive) return;
-                        // 在头像下方显示气泡
                         showGvcBubble(memberId, msgText, false);
-                        // 添加到临时消息
-                        gvcTempMessages.push({
-                            id: Date.now() + Math.random(),
-                            type: 'received',
-                            text: msgText,
-                            timestamp: Date.now(),
-                            senderId: memberId,
-                            senderName: memberName
-                        });
-                    }, msgDelay);
-                    delay += 600 + Math.random() * 800;
+                    }, bubbleDelay);
+                    gvcReplyTimeouts.push(tid);
                 }
-                // 角色之间额外间隔
-                delay += 400 + Math.random() * 600;
+            } catch(e) {
+                console.error(`GVC AI reply error for member ${member.id}:`, e);
             }
 
-            // 所有回复完成后更新状态
-            setTimeout(() => {
-                if (!gvcActive) return;
-                const statusEl = document.getElementById('gvc-status');
-                if (statusEl) {
-                    statusEl.textContent = '';
-                    statusEl.style.color = '#4ade80';
-                }
-            }, delay + 500);
-
-        } catch(e) {
-            if (e.name !== 'AbortError') {
-                console.error('GVC AI reply error:', e);
+            // 角色间间隔，模拟真实群聊节奏
+            if (i < replyingMembers.length - 1 && gvcActive) {
+                await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
             }
         }
+
+        // 所有回复完成后更新状态
+        setTimeout(() => {
+            if (!gvcActive) return;
+            const statusEl = document.getElementById('gvc-status');
+            if (statusEl) {
+                statusEl.textContent = '';
+                statusEl.style.color = '#4ade80';
+            }
+        }, 2000);
     }
 
     // 轮询群聊新消息同步到通话界面
@@ -31336,6 +31608,10 @@ ${msgContext ? msgContext : '无'}
 
     window.expandGroupVoiceCall = (e) => {
         if (!gvcMinimized) return;
+        if (gvcSuppressClick) {
+            gvcSuppressClick = false;
+            return;
+        }
         const callPage = document.getElementById('group-voice-call-page');
         const floatEl = document.getElementById('group-voice-call-float');
 
@@ -31405,8 +31681,8 @@ ${msgContext ? msgContext : '无'}
                 if (g) gvcLastRecord.groupName = g.groupName || '';
             } catch(e) {}
 
-            // 显示聊天页面底部的小弹窗
-            showGvcRecordBar();
+            // 将通话记录作为消息插入群聊
+            insertGvcRecordToChat();
         }
 
         gvcActive = false;
@@ -31418,6 +31694,78 @@ ${msgContext ? msgContext : '无'}
             document.getElementById('group-voice-call-page').classList.remove('active');
         }, 300);
     };
+
+    // 渲染群通话记录详情
+    function renderGvcRecordDetail(container, recordId) {
+        if (!gvcLastRecord) {
+            container.innerText = '通话记录已失效';
+            return;
+        }
+        const msgs = gvcLastRecord.messages;
+        if (!msgs || msgs.length === 0) {
+            container.innerText = '无通话记录内容';
+            return;
+        }
+        let html = '';
+        for (const m of msgs) {
+            const timeStr = new Date(m.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            const name = m.senderName || '未知';
+            const text = escapeHtml(m.text || '');
+            html += `<div style="margin-bottom:6px;"><span style="color:#999;font-size:11px;">${timeStr}</span> <span style="color:#666;font-weight:500;margin:0 4px;">${name}:</span> <span>${text}</span></div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    // 将通话记录作为消息插入群聊
+    function insertGvcRecordToChat() {
+        if (!gvcLastRecord) return;
+        const key = getMessagesKey(gvcLastRecord.groupId);
+        let messages = [];
+        try { messages = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+
+        const duration = gvcLastRecord.duration;
+        const msgCount = gvcLastRecord.messages.length;
+        let durationText = '';
+        if (duration < 1) {
+            durationText = '不到1分钟';
+        } else if (duration < 60) {
+            durationText = `${duration}分钟`;
+        } else {
+            const hours = Math.floor(duration / 60);
+            const mins = duration % 60;
+            durationText = mins > 0 ? `${hours}小时${mins}分钟` : `${hours}小时`;
+        }
+
+        const newMsg = {
+            id: Date.now(),
+            type: 'gvc_record',
+            text: `[群通话记录] 通话时长${durationText}，共${msgCount}条消息`,
+            timestamp: Date.now(),
+            senderId: 'system',
+            senderName: '系统',
+            isGroupMsg: true,
+            gvcRecordId: Date.now()
+        };
+
+        messages.push(newMsg);
+        localStorage.setItem(key, JSON.stringify(messages));
+
+        // 更新群聊lastMsg
+        try {
+            let groups = getGroupChatList();
+            const gi = groups.findIndex(g => g.groupId === gvcLastRecord.groupId);
+            if (gi > -1) {
+                groups[gi].lastMsg = newMsg.text;
+                groups[gi].timestamp = Date.now();
+                saveGroupChatList(groups);
+            }
+        } catch(e) {}
+
+        // 如果当前正在查看该群聊，重新渲染
+        if (String(currentChatContactId) === String(gvcLastRecord.groupId)) {
+            renderConversationMessages();
+        }
+    }
 
     // 显示通话记录小弹窗
     function showGvcRecordBar() {
@@ -31586,6 +31934,43 @@ ${msgContext ? msgContext : '无'}
                 sysDiv.className = 'msg-group-system';
                 sysDiv.innerText = msg.text;
                 fragment.appendChild(sysDiv);
+                return;
+            }
+
+            // 群通话记录消息（仿撤回提示样式）
+            if (msg.type === 'gvc_record') {
+                const wrapper = document.createElement('div');
+                wrapper.style.display = 'flex';
+                wrapper.style.flexDirection = 'column';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.margin = '5px 0';
+
+                const tipDiv = document.createElement('div');
+                tipDiv.className = 'msg-recalled-tip';
+                tipDiv.style.cursor = 'pointer';
+                tipDiv.style.padding = '5px 12px';
+                tipDiv.style.borderRadius = '12px';
+                tipDiv.style.background = 'rgba(0,0,0,0.04)';
+                tipDiv.style.userSelect = 'none';
+                tipDiv.style.webkitUserSelect = 'none';
+                tipDiv.innerText = msg.text;
+
+                const detailDiv = document.createElement('div');
+                detailDiv.style.cssText = 'display:none; margin-top:8px; padding:8px 10px; border-radius:10px; background:rgba(0,0,0,0.03); font-size:12px; line-height:1.6; color:#666; max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all;';
+
+                let expanded = false;
+                tipDiv.addEventListener('click', function() {
+                    expanded = !expanded;
+                    detailDiv.style.display = expanded ? 'block' : 'none';
+                    tipDiv.style.background = expanded ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.04)';
+                    if (expanded && !detailDiv.innerText) {
+                        renderGvcRecordDetail(detailDiv, msg.gvcRecordId);
+                    }
+                });
+
+                wrapper.appendChild(tipDiv);
+                wrapper.appendChild(detailDiv);
+                fragment.appendChild(wrapper);
                 return;
             }
 
@@ -34047,6 +34432,77 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
         }, { passive: true });
         document.addEventListener('touchmove', (e) => {
             if (voiceCallDragState && e.touches.length === 1) {
+                const t = e.touches[0];
+                moveDrag(t.clientX, t.clientY);
+                e.preventDefault();
+            }
+        }, { passive: false });
+        document.addEventListener('touchend', (e) => endDrag(e));
+    })();
+
+    // 群通话悬浮窗拖动功能
+    let gvcDragState = null;
+    let gvcSuppressClick = false;
+    (() => {
+        const floatEl = document.getElementById('group-voice-call-float');
+        if (!floatEl) return;
+
+        const startDrag = (clientX, clientY) => {
+            const rect = floatEl.getBoundingClientRect();
+            gvcDragState = {
+                startX: clientX, startY: clientY,
+                offsetX: clientX - rect.left, offsetY: clientY - rect.top,
+                moved: false
+            };
+            floatEl.classList.add('dragging');
+        };
+
+        const moveDrag = (clientX, clientY) => {
+            if (!gvcDragState) return;
+            const dx = Math.abs(clientX - gvcDragState.startX);
+            const dy = Math.abs(clientY - gvcDragState.startY);
+            if (dx > 4 || dy > 4) gvcDragState.moved = true;
+
+            const floatW = floatEl.offsetWidth;
+            const floatH = floatEl.offsetHeight;
+            let newLeft = clientX - gvcDragState.offsetX;
+            let newTop = clientY - gvcDragState.offsetY;
+            newLeft = Math.max(4, Math.min(window.innerWidth - floatW - 4, newLeft));
+            newTop = Math.max(4, Math.min(window.innerHeight - floatH - 4, newTop));
+            floatEl.style.left = newLeft + 'px';
+            floatEl.style.top = newTop + 'px';
+            floatEl.style.right = 'auto';
+            floatEl.style.bottom = 'auto';
+        };
+
+        const endDrag = (e) => {
+            if (!gvcDragState) return;
+            const wasMoved = gvcDragState.moved;
+            gvcDragState = null;
+            floatEl.classList.remove('dragging');
+            if (wasMoved) {
+                gvcSuppressClick = true;
+                setTimeout(() => { gvcSuppressClick = false; }, 50);
+            }
+        };
+
+        floatEl.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            startDrag(e.clientX, e.clientY);
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (gvcDragState) moveDrag(e.clientX, e.clientY);
+        });
+        document.addEventListener('mouseup', (e) => endDrag(e));
+
+        floatEl.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1) return;
+            const t = e.touches[0];
+            startDrag(t.clientX, t.clientY);
+        }, { passive: true });
+        document.addEventListener('touchmove', (e) => {
+            if (gvcDragState && e.touches.length === 1) {
                 const t = e.touches[0];
                 moveDrag(t.clientX, t.clientY);
                 e.preventDefault();
@@ -37207,10 +37663,20 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         if (!rawContent || typeof rawContent !== 'string') return rawContent;
         let content = rawContent.trim();
 
-        // 1. 移除 markdown 代码块标记（```json ... ```）
+        // 1. 移除思维链标签（如<think>...</think>、<thinking>...</thinking>、<reflection>...</reflection>）
+        content = content.replace(/<think(?:ing|reasoning)?>[\s\S]*?<\/think(?:ing|reasoning)?>/gi, '');
+        content = content.replace(/<think(?:ing|reasoning)?>[\s\S]*$/gi, ''); // 未闭合的标签（被截断）
+        content = content.replace(/<\/think(?:ing|reasoning)?>/gi, '');
+        content = content.replace(/<reflection>[\s\S]*?<\/reflection>/gi, '');
+        content = content.replace(/<reflection>[\s\S]*$/gi, '');
+        content = content.replace(/<\/reflection>/gi, '');
+        content = content.trim();
+        if (!content) return '';
+
+        // 2. 移除 markdown 代码块标记（```json ... ```）
         content = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '');
 
-        // 2. 移除常见的思维链前缀标记
+        // 3. 移除常见的思维链前缀标记
         const thinkingPrefixes = [
             /^(最终回复[：:]\s*)/,
             /^(好的[，,]\s*我来回复[：:]\s*)/,
@@ -37220,13 +37686,12 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
             /^(让我想想.*?[\n\r]+)/,
             /^(好的[，,].*?[\n\r]+)/,
             /^(嗯[，,].*?[\n\r]+)/,
-            /^(\d+\.\s*)/,
         ];
         for (const pattern of thinkingPrefixes) {
             content = content.replace(pattern, '');
         }
 
-        // 3. 尝试提取JSON部分（查找第一个 { 到最后一个 }）
+        // 4. 尝试提取JSON部分（查找第一个 { 到最后一个 }）
         const jsonStart = content.indexOf('{');
         const jsonEnd = content.lastIndexOf('}');
         if (jsonStart !== -1 && jsonEnd > jsonStart) {
@@ -37234,28 +37699,53 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         } else if (jsonStart !== -1 && isTruncated) {
             // JSON被截断，没有闭合的 }，尝试修复
             content = content.substring(jsonStart);
-            // 先尝试简单闭合：补全 ] 和 }
-            let repaired = content + ']}';
-            try {
-                JSON.parse(repaired);
-                content = repaired;
-            } catch(e) {
-                // 简单闭合失败，尝试移除最后一个不完整的元素
-                const lastComma = content.lastIndexOf('",');
-                const lastBracket = content.lastIndexOf('["');
-                if (lastComma > lastBracket) {
-                    repaired = content.substring(0, lastComma + 1) + ']}';
-                    try {
-                        JSON.parse(repaired);
-                        content = repaired;
-                    } catch(e2) {
-                        // 最终回退：直接用原始内容
+
+            // 尝试多种修复策略
+            const repairStrategies = [
+                // 策略1：简单闭合 ]} 
+                content + ']}',
+                // 策略2：移除最后一个不完整的字符串元素后闭合
+                (() => {
+                    const lastComma = content.lastIndexOf('",');
+                    const lastBracket = content.lastIndexOf('["');
+                    if (lastComma > lastBracket) {
+                        return content.substring(0, lastComma + 1) + ']}';
                     }
+                    return null;
+                })(),
+                // 策略3：移除最后一个不完整的元素（到倒数第一个逗号）
+                (() => {
+                    // 找到最后一个完整的字符串结尾（"后面跟逗号或]）
+                    const lastCompleteStr = content.lastIndexOf('",');
+                    if (lastCompleteStr > 0) {
+                        // 从这个逗号之后截断，闭合数组
+                        return content.substring(0, lastCompleteStr + 1) + ']}';
+                    }
+                    return null;
+                })(),
+                // 策略4：只保留数组中第一个完整元素
+                (() => {
+                    const firstStrMatch = content.match(/"reply"\s*:\s*\[\s*"([^"]*)"/);
+                    if (firstStrMatch) {
+                        return '{"reply":["' + firstStrMatch[1] + '"]}';
+                    }
+                    return null;
+                })()
+            ];
+
+            for (const repaired of repairStrategies) {
+                if (!repaired) continue;
+                try {
+                    JSON.parse(repaired);
+                    content = repaired;
+                    break;
+                } catch(e) {
+                    // 继续尝试下一个策略
                 }
             }
         }
 
-        // 4. 移除JSON前后的空白和多余文本
+        // 5. 移除JSON前后的空白和多余文本
         content = content.trim();
 
         return content;
@@ -37683,6 +38173,7 @@ ${emotionFreq !== 'none' ? (isForceEmotionTurn
                 { role: "system", content: sysPrompt },
                 { role: "user", content: `历史聊天记录:\n${historyStr}${replyContext}${blockContext}${payRequestContext}\n\n请严格按照JSON格式要求给出你的回复:` }
             ],
+            max_tokens: 2000,
             temperature: parseFloat(settings.api.temp || 0.8),
             response_format: { "type": "json_object" } // 请求API强制返回JSON
         };
@@ -37707,7 +38198,7 @@ ${emotionFreq !== 'none' ? (isForceEmotionTurn
             
             if (isGemini) {
                 fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model}:generateContent?key=${settings.api.key}`;
-                bodyData = JSON.stringify({ contents: [{ parts: [{ text: sysPrompt + "\n\n历史聊天记录:\n" + historyStr + "\n\n请严格按照JSON格式要求给出你的回复:" }] }], generationConfig: { temperature: payload.temperature, response_mime_type: "application/json" } });
+                bodyData = JSON.stringify({ contents: [{ parts: [{ text: sysPrompt + "\n\n历史聊天记录:\n" + historyStr + "\n\n请严格按照JSON格式要求给出你的回复:" }] }], generationConfig: { temperature: payload.temperature, maxOutputTokens: 2000, response_mime_type: "application/json" } });
             } else {
                 headers['Authorization'] = `Bearer ${settings.api.key}`;
                 bodyData = JSON.stringify(payload);
@@ -42575,17 +43066,80 @@ window.executeDisableLock = () => {
 
     // ========================= 见一面 App 逻辑 =========================
     const MEET_SETTINGS_KEY = 'meetApp_settings_v1';
+    const MEET_STORY_KEY = 'meetApp_story_'; // + contactId -> array of saves
     let meetCurrentContact = null;  // 当前角色对象
     let meetPlace = '';             // 地点
     let meetPov = '1';             // 人称：1=第一人称，2=第二人称，3=第三人称
     let meetNovelLines = [];       // 剧情段落数组 [{text, type:'user'|'ai'}]
     let meetModalPov = '1';        // 弹窗中临时选择的人称
+    let meetCurrentSaveId = null;  // 当前存档ID
 
     function getMeetSettings() {
         try { return JSON.parse(localStorage.getItem(MEET_SETTINGS_KEY) || '{}'); } catch(e) { return {}; }
     }
     function saveMeetSettings(s) {
         localStorage.setItem(MEET_SETTINGS_KEY, JSON.stringify(s));
+    }
+
+    // 获取指定角色的所有存档（数组）
+    function getMeetSaves(contactId) {
+        const key = MEET_STORY_KEY + contactId;
+        try {
+            const data = JSON.parse(localStorage.getItem(key));
+            if (Array.isArray(data)) return data;
+            // 兼容旧格式：单个对象
+            if (data && data.place) return [data];
+        } catch(e) {}
+        return [];
+    }
+
+    // 保存当前剧情到localStorage
+    function saveMeetStory() {
+        if (!meetCurrentContact) return;
+        const key = MEET_STORY_KEY + meetCurrentContact.id;
+        let saves = getMeetSaves(meetCurrentContact.id);
+        const saveData = {
+            id: meetCurrentSaveId || ('save_' + Date.now()),
+            contactId: meetCurrentContact.id,
+            contactName: meetCurrentContact.alias || meetCurrentContact.name || '未知',
+            contactAvatar: meetCurrentContact.avatar || '',
+            place: meetPlace,
+            pov: meetPov,
+            lines: meetNovelLines,
+            timestamp: Date.now()
+        };
+        if (!meetCurrentSaveId) {
+            meetCurrentSaveId = saveData.id;
+        }
+        // 更新或新增
+        const idx = saves.findIndex(s => s.id === meetCurrentSaveId);
+        if (idx >= 0) {
+            saves[idx] = saveData;
+        } else {
+            saves.push(saveData);
+        }
+        localStorage.setItem(key, JSON.stringify(saves));
+    }
+
+    // 加载指定角色的最新存档
+    function loadMeetStory(contactId) {
+        const saves = getMeetSaves(contactId);
+        if (saves.length === 0) return null;
+        // 返回最新的存档
+        saves.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        return saves[0];
+    }
+
+    // 删除指定存档
+    function deleteMeetSave(contactId, saveId) {
+        const key = MEET_STORY_KEY + contactId;
+        let saves = getMeetSaves(contactId);
+        saves = saves.filter(s => s.id !== saveId);
+        if (saves.length === 0) {
+            localStorage.removeItem(key);
+        } else {
+            localStorage.setItem(key, JSON.stringify(saves));
+        }
     }
 
     window.openMeetApp = () => {
@@ -42598,12 +43152,10 @@ window.executeDisableLock = () => {
     };
 
     window.closeMeetApp = () => {
+        // 保存当前剧情
+        saveMeetStory();
         document.getElementById('meet-app-page').classList.remove('active');
-        // 重置状态
-        meetCurrentContact = null;
-        meetPlace = '';
-        meetPov = '1';
-        meetNovelLines = [];
+        // 不重置状态，保留剧情
     };
 
     function renderMeetContactList() {
@@ -42620,11 +43172,13 @@ window.executeDisableLock = () => {
             const name = c.alias || c.name || '未知';
             const avatar = c.avatar || '';
             const desc = c.desc || c.greeting || '';
+            const hasStory = loadMeetStory(c.id);
+            const storyBadge = hasStory ? '<div class="meet-card-badge">继续</div>' : '';
             return `<div class="meet-card" onclick="selectMeetContact('${c.id || ''}')">
                 <img class="meet-card-avatar" src="${avatar}" onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2228%22 x=%228%22 font-size=%2224%22>👤</text></svg>'">
                 <div class="meet-card-info">
-                    <div class="meet-card-name">${name}</div>
-                    <div class="meet-card-desc">${desc}</div>
+                    <div class="meet-card-name">${name}${storyBadge}</div>
+                    <div class="meet-card-desc">${hasStory ? '上次在' + hasStory.place + '的剧情' : desc}</div>
                 </div>
             </div>`;
         }).join('');
@@ -42636,7 +43190,34 @@ window.executeDisableLock = () => {
         const contact = contacts.find(c => String(c.id) === String(contactId));
         if (!contact) return;
         meetCurrentContact = contact;
-        // 弹出地点输入弹窗
+
+        // 检查是否有已保存的剧情
+        const savedStory = loadMeetStory(contactId);
+        if (savedStory) {
+            // 恢复之前的剧情
+            meetCurrentSaveId = savedStory.id;
+            meetPlace = savedStory.place || '';
+            meetPov = savedStory.pov || '1';
+            meetNovelLines = savedStory.lines || [];
+
+            // 直接显示剧情页
+            document.getElementById('meet-select-page').style.display = 'none';
+            document.getElementById('meet-scene-page').style.display = 'flex';
+            document.getElementById('meet-scene-place').textContent = meetPlace;
+            updateMeetPovBtns();
+
+            // 重新渲染剧情
+            const novelArea = document.getElementById('meet-novel-area');
+            novelArea.innerHTML = '';
+            meetNovelLines.forEach((l, i) => {
+                const p = createMeetNovelElement(l.text, l.type, i);
+                novelArea.appendChild(p);
+            });
+            novelArea.scrollTop = novelArea.scrollHeight;
+            return;
+        }
+
+        // 没有保存的剧情，弹出地点输入弹窗
         const settings = getMeetSettings();
         document.getElementById('meet-place-input').value = settings.defaultPlace || '';
         meetModalPov = '1';
@@ -42658,6 +43239,7 @@ window.executeDisableLock = () => {
         if (!placeInput) { showToast('请输入见面地点~'); return; }
         meetPlace = placeInput;
         meetPov = meetModalPov;
+        meetCurrentSaveId = null; // 新存档
         // 隐藏弹窗和选择页，显示剧情页
         document.getElementById('meet-place-modal').classList.remove('active');
         document.getElementById('meet-select-page').style.display = 'none';
@@ -42669,6 +43251,8 @@ window.executeDisableLock = () => {
         // 清空小说区域
         meetNovelLines = [];
         document.getElementById('meet-novel-area').innerHTML = '';
+        // 保存初始剧情
+        saveMeetStory();
     };
 
     function updateMeetPovBtns() {
@@ -42682,10 +43266,10 @@ window.executeDisableLock = () => {
     };
 
     window.meetBackToSelect = () => {
+        // 保存当前剧情
+        saveMeetStory();
         document.getElementById('meet-scene-page').style.display = 'none';
         document.getElementById('meet-select-page').style.display = '';
-        meetNovelLines = [];
-        meetCurrentContact = null;
     };
 
     window.meetSendAction = () => {
@@ -42696,13 +43280,15 @@ window.executeDisableLock = () => {
         meetAppendNovel(text, 'user');
     };
 
-    window.meetTriggerAI = async () => {
-        // 先把输入框内容作为用户动作发送
-        const input = document.getElementById('meet-input');
-        const text = input.value.trim();
-        if (text) {
-            input.value = '';
-            meetAppendNovel(text, 'user');
+    window.meetTriggerAI = async (skipUserInput) => {
+        // 先把输入框内容作为用户动作发送（除非skipUserInput）
+        if (!skipUserInput) {
+            const input = document.getElementById('meet-input');
+            const text = input.value.trim();
+            if (text) {
+                input.value = '';
+                meetAppendNovel(text, 'user');
+            }
         }
 
         // 读取API设置
@@ -42771,14 +43357,37 @@ window.executeDisableLock = () => {
 
         let povRule = '';
         if (meetPov === '1') {
-            povRule = `用第一人称"我"来叙述你的动作和反应。例如：*我看着你*，心跳漏了一拍。`;
+            povRule = `用第一人称"我"来叙述角色${name}的动作和反应，用"你"来称呼用户${uName}。例如：*我看着你*，心跳漏了一拍。"你今天怎么来了？"我故作镇定地问。`;
         } else if (meetPov === '2') {
-            povRule = `用第二人称"你"来叙述。例如：*你低下头*，声音轻轻的。`;
+            povRule = `用第二人称"你"来叙述用户${uName}的动作，用"${name}"或"TA"来称呼角色。例如：*你低下头*，不敢看TA的眼睛。"嗯…"${name}轻轻应了一声。`;
         } else {
-            povRule = `用第三人称叙述，用角色的名字"${name}"。例如：*${name}低下头*，耳尖泛红。`;
+            povRule = `用第三人称叙述，用角色的名字"${name}"称呼角色，用"${uName}"称呼用户。例如：*${name}低下头*，耳尖泛红。${uName}注意到了TA的异样。`;
         }
 
+        // 读取预设中已开启的条目（最高优先级）
+        let presetContext = '';
+        try {
+            const presets = getMeetPresets();
+            const enabledEntries = [];
+            presets.forEach(p => {
+                (p.entries || []).forEach(e => {
+                    if (e.enabled && e.content) enabledEntries.push(e);
+                });
+            });
+            if (enabledEntries.length > 0) {
+                presetContext = enabledEntries.map(e => {
+                    let s = e.content;
+                    if (e.note) s = `【${e.note}】${s}`;
+                    return s;
+                }).join('\n\n');
+            }
+        } catch(e) {}
+
         let systemPrompt = `你是一个沉浸式角色扮演AI，正在扮演"${name}"与用户"${uName}"在线下面对面见面。你输出的是小说式的叙事文本，不是聊天消息。
+
+【最高准则——必须严格遵守】
+以下设定是你必须绝对遵守的最高规则，任何情况下都不能违反，必须完全融入到你的演绎中：
+${presetContext || '（无额外设定）'}
 
 【你的人设】
 ${persona}
@@ -42800,29 +43409,10 @@ ${persona}
             systemPrompt += `\n\n【你们最近的聊天记录（线上聊天，供你参考你们的关系和最近发生的事）】\n${chatHistoryContext}`;
         }
 
-        // 读取预设中已开启的条目
-        let presetContext = '';
-        try {
-            const presets = getMeetPresets();
-            const enabledEntries = [];
-            presets.forEach(p => {
-                (p.entries || []).forEach(e => {
-                    if (e.enabled && e.content) enabledEntries.push(e);
-                });
-            });
-            if (enabledEntries.length > 0) {
-                presetContext = enabledEntries.map(e => {
-                    let s = e.content;
-                    if (e.note) s = `（${e.note}）${s}`;
-                    return s;
-                }).join('\n');
-            }
-        } catch(e) {}
-        if (presetContext) {
-            systemPrompt += `\n\n【预设/剧情设定（必须遵守和融入演绎中）】\n${presetContext}`;
-        }
-
-        systemPrompt += `\n\n【人称视角规则】${povRule}
+        systemPrompt += `\n\n【人称视角规则——必须严格遵守】
+重要：用户输入的消息是以用户视角描述的用户动作和对话。而你输出的回复必须严格以下面的人称视角来叙述角色的动作和对话：
+${povRule}
+整个回复过程中，人称必须保持一致，绝对不能混用。
 
 【输出格式要求——极其重要】
 你必须输出一段完整的小说式叙事，像写小说一样，包含以下元素：
@@ -42833,6 +43423,12 @@ ${persona}
 5. 每次输出3-6句话的连贯段落，像一个小说片段
 6. 不要输出JSON，不要加任何前缀标记，直接输出纯文学文本
 7. 文字要细腻、有画面感、有情绪张力，符合角色性格`;
+
+        // 最少回复字数设置
+        const replySettings = getMeetReplySettings();
+        if (replySettings.minLength > 0) {
+            systemPrompt += `\n\n【字数要求】\n你的回复字数不能少于 ${replySettings.minLength} 字（不含标点符号的纯汉字字数）。请展开描写，多加入动作、神态、心理活动和环境细节，确保回复长度足够。`;
+        }
 
         // 构建上下文：最近10条见面互动
         const recentLines = meetNovelLines.slice(-10);
@@ -42895,23 +43491,530 @@ ${persona}
         }
     };
 
-    function meetAppendNovel(text, type) {
-        const novelArea = document.getElementById('meet-novel-area');
+    function createMeetNovelElement(text, type, index) {
         const p = document.createElement('div');
         p.className = 'meet-novel-p ' + (type === 'user' ? 'user-action' : 'ai-reply');
         p.textContent = text;
+        p.dataset.lineIdx = index;
+        p.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            showMeetLineAction(index);
+        });
+        return p;
+    }
+
+    function meetAppendNovel(text, type) {
+        const novelArea = document.getElementById('meet-novel-area');
+        const idx = meetNovelLines.length; // 当前索引
+        const p = createMeetNovelElement(text, type, idx);
         novelArea.appendChild(p);
         novelArea.scrollTop = novelArea.scrollHeight;
         // 记录到数组
         meetNovelLines.push({ text, type });
+        // 自动保存剧情
+        saveMeetStory();
     }
 
+    function refreshMeetNovelDisplay() {
+        const novelArea = document.getElementById('meet-novel-area');
+        novelArea.innerHTML = '';
+        meetNovelLines.forEach((l, i) => {
+            const p = createMeetNovelElement(l.text, l.type, i);
+            novelArea.appendChild(p);
+        });
+        novelArea.scrollTop = novelArea.scrollHeight;
+    }
+
+    // 气泡操作菜单
+    let meetLineActionMenu = null;
+
+    function closeMeetLineAction() {
+        if (meetLineActionMenu) { meetLineActionMenu.remove(); meetLineActionMenu = null; }
+    }
+
+    function showMeetLineAction(index) {
+        closeMeetLineAction();
+        const line = meetNovelLines[index];
+        if (!line) return;
+
+        const menu = document.createElement('div');
+        menu.className = 'meet-line-action-menu';
+
+        const isAI = line.type === 'ai';
+
+        // 重退按钮（AI回复才显示）
+        if (isAI) {
+            const regenBtn = document.createElement('button');
+            regenBtn.className = 'meet-line-action-item';
+            regenBtn.textContent = '重退';
+            regenBtn.onclick = () => { closeMeetLineAction(); meetRegenerateLine(index); };
+            menu.appendChild(regenBtn);
+        }
+
+        // 删除按钮
+        const delBtn = document.createElement('button');
+        delBtn.className = 'meet-line-action-item danger';
+        delBtn.textContent = '删除';
+        delBtn.onclick = () => { closeMeetLineAction(); meetDeleteLine(index); };
+        menu.appendChild(delBtn);
+
+        // 定位在气泡附近
+        const el = document.querySelector(`.meet-novel-p[data-line-idx="${index}"]`);
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            menu.style.left = Math.min(rect.left + 10, window.innerWidth - 120) + 'px';
+            menu.style.top = (rect.top - 50) + 'px';
+        } else {
+            menu.style.left = '50%';
+            menu.style.top = '50%';
+        }
+
+        document.body.appendChild(menu);
+        meetLineActionMenu = menu;
+
+        // 点击其他地方关闭
+        const closeHandler = (e) => {
+            if (!menu.contains(e.target)) {
+                closeMeetLineAction();
+                document.removeEventListener('click', closeHandler);
+                document.removeEventListener('touchstart', closeHandler);
+            }
+        };
+        setTimeout(() => {
+            document.addEventListener('click', closeHandler);
+            document.addEventListener('touchstart', closeHandler);
+        }, 50);
+    }
+
+    window.meetDeleteLine = (index) => {
+        if (index < 0 || index >= meetNovelLines.length) return;
+        meetNovelLines.splice(index, 1);
+        refreshMeetNovelDisplay();
+        saveMeetStory();
+    };
+
+    window.meetRegenerateLine = async (index) => {
+        if (index < 0 || index >= meetNovelLines.length) return;
+        if (meetNovelLines[index].type !== 'ai') return;
+
+        // 删除当前AI回复
+        meetNovelLines.splice(index, 1);
+        refreshMeetNovelDisplay();
+        saveMeetStory();
+
+        // 重新调用AI生成
+        // 找到触发这条AI回复的用户消息（index-1 位置）
+        await meetTriggerAI(true); // true = skipUserInput
+    };
+
+    // ---- 自定义CSS ----
+    const MEET_CUSTOM_CSS_ID = 'meet-custom-css-style';
+
+    function applyMeetCustomCss(css) {
+        let el = document.getElementById(MEET_CUSTOM_CSS_ID);
+        if (!el) {
+            el = document.createElement('style');
+            el.id = MEET_CUSTOM_CSS_ID;
+            document.head.appendChild(el);
+        }
+        el.textContent = css || '';
+    }
+
+    function loadMeetCustomCss() {
+        const settings = getMeetSettings();
+        return settings.customCss || '';
+    }
+
+    function loadMeetCustomCssToUI() {
+        document.getElementById('meet-custom-css').value = loadMeetCustomCss();
+    }
+
+    window.saveMeetCustomCss = () => {
+        const settings = getMeetSettings();
+        settings.customCss = document.getElementById('meet-custom-css').value || '';
+        saveMeetSettings(settings);
+        applyMeetCustomCss(settings.customCss);
+    };
+
+    window.resetMeetCustomCss = () => {
+        document.getElementById('meet-custom-css').value = '';
+        const settings = getMeetSettings();
+        delete settings.customCss;
+        saveMeetSettings(settings);
+        applyMeetCustomCss('');
+        showToast('已恢复默认样式');
+    };
+
+    // 页面加载时应用自定义CSS
+    applyMeetCustomCss(loadMeetCustomCss());
+
     window.openMeetSettings = () => {
+        renderMeetSavesList();
         renderMeetPresetList();
+        loadMeetSummarySettingsToUI();
+        loadMeetCustomCssToUI();
+        loadMeetReplySettingsToUI();
         document.getElementById('meet-settings-overlay').classList.add('active');
     };
     window.closeMeetSettings = () => {
         document.getElementById('meet-settings-overlay').classList.remove('active');
+    };
+
+    // ---- 存档管理 ----
+    let meetAllSavesCache = []; // 缓存当前显示的存档列表
+
+    function renderMeetSavesList() {
+        const list = document.getElementById('meet-saves-list');
+        // 收集所有角色的存档
+        let contacts = [];
+        try { contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); } catch(e) {}
+        let allSaves = [];
+        contacts.forEach(c => {
+            const saves = getMeetSaves(c.id);
+            saves.forEach(s => {
+                allSaves.push({ ...s, contactId: c.id, contactName: c.alias || c.name || '未知', contactAvatar: c.avatar || '' });
+            });
+        });
+        // 兼容：也可能有旧格式存档没有对应contact
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith(MEET_STORY_KEY)) {
+                const cId = k.replace(MEET_STORY_KEY, '');
+                if (!contacts.find(c => String(c.id) === String(cId))) {
+                    const saves = getMeetSaves(cId);
+                    saves.forEach(s => {
+                        allSaves.push({ ...s, contactId: cId, contactName: s.contactName || '未知', contactAvatar: s.contactAvatar || '' });
+                    });
+                }
+            }
+        }
+        // 按时间排序
+        allSaves.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        meetAllSavesCache = allSaves; // 缓存
+
+        if (allSaves.length === 0) {
+            list.innerHTML = '<div style="font-size:12px;color:#b08a8a;text-align:center;padding:8px 0;">还没有存档</div>';
+            return;
+        }
+
+        list.innerHTML = allSaves.map((s, idx) => {
+            const povText = s.pov === '1' ? '第一人称' : s.pov === '2' ? '第二人称' : '第三人称';
+            const lineCount = (s.lines || []).length;
+            const date = s.timestamp ? new Date(s.timestamp).toLocaleDateString('zh-CN', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
+            return `<div class="meet-save-item" onclick="onMeetSaveItemClick(${idx})">
+                <img class="meet-save-item-avatar" src="${s.contactAvatar}" onerror="this.style.display='none'">
+                <div class="meet-save-item-info">
+                    <div class="meet-save-item-name">${s.contactName} · ${s.place}</div>
+                    <div class="meet-save-item-meta">${povText} · ${lineCount}条对话 · ${date}</div>
+                </div>
+                <button class="meet-save-item-delete" onclick="event.stopPropagation();onMeetSaveItemDelete(${idx})">✕</button>
+            </div>`;
+        }).join('');
+    }
+
+    window.onMeetSaveItemClick = (idx) => {
+        const s = meetAllSavesCache[idx];
+        if (!s) return;
+        loadMeetSave(s.contactId, s.id);
+    };
+
+    window.onMeetSaveItemDelete = (idx) => {
+        const s = meetAllSavesCache[idx];
+        if (!s) return;
+        deleteMeetSaveConfirm(s.contactId, s.id);
+    };
+
+    window.loadMeetSave = (contactId, saveId) => {
+        let contacts = [];
+        try { contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); } catch(e) {}
+        const contact = contacts.find(c => String(c.id) === String(contactId));
+        if (!contact) {
+            showToast('找不到该角色');
+            return;
+        }
+        meetCurrentContact = contact;
+
+        const saves = getMeetSaves(contactId);
+        const save = saves.find(s => String(s.id) === String(saveId));
+        if (!save) {
+            showToast('找不到该存档');
+            return;
+        }
+
+        meetCurrentSaveId = save.id;
+        meetPlace = save.place || '';
+        meetPov = save.pov || '1';
+        meetNovelLines = save.lines || [];
+
+        // 关闭设置弹窗，显示剧情页
+        closeMeetSettings();
+        document.getElementById('meet-select-page').style.display = 'none';
+        document.getElementById('meet-scene-page').style.display = 'flex';
+        document.getElementById('meet-scene-place').textContent = meetPlace;
+        updateMeetPovBtns();
+
+        // 重新渲染剧情
+        refreshMeetNovelDisplay();
+        showToast('已切换：' + save.place);
+    };
+
+    let meetDeleteTarget = null; // {contactId, saveId}
+
+    window.deleteMeetSaveConfirm = (contactId, saveId) => {
+        meetDeleteTarget = { contactId, saveId };
+        document.getElementById('meet-delete-confirm-overlay').classList.add('active');
+    };
+
+    window.confirmMeetDelete = () => {
+        if (!meetDeleteTarget) return;
+        deleteMeetSave(meetDeleteTarget.contactId, meetDeleteTarget.saveId);
+        if (meetCurrentSaveId === meetDeleteTarget.saveId) {
+            meetCurrentSaveId = null;
+            meetNovelLines = [];
+            meetPlace = '';
+        }
+        renderMeetSavesList();
+        renderMeetContactList();
+        meetDeleteTarget = null;
+        document.getElementById('meet-delete-confirm-overlay').classList.remove('active');
+        showToast('存档已删除');
+    };
+
+    window.cancelMeetDelete = () => {
+        meetDeleteTarget = null;
+        document.getElementById('meet-delete-confirm-overlay').classList.remove('active');
+    };
+
+    window.createNewMeetSave = () => {
+        if (!meetCurrentContact) {
+            showToast('请先选择角色');
+            return;
+        }
+        // 关闭设置，弹出地点输入弹窗
+        closeMeetSettings();
+        const settings = getMeetSettings();
+        document.getElementById('meet-place-input').value = settings.defaultPlace || '';
+        meetModalPov = meetPov || '1';
+        const povBtns = document.querySelectorAll('#meet-place-modal .meet-pov-btn');
+        povBtns.forEach(b => b.classList.toggle('active', b.dataset.pov === meetModalPov));
+        document.getElementById('meet-place-modal').classList.add('active');
+        setTimeout(() => document.getElementById('meet-place-input').focus(), 100);
+    };
+
+    // ---- 总结管理 ----
+    const MEET_SUMMARY_KEY = 'meetApp_summaries_'; // + saveId
+
+    function getMeetSummarySettings() {
+        const settings = getMeetSettings();
+        return {
+            rounds: settings.summaryRounds || 10,
+            preset: settings.summaryPreset || ''
+        };
+    }
+
+    window.saveMeetSummarySettings = () => {
+        const settings = getMeetSettings();
+        settings.summaryRounds = parseInt(document.getElementById('meet-summary-rounds').value) || 10;
+        settings.summaryPreset = document.getElementById('meet-summary-preset').value || '';
+        saveMeetSettings(settings);
+    };
+
+    function loadMeetSummarySettingsToUI() {
+        const s = getMeetSummarySettings();
+        document.getElementById('meet-summary-rounds').value = s.rounds;
+        document.getElementById('meet-summary-preset').value = s.preset;
+    }
+
+    // ---- 回复设置 ----
+    function getMeetReplySettings() {
+        const settings = getMeetSettings();
+        return { minLength: settings.replyMinLength || 0 };
+    }
+
+    window.saveMeetReplySettings = () => {
+        const settings = getMeetSettings();
+        settings.replyMinLength = parseInt(document.getElementById('meet-min-length').value) || 0;
+        saveMeetSettings(settings);
+    };
+
+    function loadMeetReplySettingsToUI() {
+        const s = getMeetReplySettings();
+        document.getElementById('meet-min-length').value = s.minLength;
+    }
+
+    function getMeetSummaries(saveId) {
+        const key = MEET_SUMMARY_KEY + saveId;
+        try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; }
+    }
+
+    function saveMeetSummaries(saveId, summaries) {
+        const key = MEET_SUMMARY_KEY + saveId;
+        localStorage.setItem(key, JSON.stringify(summaries));
+    }
+
+    window.openMeetSummary = () => {
+        loadMeetSummarySettingsToUI();
+        renderMeetSummaryList();
+        document.getElementById('meet-summary-overlay').classList.add('active');
+    };
+
+    window.closeMeetSummary = () => {
+        document.getElementById('meet-summary-overlay').classList.remove('active');
+    };
+
+    function renderMeetSummaryList() {
+        const statsEl = document.getElementById('meet-summary-stats');
+        const listEl = document.getElementById('meet-summary-list');
+        const btnEl = document.getElementById('meet-summary-gen-btn');
+
+        if (!meetCurrentSaveId || !meetCurrentContact) {
+            statsEl.innerHTML = '';
+            listEl.innerHTML = '<div class="meet-summary-empty">暂无存档</div>';
+            btnEl.disabled = true;
+            return;
+        }
+
+        const summaries = getMeetSummaries(meetCurrentSaveId);
+        const totalRounds = Math.floor(meetNovelLines.length / 2); // 每轮=用户1+AI1
+        const summarizedRounds = summaries.reduce((a, s) => a + (s.rounds || 0), 0);
+        const remainingRounds = Math.max(0, totalRounds - summarizedRounds);
+
+        statsEl.innerHTML = `<span>已总结 ${summaries.length} 条</span><span>剩余 ${remainingRounds} 轮未总结</span><span>共 ${totalRounds} 轮</span>`;
+        btnEl.disabled = remainingRounds === 0;
+
+        if (summaries.length === 0) {
+            listEl.innerHTML = '<div class="meet-summary-empty">还没有总结</div>';
+            return;
+        }
+
+        listEl.innerHTML = summaries.map((s, i) => {
+            const date = s.timestamp ? new Date(s.timestamp).toLocaleDateString('zh-CN', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '';
+            return `<div class="meet-summary-item">
+                <div class="meet-summary-item-text">${s.text}</div>
+                <div class="meet-summary-item-actions">
+                    <span style="font-size:10px;color:#cbb;">${date} · ${s.rounds}轮</span>
+                    <button class="meet-summary-item-btn" onclick="copyMeetSummary(${i})">复制</button>
+                    <button class="meet-summary-item-btn del" onclick="deleteMeetSummary(${i})">删除</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    window.copyMeetSummary = (index) => {
+        const summaries = getMeetSummaries(meetCurrentSaveId);
+        if (summaries[index]) {
+            navigator.clipboard.writeText(summaries[index].text).then(() => showToast('已复制')).catch(() => showToast('复制失败'));
+        }
+    };
+
+    window.deleteMeetSummary = (index) => {
+        const summaries = getMeetSummaries(meetCurrentSaveId);
+        summaries.splice(index, 1);
+        saveMeetSummaries(meetCurrentSaveId, summaries);
+        renderMeetSummaryList();
+    };
+
+    window.generateMeetSummary = async () => {
+        if (!meetCurrentContact || !meetCurrentSaveId) { showToast('请先进入演绎'); return; }
+
+        const btnEl = document.getElementById('meet-summary-gen-btn');
+        btnEl.disabled = true;
+        btnEl.textContent = '总结中…';
+
+        try {
+            const summarySettings = getMeetSummarySettings();
+            const summaries = getMeetSummaries(meetCurrentSaveId);
+            const summarizedRounds = summaries.reduce((a, s) => a + (s.rounds || 0), 0);
+            const roundsToSummarize = summarySettings.rounds;
+
+            // 取出未总结的对话（每轮=用户+AI各一条）
+            const startLine = summarizedRounds * 2;
+            const endLine = startLine + roundsToSummarize * 2;
+            const linesToSummarize = meetNovelLines.slice(startLine, endLine);
+
+            if (linesToSummarize.length === 0) {
+                showToast('没有新的对话可总结');
+                return;
+            }
+
+            // 构建对话文本
+            const uName = localStorage.getItem('myName') || '我';
+            const cName = meetCurrentContact.alias || meetCurrentContact.name || '角色';
+            const conversationText = linesToSummarize.map(l => {
+                const speaker = l.type === 'user' ? uName : cName;
+                return `${speaker}：${l.text}`;
+            }).join('\n');
+
+            // 构建系统提示
+            let systemPrompt = '你是一个故事总结助手。请根据以下对话内容，写一段简洁的总结。';
+            if (summarySettings.preset) {
+                systemPrompt += '\n\n总结要求（必须严格遵守）：\n' + summarySettings.preset;
+            }
+            systemPrompt += '\n\n角色：' + cName + '，用户：' + uName;
+            systemPrompt += '\n请直接输出总结内容，不要加任何前缀或标记。';
+
+            // 获取API配置（和见一面用同一个配置）
+            const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+            const apiCfg = settings.api || {};
+            const apiUrl = apiCfg.url || '';
+            const apiKey = apiCfg.key || '';
+            const model = apiCfg.model || '';
+            if (!apiUrl || !apiKey) { showToast('请先在系统设置中配置API'); return; }
+
+            const isGemini = apiUrl.includes('generativelanguage');
+            let fetchUrl, headers = { 'Content-Type': 'application/json' }, bodyData = '';
+
+            if (isGemini) {
+                fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model || 'gemini-2.0-flash'}:generateContent?key=${apiKey}`;
+                bodyData = JSON.stringify({
+                    contents: [{ parts: [{ text: systemPrompt + '\n\n对话内容：\n' + conversationText }] }],
+                    generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
+                });
+            } else {
+                fetchUrl = apiUrl.endsWith('/v1') ? apiUrl + '/chat/completions' : apiUrl + '/v1/chat/completions';
+                headers['Authorization'] = 'Bearer ' + apiKey;
+                bodyData = JSON.stringify({
+                    model: model || undefined,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: '请总结以下对话：\n\n' + conversationText }
+                    ],
+                    max_tokens: 1000,
+                    temperature: 0.7
+                });
+            }
+
+            const resp = await fetch(fetchUrl, { method: 'POST', headers, body: bodyData });
+            const data = await resp.json();
+
+            let summaryText = '';
+            if (isGemini) {
+                summaryText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            } else {
+                summaryText = data?.choices?.[0]?.message?.content || data?.response || '';
+            }
+
+            // 清理思维链
+            summaryText = stripThinkingContent(summaryText).trim();
+            if (!summaryText) { showToast('总结为空'); return; }
+
+            // 保存总结
+            const actualRounds = Math.floor(linesToSummarize.length / 2);
+            summaries.push({
+                text: summaryText,
+                rounds: actualRounds,
+                timestamp: Date.now()
+            });
+            saveMeetSummaries(meetCurrentSaveId, summaries);
+            renderMeetSummaryList();
+            showToast('总结完成');
+        } catch (e) {
+            console.error('Summary error:', e);
+            showToast('总结失败：' + e.message);
+        } finally {
+            btnEl.disabled = false;
+            btnEl.textContent = '总结对话';
+        }
     };
 
     // ---- 预设管理 ----
