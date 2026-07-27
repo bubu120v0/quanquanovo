@@ -43582,26 +43582,27 @@ ${persona}
             systemPrompt += `\n\n【你们最近的聊天记录（线上聊天，供你参考你们的关系和最近发生的事）】\n${chatHistoryContext}`;
         }
 
+        // 最少回复字数设置（提前获取，用于后续的输出格式模板）
+        const replySettings = getMeetReplySettings();
+
         systemPrompt += `\n\n【人称视角规则——必须严格遵守】
 重要：用户输入的消息是以用户视角描述的用户动作和对话。而你输出的回复必须严格以下面的人称视角来叙述角色的动作和对话：
 ${povRule}
 整个回复过程中，人称必须保持一致，绝对不能混用。
 
-【输出格式要求——极其重要】
+【输出格式要求——极其重要，必须严格遵守】
 你必须输出一段完整的小说式叙事，像写小说一样，包含以下元素：
 1. 用*星号*包裹动作和神态描写，如*低下头*、*嘴角微微上扬*、*手指无意识地绕着发梢*
 2. 对话用引号""包裹
 3. 内心独白用（）包裹，如（心跳好快…）
 4. 适当加入环境描写，如*窗外的光影在TA脸上流转*
-5. 每次输出3-6句话的连贯段落，像一个小说片段
-6. 不要输出JSON，不要加任何前缀标记，直接输出纯文学文本
-7. 文字要细腻、有画面感、有情绪张力，符合角色性格`;
-
-        // 最少回复字数设置
-        const replySettings = getMeetReplySettings();
-        if (replySettings.minLength > 0) {
-            systemPrompt += `\n\n【字数要求】\n你的回复字数不能少于 ${replySettings.minLength} 字（不含标点符号的纯汉字字数）。请展开描写，多加入动作、神态、心理活动和环境细节，确保回复长度足够。`;
-        }
+${replySettings.minLength > 0 ? `5. 本次回复需要写一篇详细的长篇叙事，通过丰富的动作细节、神态变化、心理活动、环境氛围和对话来展开描写，自然流畅地达到约${replySettings.minLength}字左右的篇幅` : '5. 每次输出一个连贯的段落，像一个小说片段'}
+6. 绝对禁止输出任何英文文本，包括标题、标注、说明等
+7. 绝对禁止输出"Step"、"Paragraph"、"POV"、"constraints"等任何英文词汇或英文结构
+8. 绝对禁止输出任何形式的标题、编号、列表、分点说明
+9. 不要输出JSON，不要加任何前缀标记，直接输出纯文学中文文本
+10. 文字要细腻、有画面感、有情绪张力，符合角色性格
+11. 禁止输出你的思考过程、规划过程、写作大纲等内部内容，直接输出最终的小说文本`;
 
         // 构建上下文：最近10条见面互动
         const recentLines = meetNovelLines.slice(-10);
@@ -43613,13 +43614,22 @@ ${povRule}
             const isGemini = settings.api.url.includes('generativelanguage');
             let fetchUrl, bodyData, headers = { 'Content-Type': 'application/json' };
 
+            // 根据最少字数动态调整max_tokens，确保长文本不会被截断
+            // 中文字符约需1.5-2个token，取3.5倍以确保充足空间
+            const minLen = replySettings.minLength || 0;
+            let maxTokens = 1500;
+            if (minLen > 0) {
+                maxTokens = Math.max(2000, Math.ceil(minLen * 3.5));
+                if (maxTokens > 8000) maxTokens = 8000;
+            }
+
             if (isGemini) {
                 fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model || 'gemini-2.0-flash'}:generateContent?key=${settings.api.key}`;
                 bodyData = JSON.stringify({
                     contents: [
                         { role: 'user', parts: [{ text: systemPrompt + '\n\n---\n' + userPrompt }] }
                     ],
-                    generationConfig: { temperature: 0.9, maxOutputTokens: 1500 }
+                    generationConfig: { temperature: 0.9, maxOutputTokens: maxTokens }
                 });
             } else {
                 fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
@@ -43631,12 +43641,18 @@ ${povRule}
                         { role: 'user', content: userPrompt }
                     ],
                     temperature: 0.9,
-                    max_tokens: 1500
+                    max_tokens: maxTokens
                 });
             }
 
             const resp = await fetch(fetchUrl, { method: 'POST', headers, body: bodyData });
             const data = await resp.json();
+
+            // 检查API错误
+            if (data.error) {
+                console.error('[见一面AI] API错误:', data.error);
+                throw new Error(data.error.message || 'API error');
+            }
 
             let reply = '';
             if (isGemini) {
@@ -43644,6 +43660,16 @@ ${povRule}
             } else {
                 reply = data?.choices?.[0]?.message?.content || data?.response || '';
             }
+
+            // 调试日志：查看API原始返回
+            console.log('[见一面AI] 原始返回长度:', reply.length, '前100字:', reply.substring(0, 100));
+            if (data?.choices?.[0]?.finish_reason) {
+                console.log('[见一面AI] finish_reason:', data.choices[0].finish_reason);
+            }
+
+            // 清洗AI回复，移除英文结构化内容、思考过程等杂质
+            reply = cleanMeetAIReply(reply);
+            console.log('[见一面AI] 清洗后长度:', reply.length);
 
             // 移除"正在书写…"
             const typingEl2 = document.getElementById(typingId);
@@ -44072,6 +44098,58 @@ ${povRule}
     function loadMeetReplySettingsToUI() {
         const s = getMeetReplySettings();
         document.getElementById('meet-min-length').value = s.minLength;
+    }
+
+    // 清洗见一面AI回复内容，移除英文结构化标记、思考过程等杂质
+    function cleanMeetAIReply(text) {
+        if (!text) return '';
+        let cleaned = text;
+        const originalText = text;
+
+        // 1. 移除"Step-by-Step"开头的英文结构块（直到遇到中文或空行）
+        cleaned = cleaned.replace(/^Step-by-Step[\s\S]*?(?=\n\s*\n|\n*[\u4e00-\u9fa5*（])/i, '');
+        cleaned = cleaned.replace(/Step\s*\d+[:：][^\n]*\n?/gi, '');
+
+        // 2. 移除"Paragraph X:" 这类英文标题（整行，包含星号包裹的）
+        cleaned = cleaned.replace(/^\*?Paragraph\s*\d+[:：][^*\n]*\*?\s*$/gim, '');
+
+        // 3. 移除包含 POV、constraints 等英文关键词的整行
+        cleaned = cleaned.replace(/^.*(POV|constraints|incorporating|outline|plan|reasoning)[\s:：].*$/gim, '');
+
+        // 4. 移除纯英文的标题行（全英文单词，首字母大写）
+        cleaned = cleaned.replace(/^[A-Z][a-zA-Z\s\-]+[:：]?\s*$/gm, '');
+
+        // 5. 移除用星号包裹的英文短语（如 *The Door Opens*），但保留中文内容的星号
+        cleaned = cleaned.replace(/\*[A-Z][a-zA-Z\s\-]+\*/g, '');
+
+        // 6. 移除Markdown标题（# 开头）
+        cleaned = cleaned.replace(/^#{1,6}\s+.*$/gm, '');
+
+        // 7. 移除英文列表项（- 或 * 或 数字. 开头，且后面跟的是英文内容）
+        cleaned = cleaned.replace(/^[\s]*[-*•]\s+[A-Za-z].*$/gm, '');
+        cleaned = cleaned.replace(/^[\s]*\d+\.\s+[A-Za-z].*$/gm, '');
+
+        // 8. 移除多余的双星号（**bold** 这种格式）
+        cleaned = cleaned.replace(/\*\*(.+?)\*\*/g, '$1');
+
+        // 9. 移除开头纯英文段落（直到第一个中文、星号动作或中文括号）
+        cleaned = cleaned.replace(/^[A-Za-z\s\-:：,，.．;；!！?？\n]+(?=[\u4e00-\u9fa5*（])/, '');
+
+        // 10. 合并多个空行
+        cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+
+        // 11. 移除每行开头和结尾的多余空白
+        cleaned = cleaned.split('\n').map(line => line.trim()).join('\n');
+
+        // 12. 移除开头和结尾的空白
+        cleaned = cleaned.trim();
+
+        // 13. 如果清洗后内容太少或为空，返回原文
+        if (!cleaned || cleaned.length < 5) {
+            return originalText.trim();
+        }
+
+        return cleaned;
     }
 
     function getMeetSummaries(saveId) {
