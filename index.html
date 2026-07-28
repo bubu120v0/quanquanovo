@@ -43433,6 +43433,84 @@ window.executeDisableLock = () => {
         document.getElementById('meet-select-page').style.display = '';
     };
 
+    // 见一面输入框键盘适配：键盘弹出时将输入框顶到键盘上方
+    (function() {
+        const meetInput = document.getElementById('meet-input');
+        const meetPage = document.getElementById('meet-app-page');
+        const scenePage = document.getElementById('meet-scene-page');
+        const novelArea = document.getElementById('meet-novel-area');
+        if (!meetInput || !meetPage || !scenePage || !novelArea) return;
+
+        let meetKbOpen = false;
+        let meetKbPollTimer = null;
+        let meetKbHeightBefore = 0;
+
+        function getMeetViewH() {
+            return window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        }
+
+        function meetScrollToBottom() {
+            requestAnimationFrame(function() {
+                novelArea.scrollTop = novelArea.scrollHeight;
+            });
+        }
+
+        function meetKbApplyFix() {
+            if (!scenePage.style.display || scenePage.style.display === 'none') return;
+            var h = getMeetViewH();
+            meetPage.style.height = h + 'px';
+            meetKbOpen = true;
+            meetScrollToBottom();
+        }
+
+        function meetKbResetFix() {
+            meetPage.style.height = '';
+            meetKbOpen = false;
+            meetScrollToBottom();
+        }
+
+        function meetKbCheck() {
+            if (!scenePage.style.display || scenePage.style.display === 'none') return;
+            var h = getMeetViewH();
+            var diff = meetKbHeightBefore - h;
+            if (diff > 50) {
+                meetKbApplyFix();
+            } else if (diff < -30 && meetKbOpen) {
+                meetKbResetFix();
+            }
+        }
+
+        meetInput.addEventListener('focus', function() {
+            meetKbHeightBefore = getMeetViewH();
+            if (meetKbPollTimer) clearInterval(meetKbPollTimer);
+            var count = 0;
+            meetKbPollTimer = setInterval(function() {
+                count++;
+                meetKbCheck();
+                if (count >= 15 || meetKbOpen) {
+                    clearInterval(meetKbPollTimer);
+                    meetKbPollTimer = null;
+                }
+            }, 60);
+        });
+
+        meetInput.addEventListener('blur', function() {
+            if (meetKbPollTimer) { clearInterval(meetKbPollTimer); meetKbPollTimer = null; }
+            setTimeout(meetKbResetFix, 200);
+        });
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', function() {
+                if (meetKbOpen && scenePage.style.display !== 'none') {
+                    var h = getMeetViewH();
+                    meetPage.style.height = h + 'px';
+                    meetScrollToBottom();
+                }
+                meetKbCheck();
+            });
+        }
+    })();
+
     window.meetSendAction = () => {
         const input = document.getElementById('meet-input');
         const text = input.value.trim();
