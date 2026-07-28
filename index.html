@@ -11675,7 +11675,32 @@ body.phone-frame-active #mall-received-gifts-page .mall-favorite-header { paddin
             font-size: 12px; color: #888; line-height: 1.6;
         }
         .tarot-reading-actions {
-            display: flex; gap: 10px; margin-top: 12px;
+            display: flex; gap: 8px; margin-top: 12px;
+        }
+        .tarot-reading-actions .tarot-btn {
+            flex: 1; padding: 10px 8px; font-size: 13px;
+        }
+        .tarot-reading-save-btn {
+            position: absolute;
+            bottom: 20px; left: 20px;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.85);
+            border: 2px solid rgba(255,182,193,0.5);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(248,180,200,0.3);
+            transition: all 0.3s;
+        }
+        .tarot-reading-save-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(248,180,200,0.4);
+        }
+        .tarot-reading-save-btn:active {
+            transform: scale(0.95);
+        }
+        .tarot-reading-save-btn svg {
+            width: 20px; height: 20px;
         }
         .tarot-btn {
             flex: 1; padding: 12px; border-radius: 20px;
@@ -11684,13 +11709,53 @@ body.phone-frame-active #mall-received-gifts-page .mall-favorite-header { paddin
             transition: all 0.3s;
         }
         .tarot-btn-primary {
-            background: linear-gradient(135deg, #F8B4C8, #E8A0B8);
+            background: linear-gradient(135deg, #FDD0DF, #F8B8CC);
             color: white;
-            box-shadow: 0 4px 12px rgba(248,180,200,0.4);
+            box-shadow: 0 4px 12px rgba(253,208,223,0.4);
         }
         .tarot-btn-secondary {
             background: rgba(255,182,193,0.15);
             color: #C08090;
+        }
+        .tarot-btn-outline {
+            background: transparent;
+            color: #8B4557;
+            border: 1px solid rgba(248,180,200,0.5);
+        }
+        .tarot-btn-outline:active {
+            background: rgba(248,180,200,0.2);
+        }
+        .tarot-btn-danger {
+            background: linear-gradient(135deg, #FF8888, #FF6B6B);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255,107,107,0.4);
+        }
+
+        .tarot-header-actions {
+            display: flex; gap: 8px;
+        }
+        .tarot-save-btn {
+            width: 24px; height: 24px; cursor: pointer;
+        }
+        .tarot-storage-btn {
+            width: 24px; height: 24px; cursor: pointer;
+        }
+
+        /* 圆滑可爱按钮 */
+        .tarot-btn-cute {
+            background: linear-gradient(135deg, #FFE4EC, #FFF0F5);
+            color: #C07090;
+            border: 2px solid rgba(255,182,193,0.4);
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(255,182,193,0.2);
+            transition: all 0.2s;
+        }
+        .tarot-btn-cute:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(255,182,193,0.15);
         }
 
         /* 塔罗牌设置弹窗 */
@@ -11755,6 +11820,389 @@ body.phone-frame-active #mall-received-gifts-page .mall-favorite-header { paddin
         }
         .tarot-settings-actions {
             display: flex; gap: 10px; margin-top: 10px;
+        }
+
+        /* AI解牌对话框 */
+        .tarot-ai-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.5); z-index: 1005;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+        .tarot-ai-overlay.active { display: flex; }
+        .tarot-ai-modal {
+            width: 340px; max-width: 90vw;
+            background: linear-gradient(160deg, #fff8f8, #fff0f2);
+            border-radius: 24px; padding: 24px;
+            box-shadow: 0 20px 60px rgba(248,180,200,0.4);
+            max-height: 85vh; overflow-y: auto;
+        }
+        .tarot-ai-title {
+            font-size: 20px; font-weight: bold; color: #8B4557;
+            text-align: center; margin-bottom: 20px;
+        }
+        .tarot-ai-section { margin-bottom: 18px; }
+        .tarot-ai-label {
+            font-size: 13px; font-weight: bold; color: #B07080;
+            margin-bottom: 8px; display: block;
+        }
+        .tarot-ai-input {
+            width: 100%; padding: 12px; border: 1px solid rgba(248,180,200,0.5);
+            border-radius: 12px; font-size: 14px; color: #6A4A5A;
+            background: rgba(255,255,255,0.8); outline: none;
+            resize: vertical; box-sizing: border-box;
+            font-family: inherit;
+        }
+        .tarot-ai-input:focus { border-color: #F8B4C8; }
+        .tarot-ai-input::placeholder { color: #D4B0B0; }
+        .tarot-ai-contact-list {
+            max-height: 180px; overflow-y: auto;
+            border: 1px solid rgba(248,180,200,0.3);
+            border-radius: 12px; padding: 4px;
+        }
+        .tarot-ai-contact-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px;
+            cursor: pointer; transition: background 0.2s;
+            margin-bottom: 4px;
+        }
+        .tarot-ai-contact-item:last-child { margin-bottom: 0; }
+        .tarot-ai-contact-item:hover { background: rgba(248,180,200,0.15); }
+        .tarot-ai-contact-item.selected {
+            background: rgba(248,180,200,0.3);
+            border: 1px solid rgba(248,180,200,0.5);
+        }
+        .tarot-ai-contact-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            object-fit: cover; border: 2px solid rgba(248,180,200,0.4);
+        }
+        .tarot-ai-contact-info { flex: 1; }
+        .tarot-ai-contact-name {
+            font-size: 14px; font-weight: bold; color: #7A4A5A;
+        }
+        .tarot-ai-contact-desc {
+            font-size: 11px; color: #D0A0B0;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .tarot-ai-contact-check {
+            color: #F8B4C8; font-size: 16px; display: none;
+        }
+        .tarot-ai-contact-item.selected .tarot-ai-contact-check { display: block; }
+        .tarot-ai-actions {
+            display: flex; gap: 10px; margin-top: 20px;
+        }
+
+        /* AI解牌等待页面 */
+        .tarot-ai-loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #fff5f7, #fff0f3); z-index: 1006;
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center;
+        }
+        .tarot-ai-loading-overlay.active { display: flex; }
+        .tarot-ai-loading-content {
+            text-align: center; padding: 40px;
+        }
+        .tarot-ai-loading-avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #F8B4C8, #E8A0B8);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 8px 30px rgba(248,180,200,0.3);
+        }
+        .tarot-ai-loading-avatar img {
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+        }
+        .tarot-ai-loading-name {
+            font-size: 18px; font-weight: bold; color: #8B4557;
+            margin-bottom: 12px;
+        }
+        .tarot-ai-loading-text {
+            font-size: 14px; color: #B08090;
+            margin-bottom: 30px;
+        }
+        .tarot-ai-loading-spinner {
+            position: relative; width: 60px; height: 60px;
+            margin: 0 auto;
+        }
+        .tarot-spinner-ring {
+            position: absolute; width: 100%; height: 100%;
+            border: 3px solid rgba(248,180,200,0.2);
+            border-top-color: #F8B4C8;
+            border-radius: 50%;
+            animation: tarotSpin 1.5s linear infinite;
+        }
+        .tarot-spinner-ring:nth-child(2) {
+            animation-delay: 0.3s;
+            border-top-color: #E8A0B8;
+        }
+        .tarot-spinner-ring:nth-child(3) {
+            animation-delay: 0.6s;
+            border-top-color: #D890A8;
+        }
+        @keyframes tarotSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* AI解牌结果页面 */
+        .tarot-ai-result-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #fff5f7, #fff0f3); z-index: 1007;
+            display: none; flex-direction: column;
+        }
+        .tarot-ai-result-overlay.active { display: flex; }
+        .tarot-ai-result-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 85px 16px 12px;
+            background: transparent;
+            border-bottom: none;
+        }
+        .tarot-ai-result-header .tarot-back-btn {
+            margin-left: 20px;
+        }
+        .tarot-ai-result-title {
+            font-size: 18px; font-weight: bold; color: #F0B0C0;
+        }
+        .tarot-ai-result-content {
+            flex: 1; overflow-y: auto; padding: 8px 16px;
+        }
+        .tarot-ai-result-question-shimmer {
+            background: linear-gradient(90deg, #FFD0DC 0%, #FFF0F5 40%, #FFD0DC 80%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: tarotShimmer 2s ease-in-out infinite;
+        }
+        @keyframes tarotShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .tarot-ai-result-cards {
+            display: flex; flex-wrap: wrap;
+            justify-content: center; gap: 10px;
+            margin-bottom: 12px;
+        }
+        .tarot-ai-result-card-wrap {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 3px; width: 75px;
+        }
+        .tarot-ai-result-card-img {
+            width: 65px; height: 97px;
+            border-radius: 12px; overflow: hidden;
+            border: 2px solid rgba(255,182,193,0.5);
+            box-shadow: 0 3px 10px rgba(248,180,200,0.2);
+        }
+        .tarot-ai-result-card-img img { width: 100%; height: 100%; object-fit: cover; }
+        .tarot-ai-result-card-img.reversed img { transform: rotate(180deg); }
+        .tarot-ai-result-card-pos {
+            font-size: 9px; color: #D4A0B0;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+        .tarot-ai-result-card-name {
+            font-size: 10px; color: #C08090; font-weight: bold;
+        }
+        .tarot-ai-result-card-dir {
+            font-size: 8px; color: #D4A0B0;
+        }
+        .tarot-ai-result-details {
+            margin-bottom: 16px;
+        }
+        .tarot-ai-result-detail {
+            background: transparent;
+            border-radius: 20px; padding: 10px 20px;
+            margin-bottom: 6px; margin-left: 16px; margin-right: 16px;
+            border: 1.5px solid rgba(255,182,193,0.35);
+        }
+        .tarot-ai-result-detail-title {
+            font-size: 13px; color: #C08090; font-weight: bold;
+            margin-bottom: 5px;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+        .tarot-ai-result-detail-text {
+            font-size: 12px; color: #888; line-height: 1.6;
+        }
+        .tarot-ai-result-reading {
+            background: rgba(255,255,255,0.75);
+            border-radius: 50px;
+            padding: 16px 22px; margin-bottom: 16px;
+            margin-left: 20px; margin-right: 20px;
+            border: 1.5px solid rgba(255,255,255,0.6);
+            box-shadow: 0 2px 12px rgba(248,180,200,0.12);
+        }
+        .tarot-ai-result-text {
+            font-size: 15px; color: #5A4A5A; line-height: 1.5;
+            word-break: break-all;
+        }
+        .tarot-ai-result-text p {
+            text-indent: 2em;
+            margin: 0 0 0 0;
+            padding: 0;
+        }
+        .tarot-ai-result-reader-info {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 12px; padding: 0;
+            background: transparent;
+            border-radius: 0;
+            border: none;
+        }
+        .tarot-ai-result-reader-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            object-fit: cover; border: 2px solid rgba(248,180,200,0.4);
+            flex-shrink: 0;
+        }
+        .tarot-ai-result-reader-name {
+            font-size: 14px; font-weight: bold; color: #8B4557;
+            white-space: nowrap;
+        }
+        .tarot-ai-result-actions {
+            display: flex; gap: 10px; padding: 16px;
+            background: transparent;
+            border-top: none;
+        }
+
+        /* 存储箱弹窗 */
+        .tarot-storage-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #fff5f7, #fff0f3); z-index: 1008;
+            display: none; flex-direction: column;
+        }
+        .tarot-storage-overlay.active { display: flex; }
+        .tarot-storage-modal {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .tarot-storage-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 90px 16px 12px;
+            background: transparent;
+            border-bottom: none;
+        }
+        .tarot-storage-header .tarot-back-btn {
+            margin-left: 20px;
+        }
+        .tarot-storage-title {
+            font-size: 18px; font-weight: bold; color: #8B4557;
+        }
+        .tarot-storage-delete-btn {
+            width: 24px; height: 24px; cursor: pointer;
+            margin-right: 20px;
+        }
+        .tarot-storage-content {
+            flex: 1; overflow-y: auto; padding: 12px 18px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            align-content: start;
+        }
+        .tarot-storage-item {
+            background: rgba(255,255,255,0.85); border-radius: 16px;
+            padding: 10px 10px;
+            box-shadow: 0 2px 8px rgba(255,182,193,0.12);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; flex-direction: column; align-items: center;
+            max-width: 150px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .tarot-storage-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255,182,193,0.2);
+        }
+        .tarot-storage-item-question {
+            font-size: 11px; color: #7A5A6A; font-weight: bold;
+            text-align: center;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            max-width: 100%;
+            margin-bottom: 3px;
+        }
+        .tarot-storage-item-reader {
+            font-size: 9px; color: #C090A0;
+            margin-bottom: 4px;
+            display: flex; align-items: center; gap: 3px;
+        }
+        .tarot-storage-item-reader-avatar {
+            width: 12px; height: 12px; border-radius: 50%; object-fit: cover;
+        }
+        .tarot-storage-item-spread-label {
+            font-size: 9px; color: #D0A0B0;
+            margin-bottom: 3px;
+        }
+        .tarot-storage-item-cards {
+            display: flex; gap: 2px; justify-content: center;
+        }
+        .tarot-storage-item-card {
+            width: 24px; height: 36px; border-radius: 3px;
+            background: white; overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+        .tarot-storage-item-card img { width: 100%; height: 100%; object-fit: cover; }
+        .tarot-storage-item-card.reversed img { transform: rotate(180deg); }
+        .tarot-storage-empty {
+            text-align: center; padding: 40px; color: #D0A0B0; font-size: 14px;
+            grid-column: 1 / -1;
+        }
+
+        /* 存储箱删除选择弹窗 */
+        .tarot-storage-delete-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.4); z-index: 1009;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .tarot-storage-delete-overlay.active { display: flex; }
+        .tarot-storage-delete-modal {
+            width: 340px; max-width: 90vw; max-height: 80vh;
+            background: linear-gradient(160deg, #fff8f8, #fff0f2);
+            border-radius: 24px; padding: 20px;
+            box-shadow: 0 20px 60px rgba(248,180,200,0.3);
+            display: flex; flex-direction: column;
+        }
+        .tarot-storage-delete-title {
+            font-size: 18px; font-weight: bold; color: #8B4557;
+            margin-bottom: 16px; text-align: center;
+        }
+        .tarot-storage-delete-list {
+            flex: 1; overflow-y: auto; margin-bottom: 16px;
+        }
+        .tarot-storage-delete-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px; border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .tarot-storage-delete-item:hover { background: rgba(248,180,200,0.15); }
+        .tarot-storage-delete-item.selected {
+            background: rgba(248,180,200,0.3);
+            border: 1px solid rgba(248,180,200,0.5);
+        }
+        .tarot-storage-delete-checkbox {
+            width: 18px; height: 18px; border-radius: 50%;
+            border: 2px solid rgba(248,180,200,0.5);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .tarot-storage-delete-item.selected .tarot-storage-delete-checkbox {
+            background: #F8B4C8; border-color: #F8B4C8;
+        }
+        .tarot-storage-delete-checkbox::after {
+            content: '✓'; color: white; font-size: 12px; display: none;
+        }
+        .tarot-storage-delete-item.selected .tarot-storage-delete-checkbox::after {
+            display: block;
+        }
+        .tarot-storage-delete-info { flex: 1; overflow: hidden; }
+        .tarot-storage-delete-spread {
+            font-size: 13px; font-weight: bold; color: #7A4A5A;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .tarot-storage-delete-time {
+            font-size: 11px; color: #D0A0B0;
+        }
+        .tarot-storage-delete-actions {
+            display: flex; gap: 10px;
         }
 
         /* 自定义牌阵编辑器 */
@@ -14624,9 +15072,12 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 <!-- ========================= 塔罗牌应用页面 ========================= -->
 <div id="tarot-app-page">
     <div class="tarot-header">
-        <img src="https://img.heliar.top/file/1770068142146_骨头_bone.png" class="tarot-back-btn" onclick="closeTarotApp()">
+        <img src="https://img.heliar.top/file/1770068142146_骨头_bone.png" class="tarot-back-btn" onclick="tarotBackBtnClick()">
         <div class="tarot-title">Tarot</div>
-        <svg class="tarot-settings-btn" onclick="openTarotSettings()" viewBox="0 0 24 24" fill="none" stroke="#FFB6C1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <div class="tarot-header-actions">
+            <svg class="tarot-storage-btn" onclick="openTarotStorage()" viewBox="0 0 24 24" fill="none" stroke="#FFB6C1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <svg class="tarot-settings-btn" onclick="openTarotSettings()" viewBox="0 0 24 24" fill="none" stroke="#FFB6C1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
     </div>
 
     <!-- 牌阵选择区 -->
@@ -14674,8 +15125,11 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
         <div class="tarot-reading-cards" id="tarot-reading-cards"></div>
         <div id="tarot-reading-details"></div>
         <div class="tarot-reading-actions">
-            <button class="tarot-btn tarot-btn-secondary" onclick="resetTarotApp()">重新占卜</button>
-            <button class="tarot-btn tarot-btn-primary" onclick="closeTarotApp()">完成</button>
+            <button class="tarot-btn tarot-btn-cute" onclick="resetTarotApp()">重新占卜</button>
+            <button class="tarot-btn tarot-btn-cute" onclick="openTarotAIOverlay()">解牌</button>
+        </div>
+        <div class="tarot-reading-save-btn" onclick="saveTarotReading()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FFB6C1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </div>
     </div>
 </div>
@@ -14703,6 +15157,87 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
         </div>
         <div style="margin-top:12px;text-align:center;">
             <button class="tarot-btn tarot-btn-secondary" style="font-size:12px;padding:8px 30px;" onclick="closeTarotSettings()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 塔罗牌解牌对话框 -->
+<div class="tarot-ai-overlay" id="tarot-ai-overlay" onclick="if(event.target===this)closeTarotAIOverlay()">
+    <div class="tarot-ai-modal">
+        <div class="tarot-ai-title">🔮 解牌</div>
+        <div class="tarot-ai-section">
+            <div class="tarot-ai-label">你的问题</div>
+            <textarea class="tarot-ai-input" id="tarot-ai-question" placeholder="请输入你想询问的问题..." rows="3"></textarea>
+        </div>
+        <div class="tarot-ai-section">
+            <div class="tarot-ai-label">选择解牌角色</div>
+            <div class="tarot-ai-contact-list" id="tarot-ai-contact-list"></div>
+        </div>
+        <div class="tarot-ai-actions">
+            <button class="tarot-btn tarot-btn-secondary" onclick="closeTarotAIOverlay()">取消</button>
+            <button class="tarot-btn tarot-btn-primary" onclick="startTarotAIReading()">开始解牌</button>
+        </div>
+    </div>
+</div>
+
+<!-- 塔罗牌AI解牌等待页面 -->
+<div class="tarot-ai-loading-overlay" id="tarot-ai-loading-overlay">
+    <div class="tarot-ai-loading-content">
+        <div class="tarot-ai-loading-avatar" id="tarot-ai-loading-avatar"></div>
+        <div class="tarot-ai-loading-name" id="tarot-ai-loading-name"></div>
+        <div class="tarot-ai-loading-text">正在为你解读...</div>
+        <div class="tarot-ai-loading-spinner">
+            <div class="tarot-spinner-ring"></div>
+            <div class="tarot-spinner-ring"></div>
+            <div class="tarot-spinner-ring"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 塔罗牌AI解牌结果页面 -->
+<div class="tarot-ai-result-overlay" id="tarot-ai-result-overlay">
+    <div class="tarot-ai-result-header">
+        <img src="https://img.heliar.top/file/1770068142146_骨头_bone.png" class="tarot-back-btn" onclick="closeTarotAIResult()">
+        <div class="tarot-ai-result-title tarot-ai-result-question-shimmer" id="tarot-ai-result-title-text">解牌结果</div>
+        <div style="width:30px;"></div>
+    </div>
+    <div class="tarot-ai-result-content">
+        <div class="tarot-ai-result-cards" id="tarot-ai-result-cards"></div>
+        <div class="tarot-ai-result-details" id="tarot-ai-result-details"></div>
+        <div class="tarot-ai-result-reading">
+            <div class="tarot-ai-result-reader-info" id="tarot-ai-result-reader-info"></div>
+            <div class="tarot-ai-result-text" id="tarot-ai-result-text"></div>
+        </div>
+    </div>
+    <div class="tarot-ai-result-actions">
+        <div class="tarot-reading-save-btn" style="position:static;" onclick="saveTarotReading()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FFB6C1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <button class="tarot-btn tarot-btn-secondary" onclick="closeTarotAIResult()">返回</button>
+        <button class="tarot-btn tarot-btn-primary" onclick="startTarotAIReading()">重新解读</button>
+    </div>
+</div>
+
+<!-- 塔罗牌存储箱弹窗 -->
+<div class="tarot-storage-overlay" id="tarot-storage-overlay" onclick="if(event.target===this)closeTarotStorage()">
+    <div class="tarot-storage-modal">
+        <div class="tarot-storage-header">
+            <img src="https://img.heliar.top/file/1770068142146_骨头_bone.png" class="tarot-back-btn" onclick="closeTarotStorage()">
+            <div class="tarot-storage-title">存储箱</div>
+            <svg class="tarot-storage-delete-btn" onclick="openTarotStorageDelete()" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        </div>
+        <div class="tarot-storage-content" id="tarot-storage-list"></div>
+    </div>
+</div>
+
+<!-- 塔罗牌存储箱删除选择弹窗 -->
+<div class="tarot-storage-delete-overlay" id="tarot-storage-delete-overlay" onclick="if(event.target===this)closeTarotStorageDelete()">
+    <div class="tarot-storage-delete-modal">
+        <div class="tarot-storage-delete-title">选择要删除的记录</div>
+        <div class="tarot-storage-delete-list" id="tarot-storage-delete-list"></div>
+        <div class="tarot-storage-delete-actions">
+            <button class="tarot-btn tarot-btn-secondary" onclick="closeTarotStorageDelete()">取消</button>
+            <button class="tarot-btn tarot-btn-danger" onclick="deleteSelectedTarotRecords()">删除选中</button>
         </div>
     </div>
 </div>
@@ -20382,6 +20917,16 @@ function renderCategories() {
         resetTarotState();
     };
 
+    // 塔罗页面返回按钮逻辑：解读区域显示时回到选牌阵页面，否则回主屏幕
+    window.tarotBackBtnClick = () => {
+        const readingArea = document.getElementById('tarot-reading-area');
+        if (readingArea && readingArea.classList.contains('active')) {
+            resetTarotApp();
+        } else {
+            closeTarotApp();
+        }
+    };
+
     function resetTarotState() {
         tarotState.currentSpread = null;
         tarotState.drawnCards = [];
@@ -20779,6 +21324,547 @@ function renderCategories() {
         resetTarotState();
         renderPresetGrid();
         renderCustomSpreadsAccordion();
+    };
+
+    // --- AI解牌功能 ---
+    let selectedTarotReaderId = null;
+    let tarotAIQuestion = '';
+
+    // 打开AI解牌对话框
+    window.openTarotAIOverlay = () => {
+        document.getElementById('tarot-ai-overlay').classList.add('active');
+        document.getElementById('tarot-ai-question').value = '';
+        selectedTarotReaderId = null;
+        renderTarotAIContactList();
+        setTimeout(() => document.getElementById('tarot-ai-question').focus(), 300);
+    };
+
+    // 关闭AI解牌对话框
+    window.closeTarotAIOverlay = () => {
+        document.getElementById('tarot-ai-overlay').classList.remove('active');
+    };
+
+    // 渲染角色选择列表
+    function renderTarotAIContactList() {
+        const list = document.getElementById('tarot-ai-contact-list');
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        
+        if (contacts.length === 0) {
+            list.innerHTML = '<div style="text-align:center;padding:20px;color:#D0A0B0;font-size:13px;">暂无角色，请先添加好友</div>';
+            return;
+        }
+
+        list.innerHTML = contacts.map(c => {
+            const name = c.alias || c.name || '未知角色';
+            const desc = c.desc || c.greeting || '暂无描述';
+            const avatar = c.avatar || '';
+            const isSelected = selectedTarotReaderId === String(c.id);
+            return `
+                <div class="tarot-ai-contact-item ${isSelected ? 'selected' : ''}" onclick="selectTarotReader('${c.id}')">
+                    <img class="tarot-ai-contact-avatar" src="${avatar || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2228%22 x=%228%22 font-size=%2224%22>👤</text></svg>'}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2228%22 x=%228%22 font-size=%2224%22>👤</text></svg>'">
+                    <div class="tarot-ai-contact-info">
+                        <div class="tarot-ai-contact-name">${escapeHtml(name)}</div>
+                        <div class="tarot-ai-contact-desc">${escapeHtml(desc)}</div>
+                    </div>
+                    <div class="tarot-ai-contact-check">✓</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 选择解牌角色
+    window.selectTarotReader = (id) => {
+        selectedTarotReaderId = id;
+        renderTarotAIContactList();
+    };
+
+    // 开始AI解牌
+    window.startTarotAIReading = async () => {
+        tarotAIQuestion = document.getElementById('tarot-ai-question').value.trim();
+        
+        if (!tarotAIQuestion) {
+            showToast('请输入你的问题~');
+            return;
+        }
+        if (!selectedTarotReaderId) {
+            showToast('请选择解牌角色~');
+            return;
+        }
+
+        // 获取选中的角色信息
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(selectedTarotReaderId));
+        if (!contact) {
+            showToast('角色不存在');
+            return;
+        }
+
+        // 关闭对话框，显示等待页面
+        closeTarotAIOverlay();
+        showTarotAILoading(contact);
+
+        try {
+            const result = await callTarotAI(contact, tarotAIQuestion);
+            hideTarotAILoading();
+            showTarotAIResult(contact, result);
+        } catch (e) {
+            console.error('AI解牌失败:', e);
+            hideTarotAILoading();
+            showToast('解牌失败：' + (e.message || '请重试'));
+        }
+    };
+
+    // 显示等待页面
+    function showTarotAILoading(contact) {
+        const name = contact.alias || contact.name || 'TA';
+        const avatar = contact.avatar || '';
+        document.getElementById('tarot-ai-loading-name').textContent = name;
+        
+        const avatarEl = document.getElementById('tarot-ai-loading-avatar');
+        if (avatar) {
+            avatarEl.innerHTML = `<img src="${avatar}" onerror="this.parentElement.innerHTML='🔮'">`;
+        } else {
+            avatarEl.innerHTML = '🔮';
+        }
+        
+        document.getElementById('tarot-ai-loading-overlay').classList.add('active');
+    }
+
+    // 隐藏等待页面
+    function hideTarotAILoading() {
+        document.getElementById('tarot-ai-loading-overlay').classList.remove('active');
+    }
+
+    // 调用AI解牌API
+    async function callTarotAI(contact, question) {
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        if (!settings?.api?.url || !settings?.api?.key || !settings?.api?.model) {
+            throw new Error('请先在设置中配置API（地址、密钥、模型）');
+        }
+        console.log('[塔罗解牌] 使用API:', settings.api.url, '模型:', settings.api.model);
+
+        const name = contact.alias || contact.name || 'TA';
+        const persona = contact.persona || contact.desc || contact.greeting || '';
+        const globalProfile = getUserProfile();
+        const uName = globalProfile.nickname || '用户';
+        const uPersona = contact.userPersona || '一个普通用户';
+
+        // 世界书
+        let worldbookContext = '';
+        if (contact.worldbookIds && contact.worldbookIds.length > 0) {
+            try {
+                const allWb = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]');
+                worldbookContext = buildWorldbookContext(allWb, contact.worldbookIds, question);
+            } catch (e) {}
+        }
+
+        // 回忆总结
+        let recollectionContext = '';
+        try {
+            const recollectionData = getRecollections(String(contact.id));
+            const items = recollectionData.items || [];
+            if (items.length > 0) {
+                recollectionContext = items.map(item => item.text).join('\n');
+            }
+        } catch (e) {}
+
+        // 构建卡牌信息（含详细属性）
+        let cardsInfo = '';
+        const spread = tarotState.currentSpread;
+        const suitInfo = { wands: '权杖（火元素·行动与激情）', cups: '圣杯（水元素·情感与直觉）', swords: '宝剑（风元素·思维与冲突）', pentacles: '星币（土元素·物质与稳定）' };
+        tarotState.drawnCards.forEach((drawn, i) => {
+            const card = TAROT_CARDS[drawn.cardIdx];
+            const posIdx = drawn.slotIdx !== undefined ? drawn.slotIdx : i;
+            const posText = spread.positions[posIdx] || `第${i + 1}张牌`;
+            const reversedText = drawn.isReversed ? '逆位' : '正位';
+            const suitText = card.suit ? suitInfo[card.suit] || card.suit : (card.arcana === 'major' ? '大阿卡纳' : '小阿卡纳');
+            cardsInfo += `位置【${posText}】：${card.name}（${card.en}）| ${reversedText} | ${suitText} | 正位含义：${card.meaning} | 逆位含义：${card.reverse}\n`;
+        });
+
+        // 构建系统提示词
+        let systemPrompt = `你是${name}，一个精通塔罗牌解读的占卜师。`;
+        if (persona) {
+            systemPrompt += `\n\n【你的人设】\n${persona}`;
+        }
+        if (worldbookContext) {
+            systemPrompt += `\n\n【相关世界书】\n${worldbookContext}`;
+        }
+        if (recollectionContext) {
+            systemPrompt += `\n\n【你们的回忆】\n${recollectionContext}`;
+        }
+        if (uPersona) {
+            systemPrompt += `\n\n【用户人设】\n${uPersona}`;
+        }
+
+        systemPrompt += `\n\n【解读任务】\n用户现在正在进行塔罗牌占卜，你需要根据以下信息为用户解读牌面：
+
+【用户问题】
+${question}
+
+【牌阵名称】
+${spread.name || '未知'}
+
+【牌阵位置说明】
+${spread.positions.map((pos, idx) => `${idx + 1}. ${pos}`).join('\n')}
+
+【抽取的卡牌】
+${cardsInfo}
+
+【解读要求】
+1. 请以${name}的身份和语气来解读，保持你的人设特点
+2. 结合用户的问题、卡牌含义、牌阵位置含义和你们的回忆来进行解读
+3. 解读时必须清晰区分每张牌所在的位置及其代表的含义（如过去、现在、未来等），不能混淆
+4. 提到用户时使用"你"或"${uName}"
+5. 解读要详细、有深度，帮助用户理解牌面的指引
+6. 语言要优美、神秘，符合塔罗牌占卜的氛围
+7. 不要输出任何英文或结构化标记，直接输出中文解读文本
+8. 禁止输出思考过程或规划，直接输出最终解读
+
+【专业解读维度——必须综合参考】
+- 牌义：每张牌的核心含义，正位与逆位的区别与转变
+- 元素：权杖（火·行动激情）、圣杯（水·情感直觉）、宝剑（风·思维冲突）、星币（土·物质稳定）；大阿卡纳则综合灵性课题
+- 数字：小阿卡纳中数字1为新始、2为平衡、3为成长、4为稳定、5为冲突、6为和谐、7为反思、8为力量、9为完成、10为终结转化；宫廷牌（侍从/骑士/王后/国王）代表不同成熟度的人格面向
+- 占星对应：大阿卡纳与星座/行星的对应关系（如愚者-天王星、皇帝-白羊座、恋人-双子座等），小阿卡纳与黄道30°区间
+- 符号与意象：牌面中的关键符号（如太阳、月亮、塔、钥匙等）所暗示的深层含义
+- 正逆位：逆位不是简单的"坏"，而是能量的内化、延迟、阻碍或另一种表达方式
+- 牌间关系：牌与牌之间是否有元素呼应、数字递进、故事线串联，以及整个牌阵呈现的整体叙事
+
+请开始你的解读：`;
+
+        const isGemini = settings.api.url.includes('generativelanguage');
+        let fetchUrl, bodyData, headers = { 'Content-Type': 'application/json' };
+
+        if (isGemini) {
+            fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model || 'gemini-2.0-flash'}:generateContent?key=${settings.api.key}`;
+            bodyData = JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
+                generationConfig: { temperature: 0.8, maxOutputTokens: 4096 }
+            });
+        } else {
+            fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
+            headers['Authorization'] = `Bearer ${settings.api.key}`;
+            bodyData = JSON.stringify({
+                model: settings.api.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `请为${uName}解读以上塔罗牌。` }
+                ],
+                temperature: 0.8,
+                max_tokens: 4096
+            });
+        }
+
+        const resp = await fetch(fetchUrl, { method: 'POST', headers, body: bodyData });
+        if (!resp.ok) {
+            const errText = await resp.text().catch(() => '');
+            console.error('[塔罗解牌] API请求失败:', resp.status, errText);
+            throw new Error(`API请求失败(${resp.status})，请检查API配置`);
+        }
+        const data = await resp.json();
+        console.log('[塔罗解牌] API响应:', data);
+
+        if (data.error) {
+            throw new Error(data.error.message || 'API error');
+        }
+
+        let reply = '';
+        if (isGemini) {
+            reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        } else {
+            reply = data?.choices?.[0]?.message?.content || data?.response || '';
+        }
+
+        return reply.trim();
+    }
+
+    // 显示解牌结果
+    function showTarotAIResult(contact, readingText, storageItem) {
+        const name = contact.alias || contact.name || 'TA';
+        const avatar = contact.avatar || '';
+        const hasReader = name && name !== 'TA' && name !== '塔罗师';
+
+        // 保存当前解读结果（用于收录）
+        currentTarotAIResult = readingText;
+
+        // 设置问题/牌阵名称到标题（闪烁动画）
+        const spreadName = storageItem ? storageItem.spreadName : (tarotState.currentSpread?.name || '');
+        const questionText = tarotAIQuestion || spreadName || '解牌结果';
+        document.getElementById('tarot-ai-result-title-text').textContent = questionText;
+
+        // 获取卡牌数据（支持从存储箱读取）
+        const drawnCards = storageItem ? storageItem.drawnCards : tarotState.drawnCards;
+        const positions = storageItem ? storageItem.positions : (tarotState.currentSpread?.positions || []);
+
+        // 设置卡牌（与解读页面相同的排列方式）
+        const cardsContainer = document.getElementById('tarot-ai-result-cards');
+        if (drawnCards && drawnCards.length > 0) {
+            cardsContainer.innerHTML = drawnCards.map((drawn, i) => {
+                const card = TAROT_CARDS[drawn.cardIdx];
+                const posIdx = drawn.slotIdx !== undefined ? drawn.slotIdx : i;
+                return `
+                    <div class="tarot-ai-result-card-wrap">
+                        <div class="tarot-ai-result-card-img ${drawn.isReversed ? 'reversed' : ''}">
+                            <img src="${tarotData.cards[drawn.cardIdx].image}" alt="${card.name}">
+                        </div>
+                        <div class="tarot-ai-result-card-pos">${positions[posIdx] || ''}</div>
+                        <div class="tarot-ai-result-card-name">${card.name}</div>
+                        <div class="tarot-ai-result-card-dir">${drawn.isReversed ? '逆位' : '正位'}</div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            cardsContainer.innerHTML = '';
+        }
+
+        // 设置牌义详情
+        const detailsContainer = document.getElementById('tarot-ai-result-details');
+        if (drawnCards && drawnCards.length > 0) {
+            detailsContainer.innerHTML = drawnCards.map((drawn, i) => {
+                const card = TAROT_CARDS[drawn.cardIdx];
+                const meaning = drawn.isReversed ? card.reverse : card.meaning;
+                const posText = drawn.isReversed ? '逆位' : '正位';
+                const posIdx = drawn.slotIdx !== undefined ? drawn.slotIdx : i;
+                return `
+                    <div class="tarot-ai-result-detail">
+                        <div class="tarot-ai-result-detail-title">${positions[posIdx] || ''} · ${card.name}（${posText}）</div>
+                        <div class="tarot-ai-result-detail-text">${meaning}</div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            detailsContainer.innerHTML = '';
+        }
+
+        // 设置解牌者信息
+        if (hasReader) {
+            document.getElementById('tarot-ai-result-reader-info').innerHTML = `
+                <img class="tarot-ai-result-reader-avatar" src="${avatar || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2228%22 x=%228%22 font-size=%2224%22>👤</text></svg>'}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><text y=%2228%22 x=%228%22 font-size=%2224%22>👤</text></svg>'">
+                <div class="tarot-ai-result-reader-name">${escapeHtml(name)}的解读</div>
+            `;
+            document.getElementById('tarot-ai-result-reader-info').style.display = 'flex';
+        } else {
+            document.getElementById('tarot-ai-result-reader-info').style.display = 'none';
+        }
+
+        // 设置解读内容（按段落渲染，每段首行缩进两格）
+        const textEl = document.getElementById('tarot-ai-result-text');
+        const paragraphs = readingText.split(/\n+/).filter(p => p.trim());
+        textEl.innerHTML = paragraphs.map(p => `<p>${escapeHtml(p.trim())}</p>`).join('');
+
+        document.getElementById('tarot-ai-result-overlay').classList.add('active');
+    }
+
+    // 关闭解牌结果页面
+    window.closeTarotAIResult = () => {
+        document.getElementById('tarot-ai-result-overlay').classList.remove('active');
+        if (tarotResultFromStorage) {
+            // 从存储箱进入的，返回存储箱
+            tarotResultFromStorage = false;
+            openTarotStorage();
+        } else {
+            // 返回解读页面
+            document.getElementById('tarot-reading-area').classList.add('active');
+        }
+    };
+
+    // --- 存储箱功能 ---
+    const TAROT_STORAGE_KEY = 'tarot_storage_v1';
+    let currentTarotAIResult = '';
+    let tarotResultFromStorage = false; // 标记是否从存储箱进入
+
+    // 保存解读结果到存储箱
+    window.saveTarotReading = () => {
+        const spread = tarotState.currentSpread;
+        if (!spread || tarotState.drawnCards.length === 0) {
+            showToast('请先完成占卜');
+            return;
+        }
+
+        const saveData = {
+            id: 'storage_' + Date.now(),
+            timestamp: Date.now(),
+            spreadName: spread.name || '未知',
+            positions: spread.positions || [],
+            drawnCards: tarotState.drawnCards.map(drawn => ({
+                cardIdx: drawn.cardIdx,
+                isReversed: drawn.isReversed,
+                slotIdx: drawn.slotIdx
+            })),
+            question: tarotAIQuestion || '',
+            reading: currentTarotAIResult || '',
+            readerName: selectedTarotReaderId ? (JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]').find(c => String(c.id) === String(selectedTarotReaderId))?.alias || JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]').find(c => String(c.id) === String(selectedTarotReaderId))?.name || '') : '',
+            readerAvatar: selectedTarotReaderId ? (JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]').find(c => String(c.id) === String(selectedTarotReaderId))?.avatar || '') : ''
+        };
+
+        let storage = [];
+        try {
+            storage = JSON.parse(localStorage.getItem(TAROT_STORAGE_KEY) || '[]');
+        } catch (e) {}
+
+        storage.unshift(saveData);
+        try {
+            localStorage.setItem(TAROT_STORAGE_KEY, JSON.stringify(storage));
+            showToast('已收录到存储箱');
+        } catch (e) {
+            showToast('存储失败');
+        }
+    };
+
+    // 打开存储箱
+    window.openTarotStorage = () => {
+        document.getElementById('tarot-storage-overlay').classList.add('active');
+        renderTarotStorageList();
+    };
+
+    // 关闭存储箱
+    window.closeTarotStorage = () => {
+        document.getElementById('tarot-storage-overlay').classList.remove('active');
+    };
+
+    // 渲染存储箱列表
+    function renderTarotStorageList() {
+        const list = document.getElementById('tarot-storage-list');
+        let storage = [];
+        try {
+            storage = JSON.parse(localStorage.getItem(TAROT_STORAGE_KEY) || '[]');
+        } catch (e) {}
+
+        if (storage.length === 0) {
+            list.innerHTML = '<div class="tarot-storage-empty">📦 存储箱是空的<br>完成占卜后点击"收录"保存结果</div>';
+            return;
+        }
+
+        list.innerHTML = storage.map(item => {
+            const cardsHtml = item.drawnCards.map((drawn, i) => {
+                const posIdx = drawn.slotIdx !== undefined ? drawn.slotIdx : i;
+                const posText = item.positions[posIdx] || '';
+                const cardName = TAROT_CARDS[drawn.cardIdx]?.name || '';
+                const reversedText = drawn.isReversed ? '逆位' : '正位';
+                return `
+                    <div class="tarot-storage-item-card ${drawn.isReversed ? 'reversed' : ''}" title="${posText}: ${cardName}(${reversedText})">
+                        <img src="${tarotData.cards[drawn.cardIdx].image}" alt="${cardName}">
+                    </div>
+                `;
+            }).join('');
+
+            const readerHtml = item.readerName ? `
+                <div class="tarot-storage-item-reader">
+                    ${item.readerAvatar ? `<img class="tarot-storage-item-reader-avatar" src="${item.readerAvatar}" onerror="this.style.display='none'">` : ''}
+                    ${escapeHtml(item.readerName)}解牌
+                </div>
+            ` : '';
+
+            return `
+                <div class="tarot-storage-item" onclick="viewTarotStorageItem('${item.id}')">
+                    ${item.question ? `<div class="tarot-storage-item-question">📝 ${escapeHtml(item.question)}</div>` : '<div class="tarot-storage-item-question">未提问</div>'}
+                    ${readerHtml}
+                    <div class="tarot-storage-item-spread-label">${escapeHtml(item.spreadName)}</div>
+                    <div class="tarot-storage-item-cards">${cardsHtml}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 查看存储箱条目详情（重新打开AI解牌结果页面展示）
+    window.viewTarotStorageItem = (id) => {
+        let storage = [];
+        try {
+            storage = JSON.parse(localStorage.getItem(TAROT_STORAGE_KEY) || '[]');
+        } catch (e) {}
+
+        const item = storage.find(s => s.id === id);
+        if (!item) return;
+
+        tarotAIQuestion = item.question;
+        currentTarotAIResult = item.reading;
+        tarotResultFromStorage = true; // 标记从存储箱进入
+
+        // 优先使用存储的角色信息
+        const contact = item.readerName 
+            ? { alias: item.readerName, name: item.readerName, avatar: item.readerAvatar || '' }
+            : { alias: '塔罗师', name: '塔罗师' };
+
+        showTarotAIResult(contact, item.reading, item);
+        closeTarotStorage();
+    };
+
+    // 打开删除选择弹窗
+    window.openTarotStorageDelete = () => {
+        document.getElementById('tarot-storage-delete-overlay').classList.add('active');
+        renderTarotStorageDeleteList();
+    };
+
+    // 关闭删除选择弹窗
+    window.closeTarotStorageDelete = () => {
+        document.getElementById('tarot-storage-delete-overlay').classList.remove('active');
+    };
+
+    let selectedTarotStorageIds = [];
+
+    // 渲染删除选择列表
+    function renderTarotStorageDeleteList() {
+        const list = document.getElementById('tarot-storage-delete-list');
+        let storage = [];
+        try {
+            storage = JSON.parse(localStorage.getItem(TAROT_STORAGE_KEY) || '[]');
+        } catch (e) {}
+
+        selectedTarotStorageIds = [];
+
+        if (storage.length === 0) {
+            list.innerHTML = '<div class="tarot-storage-empty">没有可删除的记录</div>';
+            return;
+        }
+
+        list.innerHTML = storage.map(item => {
+            const date = new Date(item.timestamp);
+            const timeStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+            const displayText = item.question || item.spreadName || '未提问';
+            return `
+                <div class="tarot-storage-delete-item" onclick="toggleTarotStorageSelect('${item.id}', this)">
+                    <div class="tarot-storage-delete-checkbox"></div>
+                    <div class="tarot-storage-delete-info">
+                        <div class="tarot-storage-delete-spread">${escapeHtml(displayText)}</div>
+                        <div class="tarot-storage-delete-time">${timeStr}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 切换选择状态
+    window.toggleTarotStorageSelect = (id, el) => {
+        const idx = selectedTarotStorageIds.indexOf(id);
+        if (idx >= 0) {
+            selectedTarotStorageIds.splice(idx, 1);
+            el.classList.remove('selected');
+        } else {
+            selectedTarotStorageIds.push(id);
+            el.classList.add('selected');
+        }
+    };
+
+    // 删除选中的记录
+    window.deleteSelectedTarotRecords = () => {
+        if (selectedTarotStorageIds.length === 0) {
+            showToast('请选择要删除的记录');
+            return;
+        }
+
+        let storage = [];
+        try {
+            storage = JSON.parse(localStorage.getItem(TAROT_STORAGE_KEY) || '[]');
+        } catch (e) {}
+
+        storage = storage.filter(item => !selectedTarotStorageIds.includes(item.id));
+        try {
+            localStorage.setItem(TAROT_STORAGE_KEY, JSON.stringify(storage));
+            showToast(`已删除 ${selectedTarotStorageIds.length} 条记录`);
+            closeTarotStorageDelete();
+            renderTarotStorageList();
+        } catch (e) {
+            showToast('删除失败');
+        }
     };
 
     // --- 自定义牌阵 ---
