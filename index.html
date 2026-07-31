@@ -2462,6 +2462,22 @@
         }
         .role-signature-edit:focus { border-bottom-color: var(--theme-pink-btn); }
         
+        .role-online-rules-input {
+            width: 100%;
+            min-height: 80px;
+            max-height: 200px;
+            border: 1px solid rgba(255,182,193,0.3);
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 13px;
+            color: #5a3e3e;
+            background: #fef8f8;
+            outline: none;
+            resize: vertical;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+        .role-online-rules-input:focus { background-color: white; border-color: var(--theme-pink-btn); }
         .role-persona-input, .role-css-input {
             width: 100%; height: 80px;
             border: 1px solid #eee; border-radius: 12px;
@@ -13244,6 +13260,231 @@ body.phone-frame-active .pet-task-bonus-text { font-size: 10px !important; }
 body.phone-frame-active .pet-task-bonus-btn { padding: 5px 10px !important; font-size: 10px !important; }
 body.phone-frame-active .pet-task-close { margin-top: 8px !important; padding: 7px !important; font-size: 12px !important; border-radius: 10px !important; }
 
+/* ========================= 一起听弹窗样式 ========================= */
+.listen-together-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.35); z-index: 1000;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.listen-together-overlay.active { display: flex; }
+.listen-together-modal {
+    background: #fff; border-radius: 28px; padding: 30px 24px 28px;
+    width: 340px; max-width: 92vw; position: relative;
+    box-shadow: 0 12px 40px rgba(255,182,193,0.25), 0 4px 16px rgba(0,0,0,0.08);
+    display: flex; flex-direction: column; align-items: center;
+}
+.listen-together-close {
+    position: absolute; top: 14px; left: 16px; width: 30px; height: 30px;
+    border: none; background: #f5f0f0; border-radius: 50%; font-size: 16px;
+    cursor: pointer; color: #999; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+}
+.listen-together-close:hover { background: #ffe4e8; color: #e88; }
+.listen-together-avatars {
+    display: flex; align-items: center; justify-content: center; width: 100%;
+    margin-top: 8px; margin-bottom: 6px; gap: 0;
+}
+.listen-together-avatar-side {
+    display: flex; flex-direction: column; align-items: center; min-width: 80px;
+}
+.listen-together-avatar-circle {
+    width: 60px; height: 60px; border-radius: 50%;
+    background-size: cover; background-position: center;
+    border: 3px solid #fff; box-shadow: 0 2px 10px rgba(255,182,193,0.3);
+}
+.listen-together-avatar-name {
+    font-size: 12px; color: #8a6a6a; margin-top: 6px; max-width: 80px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;
+}
+.listen-together-heart-line {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; min-width: 100px; padding: 0 4px;
+}
+.listen-heart-svg { width: 110px; height: 28px; }
+.listen-heart-wave { stroke-dasharray: 200; stroke-dashoffset: 0; }
+.listen-heart-wave1 { animation: listenWave 2.5s ease-in-out infinite; }
+.listen-heart-wave2 { animation: listenWave 2.5s ease-in-out infinite 0.3s; }
+.listen-heart-wave3 { animation: listenWave 2.5s ease-in-out infinite 0.6s; }
+@keyframes listenWave {
+    0% { stroke-dashoffset: 0; opacity: 1; }
+    50% { stroke-dashoffset: 40; opacity: 0.7; }
+    100% { stroke-dashoffset: 0; opacity: 1; }
+}
+.listen-heart-glow {
+    width: 60px; height: 14px; margin-top: -8px;
+    background: radial-gradient(ellipse, rgba(255,182,193,0.45) 0%, transparent 70%);
+    animation: listenGlow 2s ease-in-out infinite;
+    border-radius: 50%;
+}
+@keyframes listenGlow {
+    0%, 100% { opacity: 0.5; transform: scaleX(1); }
+    50% { opacity: 1; transform: scaleX(1.2); }
+}
+.listen-together-duration {
+    font-size: 14px; color: #b08a8a; margin-bottom: 16px; font-weight: 500;
+}
+.listen-lyrics-bg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 28px; background: #000;
+    z-index: 5; opacity: 0; transition: opacity 0.5s ease;
+    cursor: pointer; overflow: hidden;
+}
+.listen-lyrics-bg.fade-in { opacity: 1; }
+.listen-lyrics-bg-inner {
+    width: 100%; height: 100%; overflow-y: auto; padding: 60px 20px 20px;
+    box-sizing: border-box; scroll-behavior: smooth;
+    -ms-overflow-style: none; scrollbar-width: none;
+}
+.listen-lyrics-bg-inner::-webkit-scrollbar { display: none; }
+.listen-lyric-line {
+    font-size: 14px; color: rgba(255,255,255,0.5); text-align: center;
+    line-height: 2.2; transition: all 0.3s ease; padding: 2px 0;
+}
+.listen-lyric-line.active {
+    color: #fff; font-weight: 600; font-size: 16px;
+}
+.listen-lyric-no {
+    font-size: 14px; color: rgba(255,255,255,0.4); text-align: center;
+    padding-top: 100px;
+}
+.listen-together-cover {
+    width: 140px; height: 140px; border-radius: 18px;
+    background-size: cover; background-position: center;
+    box-shadow: 0 6px 24px rgba(255,182,193,0.25);
+    margin-bottom: 12px; cursor: pointer; transition: transform 0.2s;
+}
+.listen-together-cover:active { transform: scale(0.95); }
+.listen-together-song-info { text-align: center; margin-bottom: 16px; }
+.listen-together-song-title { font-size: 15px; color: #5a3e3e; font-weight: 600; }
+.listen-together-lyric-preview {
+    font-size: 12px; color: #c8a0a0; margin-top: 4px; min-height: 18px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 240px; margin-left: auto; margin-right: auto;
+}
+.listen-together-player { width: 100%; padding: 0 12px; box-sizing: border-box; }
+.listen-together-progress-bar {
+    width: 100%; height: 4px; background: #f0e0e0; border-radius: 2px;
+    overflow: hidden; cursor: pointer; margin-bottom: 4px;
+}
+.listen-together-progress-fill {
+    height: 100%; width: 0%; border-radius: 2px;
+    background: linear-gradient(90deg, #ffb6c1, #ff8fa3);
+    transition: width 0.3s linear;
+}
+.listen-together-time-row {
+    display: flex; justify-content: space-between; font-size: 11px; color: #b08a8a;
+    margin-bottom: 14px;
+}
+.listen-together-controls {
+    display: flex; align-items: center; justify-content: center; gap: 28px;
+}
+.listen-ctrl-btn {
+    border: none; background: none; cursor: pointer; padding: 6px;
+    border-radius: 50%; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+}
+.listen-ctrl-btn:hover { background: rgba(255,182,193,0.15); }
+.listen-ctrl-btn:active { transform: scale(0.9); }
+.listen-ctrl-play {
+    width: 52px; height: 52px; background: linear-gradient(135deg, #ffb6c1, #ffc0cb);
+    border-radius: 50%; box-shadow: 0 3px 12px rgba(255,182,193,0.4);
+}
+.listen-ctrl-play:hover { background: linear-gradient(135deg, #ffa0b0, #ffb6c1); }
+.listen-ctrl-play svg path { fill: #fff; }
+.listen-mode-btn {
+    border: none; background: none; cursor: pointer; padding: 4px;
+    border-radius: 50%; transition: all 0.2s; display: flex; align-items: center;
+    justify-content: center; margin-top: 6px;
+}
+.listen-mode-btn:hover { background: rgba(255,182,193,0.15); }
+.listen-mode-btn:active { transform: scale(0.9); }
+.listen-together-settings-btn {
+    position: absolute; top: 16px; right: 14px; width: 30px; height: 30px;
+    border: none; background: #f5f0f0; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.listen-together-settings-btn:hover { background: #ffe4e8; }
+.listen-settings-title {
+    font-size: 17px; color: #5a3e3e; font-weight: bold; text-align: center; margin-bottom: 20px; margin-top: 4px;
+}
+.listen-settings-section { width: 100%; }
+.listen-settings-label { font-size: 13px; color: #8a6a6a; display: block; margin-bottom: 6px; }
+.listen-settings-input {
+    width: 100%; padding: 10px 12px; border: 1px solid rgba(255,182,193,0.3);
+    border-radius: 10px; font-size: 13px; color: #5a3e3e; outline: none;
+    box-sizing: border-box; background: #fef8f8;
+}
+.listen-settings-input:focus { border-color: #ffb6c1; background: #fff; }
+.listen-settings-save-btn {
+    margin-top: 10px; padding: 9px 20px; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, #ffb6c1, #ffc0cb); color: #fff;
+    font-size: 14px; cursor: pointer; transition: all 0.2s;
+}
+.listen-settings-save-btn:hover { opacity: 0.9; }
+.listen-settings-save-btn:active { transform: scale(0.97); }
+.listen-settings-manage-btn {
+    width: 100%; padding: 12px; border: none; border-radius: 12px;
+    background: linear-gradient(135deg, #ffb6c1, #ffc0cb); color: #fff;
+    font-size: 15px; font-weight: 600; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+}
+.listen-settings-manage-btn:hover { opacity: 0.9; }
+.listen-settings-manage-btn:active { transform: scale(0.97); }
+.listen-manage-list {
+    flex: 1; overflow-y: auto; margin-bottom: 14px; max-height: 200px;
+    border: 1px solid rgba(255,182,193,0.2); border-radius: 12px; padding: 6px;
+}
+.listen-manage-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px; border-radius: 8px; transition: background 0.2s;
+}
+.listen-manage-item:hover { background: rgba(255,182,193,0.08); }
+.listen-manage-item-info { flex: 1; min-width: 0; }
+.listen-manage-item-title { font-size: 13px; color: #5a3e3e; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.listen-manage-item-artist { font-size: 11px; color: #b08a8a; }
+.listen-manage-item-badge { font-size: 9px; color: #e88a9a; background: rgba(255,182,193,0.15); padding: 1px 6px; border-radius: 6px; margin-left: 6px; }
+.listen-manage-del {
+    border: none; background: none; color: #ccc; cursor: pointer; font-size: 18px;
+    padding: 2px 6px; border-radius: 6px; transition: all 0.2s;
+}
+.listen-manage-del:hover { color: #e88; background: rgba(232,136,136,0.1); }
+.listen-manage-edit {
+    border: none; background: none; color: #bbb; cursor: pointer; font-size: 14px;
+    padding: 2px 6px; border-radius: 6px; transition: all 0.2s;
+}
+.listen-manage-edit:hover { color: #b08a8a; background: rgba(255,182,193,0.1); }
+.listen-manage-item-editing { background: rgba(255,182,193,0.06); }
+.listen-edit-input {
+    width: 100%; padding: 5px 8px; border: 1px solid rgba(255,182,193,0.35);
+    border-radius: 6px; font-size: 12px; color: #5a3e3e; outline: none;
+    background: #fff; box-sizing: border-box;
+}
+.listen-edit-input:focus { border-color: #ffb6c1; }
+.listen-manage-edit-btns { display: flex; flex-direction: column; gap: 4px; margin-left: 6px; }
+.listen-manage-save {
+    border: none; background: none; color: #7bc47e; cursor: pointer; font-size: 16px;
+    padding: 2px 6px; border-radius: 6px; transition: all 0.2s; font-weight: bold;
+}
+.listen-manage-save:hover { background: rgba(123,196,126,0.1); }
+.listen-manage-cancel {
+    border: none; background: none; color: #ccc; cursor: pointer; font-size: 14px;
+    padding: 2px 6px; border-radius: 6px; transition: all 0.2s;
+}
+.listen-manage-cancel:hover { color: #e88; background: rgba(232,136,136,0.1); }
+.listen-manage-add-section {
+    border-top: 1px solid rgba(255,182,193,0.2); padding-top: 14px;
+}
+.listen-manage-add-title { font-size: 14px; color: #5a3e3e; font-weight: 600; margin-bottom: 10px; }
+.listen-manage-file-row { margin-bottom: 6px; }
+.listen-file-label {
+    display: flex; align-items: center; gap: 8px; font-size: 12px; color: #8a6a6a;
+    padding: 8px 10px; border: 1px dashed rgba(255,182,193,0.4); border-radius: 10px;
+    cursor: pointer; transition: all 0.2s; background: #fef8f8;
+}
+.listen-file-label:hover { border-color: #ffb6c1; background: #fff; }
+.listen-file-input { display: none; }
+.listen-file-name { font-size: 11px; color: #b08a8a; flex: 1; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+
 /* ========================= 见一面 App 样式 ========================= */
 #meet-app-page {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -13976,7 +14217,10 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
                 <div class="chat-conv-title" id="chat-conv-title">角色名称</div>
                 <div class="chat-conv-signature" id="chat-conv-signature"></div>
             </div>
-            <img class="chat-conv-right-icon" src="https://img.heliar.top/file/1770241189848_更多_more.png" onclick="openRoleSettings()">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <img class="chat-conv-right-icon" id="listen-together-icon" src="https://i.postimg.cc/jSJDcMgB/Air-Pods-airpods.png" onclick="openListenTogetherPopup()" title="一起听">
+                <img class="chat-conv-right-icon" id="chat-settings-icon" src="https://img.heliar.top/file/1770241189848_更多_more.png" onclick="openRoleSettings()">
+            </div>
         </div>
         <!-- 角色拉黑用户：顶栏下方提示条 -->
         <div id="chat-blocked-by-char-banner" class="chat-blocked-by-char-banner">
@@ -14241,6 +14485,121 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 <!-- 通话状态提示弹窗 -->
 <div id="call-status-toast"></div>
 
+<!-- ========================= 一起听弹窗 ========================= -->
+<div id="listen-together-overlay" class="listen-together-overlay">
+    <div class="listen-together-modal">
+        <!-- 全屏歌词背景层 -->
+        <div class="listen-lyrics-bg" id="listen-lyrics-bg" style="display:none;" onclick="toggleListenCoverLyrics()">
+            <div class="listen-lyrics-bg-inner" id="listen-full-lyrics-inner">暂无歌词</div>
+        </div>
+        <button class="listen-together-close" onclick="closeListenTogetherPopup()">✕</button>
+        <button class="listen-together-settings-btn" onclick="openListenSettingsPopup()" title="设置">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.0.7-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.61 3.61 0 0112 15.6z" fill="#b08a8a"/></svg>
+        </button>
+        <div class="listen-together-avatars">
+            <div class="listen-together-avatar-side">
+                <div class="listen-together-avatar-circle" id="listen-char-avatar"></div>
+                <div class="listen-together-avatar-name" id="listen-char-name"></div>
+            </div>
+            <div class="listen-together-heart-line">
+                <svg viewBox="0 0 120 30" class="listen-heart-svg">
+                    <path class="listen-heart-wave listen-heart-wave1" d="M0,15 Q15,5 30,15 Q45,25 60,15 Q75,5 90,15 Q105,25 120,15" fill="none" stroke="#ffb6c1" stroke-width="2"/>
+                    <path class="listen-heart-wave listen-heart-wave2" d="M0,15 Q15,8 30,15 Q45,22 60,15 Q75,8 90,15 Q105,22 120,15" fill="none" stroke="#ffc0cb" stroke-width="1.5" opacity="0.6"/>
+                    <path class="listen-heart-wave listen-heart-wave3" d="M0,15 Q15,10 30,15 Q45,20 60,15 Q75,10 90,15 Q105,20 120,15" fill="none" stroke="#ffd1dc" stroke-width="1" opacity="0.4"/>
+                </svg>
+                <div class="listen-heart-glow"></div>
+            </div>
+            <div class="listen-together-avatar-side">
+                <div class="listen-together-avatar-circle" id="listen-user-avatar"></div>
+                <div class="listen-together-avatar-name" id="listen-user-name"></div>
+            </div>
+        </div>
+        <div class="listen-together-duration" id="listen-duration">一起听了 0小时0分</div>
+        <div class="listen-together-cover" id="listen-cover" onclick="toggleListenCoverLyrics()"></div>
+        <div class="listen-together-song-info">
+            <div class="listen-together-song-title" id="listen-song-title">未知歌曲</div>
+            <div class="listen-together-lyric-preview" id="listen-lyric-preview">暂无歌词</div>
+        </div>
+        <div class="listen-together-player">
+            <div class="listen-together-progress-bar" id="listen-progress-bar-click">
+                <div class="listen-together-progress-fill" id="listen-progress-fill"></div>
+            </div>
+            <div class="listen-together-time-row">
+                <span id="listen-current-time">0:00</span>
+                <span id="listen-total-time">3:45</span>
+            </div>
+            <div class="listen-together-controls">
+                <button class="listen-ctrl-btn" onclick="listenPrevSong()">
+                    <svg viewBox="0 0 24 24" width="26" height="26"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" fill="#5a3e3e"/></svg>
+                </button>
+                <button class="listen-ctrl-btn listen-ctrl-play" id="listen-play-btn" onclick="listenTogglePlay()">
+                    <svg id="listen-play-icon" viewBox="0 0 24 24" width="32" height="32"><path d="M8 5v14l11-7z" fill="#5a3e3e"/></svg>
+                    <svg id="listen-pause-icon" viewBox="0 0 24 24" width="32" height="32" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="#5a3e3e"/></svg>
+                </button>
+                <button class="listen-ctrl-btn" onclick="listenNextSong()">
+                    <svg viewBox="0 0 24 24" width="26" height="26"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" fill="#5a3e3e"/></svg>
+                </button>
+            </div>
+            <button class="listen-mode-btn" id="listen-mode-btn" onclick="toggleListenMode()" title="顺序播放">
+                <svg id="listen-mode-seq" viewBox="0 0 24 24" width="20" height="20"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z" fill="#b08a8a"/></svg>
+                <svg id="listen-mode-loop" viewBox="0 0 24 24" width="20" height="20" style="display:none"><path d="M7 7h10v3l4-4-4-4v3H5v6h2zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2z" fill="#e88a9a"/><text x="12" y="15" text-anchor="middle" font-size="8" font-weight="bold" fill="#e88a9a">1</text></svg>
+                <svg id="listen-mode-shuffle" viewBox="0 0 24 24" width="20" height="20" style="display:none"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" fill="#e88a9a"/></svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 一起听-设置弹窗 -->
+<div id="listen-settings-overlay" class="listen-together-overlay" style="z-index:1001;">
+    <div class="listen-together-modal" style="padding:24px 20px;">
+        <button class="listen-together-close" onclick="closeListenSettingsPopup()">✕</button>
+        <div class="listen-settings-title">一起听设置</div>
+        <div class="listen-settings-section">
+            <label class="listen-settings-label">音乐封面图片URL</label>
+            <input type="text" id="listen-cover-url-input" class="listen-settings-input" placeholder="输入图片URL，留空则使用角色头像">
+            <button class="listen-settings-save-btn" onclick="saveListenCoverUrl()">应用</button>
+        </div>
+        <div class="listen-settings-section" style="margin-top:18px;">
+            <button class="listen-settings-manage-btn" onclick="openListenManagePopup()">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55C7.79 13 6 14.79 6 17s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="#fff"/></svg>
+                管理音乐
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 一起听-管理音乐弹窗 -->
+<div id="listen-manage-overlay" class="listen-together-overlay" style="z-index:1002;">
+    <div class="listen-together-modal" style="width:380px;max-width:95vw;padding:24px 16px;max-height:80vh;display:flex;flex-direction:column;">
+        <button class="listen-together-close" onclick="closeListenManagePopup()">✕</button>
+        <div class="listen-settings-title">管理音乐</div>
+        <div class="listen-manage-list" id="listen-manage-list"></div>
+        <div class="listen-manage-add-section">
+            <div class="listen-manage-add-title">添加歌曲</div>
+            <input type="text" id="listen-add-title" class="listen-settings-input" placeholder="歌曲名称" style="margin-bottom:6px;">
+            <input type="text" id="listen-add-artist" class="listen-settings-input" placeholder="歌手名" style="margin-bottom:8px;">
+            <div class="listen-manage-file-row">
+                <label class="listen-file-label">
+                    <span>音乐文件</span>
+                    <input type="file" id="listen-add-audio" accept="audio/*" class="listen-file-input">
+                    <span class="listen-file-name" id="listen-audio-filename">未选择</span>
+                </label>
+            </div>
+            <div class="listen-manage-file-row">
+                <label class="listen-file-label">
+                    <span>歌词文件(.lrc，可选)</span>
+                    <input type="file" id="listen-add-lrc" accept=".lrc,.txt" class="listen-file-input">
+                    <span class="listen-file-name" id="listen-lrc-filename">未选择</span>
+                </label>
+            </div>
+            <button class="listen-settings-save-btn" style="width:100%;margin-top:10px;" onclick="addListenSong()">添加歌曲</button>
+        </div>
+    </div>
+</div>
+
+<!-- 隐藏的audio元素 -->
+<audio id="listen-audio-player" preload="auto"></audio>
+
 <!-- 角色设置页面 -->
 <div id="role-settings-page">
     <div class="role-setting-close-area">
@@ -14254,6 +14613,8 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
         <input type="text" id="role-setting-alias" class="role-alias-edit" placeholder="备注名">
         <input type="text" id="role-setting-signature" class="role-signature-edit" placeholder="角色签名...">
         <textarea id="role-setting-persona" class="role-persona-input" placeholder="输入角色人设 (Persona)..."></textarea>
+        <div style="font-size: 12px; color: #b08a8a; margin-bottom: 4px; margin-top: -4px;">线上规则 (仅线上聊天生效，线下见面不读取)</div>
+        <textarea id="role-setting-online-rules" class="role-online-rules-input" placeholder="输入线上规则（仅在线上聊天和群聊时AI会读取，见一面线下演绎时不会读取）..."></textarea>
         
         <div class="settings-row-with-switch" style="width:100%; padding: 10px 5px; border-top: 1px solid #f0f0f0; margin-top: 10px;">
             <label for="role-time-perception-switch">时间感知</label>
@@ -18029,6 +18390,28 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
     document.addEventListener('DOMContentLoaded', () => {
         imgObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src', 'style'] });
         setTimeout(() => processLocalImages(document.body), 300); // 开局全盘扫描
+
+        // 实时更新北京时间
+        function updateBeijingClock() {
+            const now = new Date();
+            // 获取北京时间 (UTC+8)
+            const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+            const beijing = new Date(utc + 8 * 3600000);
+            const h = beijing.getHours().toString().padStart(2, '0');
+            const m = beijing.getMinutes().toString().padStart(2, '0');
+            const clockTime = document.getElementById('clock-time');
+            if (clockTime) clockTime.textContent = `${h}:${m}`;
+
+            const weekdays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+            const y = beijing.getFullYear();
+            const mon = (beijing.getMonth() + 1).toString().padStart(2, '0');
+            const d = beijing.getDate().toString().padStart(2, '0');
+            const w = weekdays[beijing.getDay()];
+            const clockDate = document.getElementById('clock-date');
+            if (clockDate) clockDate.textContent = `${y}年${mon}月${d}日 ${w}`;
+        }
+        updateBeijingClock();
+        setInterval(updateBeijingClock, 10000); // 每10秒更新
     });
     // ========================= 引擎安装完毕 =========================
     const sleep = ms => new Promise(res => setTimeout(res, ms)); // <-- 添加这一行代码
@@ -21485,6 +21868,9 @@ function renderCategories() {
         let systemPrompt = `你是${name}，一个精通塔罗牌解读的占卜师。`;
         if (persona) {
             systemPrompt += `\n\n【你的人设】\n${persona}`;
+        }
+        if (contact.onlineRules) {
+            systemPrompt += `\n\n【线上规则】（在线上聊天时必须遵守的规则）\n${contact.onlineRules}`;
         }
         if (worldbookContext) {
             systemPrompt += `\n\n【相关世界书】\n${worldbookContext}`;
@@ -28196,6 +28582,7 @@ ${rolesContext ? rolesContext : '无常驻角色。'}
 
                 const sysPrompt = `你现在扮演角色：${contact.alias || contact.name}。
 角色设定：${contact.persona}
+${contact.onlineRules ? `\n线上规则（在线上聊天时必须遵守的规则）：\n${contact.onlineRules}\n` : ''}
 ${worldbookContext ? `背景设定(世界书)：\n${worldbookContext}\n` : ''}
 ${recollectionContext ? `回忆总结(发生过的事)：\n${recollectionContext}\n` : ''}
 
@@ -29263,10 +29650,13 @@ ${actionInstruction}
         styleTag.innerHTML = group.customCss || '';
 
         // 修改右侧图标：群聊时打开群设置
-        const rightIcon = view.querySelector('.chat-conv-right-icon');
+        const rightIcon = document.getElementById('chat-settings-icon');
         if (rightIcon) {
             rightIcon.setAttribute('onclick', 'openGroupSettings()');
         }
+        // 群聊时隐藏一起听图标
+        const listenIcon = document.getElementById('listen-together-icon');
+        if (listenIcon) listenIcon.style.display = 'none';
 
         isMultiSelectMode = false;
         selectedMsgIds.clear();
@@ -29796,6 +30186,9 @@ ${actionInstruction}
                 }
                 if (member.signature) {
                     systemPrompt += `你的个性签名是：${member.signature}\n`;
+                }
+                if (member.onlineRules) {
+                    systemPrompt += `\n【线上规则】（在线上聊天时必须遵守的规则）\n${member.onlineRules}\n`;
                 }
 
                 systemPrompt += `\n【用户信息】\n用户的名字是"${uName}"。\n用户人设：${uPersona}\n`;
@@ -31681,8 +32074,11 @@ ${msgContext ? msgContext : '无'}
         const contact = contacts.find(c => c.id === contactId);
         if (!contact) return;
         // 恢复右侧图标为角色设置
-        const rightIcon = document.getElementById('chat-conversation-view').querySelector('.chat-conv-right-icon');
+        const rightIcon = document.getElementById('chat-settings-icon');
         if (rightIcon) { rightIcon.setAttribute('onclick', 'openRoleSettings()'); }
+        // 私聊时显示一起听图标
+        const listenIcon = document.getElementById('listen-together-icon');
+        if (listenIcon) listenIcon.style.display = '';
         // 新增：保存当前联系人昵称，供引用回复显示用
         window.currentContactAlias = contact.alias || contact.name;
         document.getElementById('chat-conv-title').innerText = contact.alias || contact.name;
@@ -31724,7 +32120,7 @@ ${msgContext ? msgContext : '无'}
         closeMentionPopup();
         currentMentionIds = [];
         // 恢复右侧图标
-        const rightIcon = view.querySelector('.chat-conv-right-icon');
+        const rightIcon = document.getElementById('chat-settings-icon');
         if (rightIcon) { rightIcon.setAttribute('onclick', 'openRoleSettings()'); }
         // 新增：清除引用回复状态
         pendingReplyMsgId = null;
@@ -32335,6 +32731,9 @@ ${msgContext ? msgContext : '无'}
             }
             if (member.signature) {
                 systemPrompt += `你的个性签名是：${member.signature}\n`;
+            }
+            if (member.onlineRules) {
+                systemPrompt += `\n【线上规则】（在线上聊天时必须遵守的规则）\n${member.onlineRules}\n`;
             }
 
             systemPrompt += `\n【用户信息】\n用户的名字是"${uName}"。\n用户人设：${uPersona}\n`;
@@ -34864,6 +35263,7 @@ ${msgContext ? msgContext : '无'}
         
         const sysPrompt = `你现在扮演角色：${contact.alias || contact.name}。
 角色设定：${contact.persona}
+${contact.onlineRules ? `\n线上规则（在线上聊天时必须遵守的规则）：\n${contact.onlineRules}\n` : ''}
 ${worldbookContext ? `\n背景设定(世界书)：\n${worldbookContext}\n` : ''}
 ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionContext}\n` : ''}
 
@@ -35173,6 +35573,7 @@ ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionCo
 
         const sysPrompt = `你现在扮演角色：${contact.alias || contact.name}。
 角色设定：${contact.persona}
+${contact.onlineRules ? `\n线上规则（在线上聊天时必须遵守的规则）：\n${contact.onlineRules}\n` : ''}
 ${worldbookContext ? `\n背景设定(世界书)：\n${worldbookContext}\n` : ''}
 ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionContext}\n` : ''}
 
@@ -37035,6 +37436,763 @@ window.openTransferConfirmPopup = (amount) => {
 
     // --- Role Settings & Styling ---
 
+    // ========================= 一起听功能 =========================
+    const LISTEN_SONGS_KEY = 'listenTogether_songs_v1';
+    const LISTEN_STATE_KEY = 'listenTogether_state_v1';
+    const LISTEN_COVER_KEY = 'listenTogether_cover_v1';
+    const LISTEN_AUDIO_KEY = 'listenTogether_audio_'; // + contactId
+
+    // 内置默认歌曲列表（无真实音频的模拟歌曲）
+    const DEFAULT_SONGS = [
+        { title: '晴天', artist: '周杰伦', duration: 269 },
+        { title: '小幸运', artist: '田馥甄', duration: 258 },
+        { title: '起风了', artist: '买辣椒也用券', duration: 315 },
+        { title: '告白气球', artist: '周杰伦', duration: 216 },
+        { title: '后来', artist: '刘若英', duration: 328 },
+        { title: '夜曲', artist: '周杰伦', duration: 238 },
+        { title: '遇见', artist: '孙燕姿', duration: 250 },
+        { title: '富士山下', artist: '陈奕迅', duration: 261 },
+        { title: '岁月神偷', artist: '金玟岐', duration: 242 },
+        { title: '安静', artist: '周杰伦', duration: 336 }
+    ];
+
+    let listenState = {
+        isPlaying: false,
+        currentSongIndex: 0,
+        currentTime: 0,
+        totalListenSeconds: 0,
+        playStartTimestamp: null,  // 只在播放时记录开始时间，暂停时结算
+        playMode: 'seq'  // 'seq'=顺序, 'loop'=单曲循环, 'shuffle'=随机
+    };
+    let listenTimerInterval = null;
+    let listenAudio = null; // HTMLAudioElement引用
+
+    // IndexedDB用于存储音频文件（localStorage放不下大文件）
+    const LISTEN_DB_NAME = 'ListenTogetherDB';
+    const LISTEN_DB_VERSION = 1;
+    const LISTEN_DB_STORE = 'audioFiles';
+
+    function openListenDB() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(LISTEN_DB_NAME, LISTEN_DB_VERSION);
+            req.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(LISTEN_DB_STORE)) {
+                    db.createObjectStore(LISTEN_DB_STORE, { keyPath: 'id' });
+                }
+            };
+            req.onsuccess = (e) => resolve(e.target.result);
+            req.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    async function saveAudioToDB(id, blob) {
+        const db = await openListenDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(LISTEN_DB_STORE, 'readwrite');
+            tx.objectStore(LISTEN_DB_STORE).put({ id, blob });
+            tx.oncomplete = () => resolve();
+            tx.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    async function getAudioFromDB(id) {
+        const db = await openListenDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(LISTEN_DB_STORE, 'readonly');
+            const req = tx.objectStore(LISTEN_DB_STORE).get(id);
+            req.onsuccess = () => resolve(req.result ? req.result.blob : null);
+            req.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    async function deleteAudioFromDB(id) {
+        const db = await openListenDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(LISTEN_DB_STORE, 'readwrite');
+            tx.objectStore(LISTEN_DB_STORE).delete(id);
+            tx.oncomplete = () => resolve();
+            tx.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    function getListenSongs() {
+        try {
+            const saved = localStorage.getItem(LISTEN_SONGS_KEY);
+            return saved ? JSON.parse(saved) : [];
+        } catch(e) { return []; }
+    }
+
+    function saveListenSongs(songs) {
+        localStorage.setItem(LISTEN_SONGS_KEY, JSON.stringify(songs));
+    }
+
+    function getListenTotalSeconds(contactId) {
+        try {
+            const saved = localStorage.getItem(LISTEN_STATE_KEY);
+            const data = saved ? JSON.parse(saved) : {};
+            return data[contactId] || 0;
+        } catch(e) { return 0; }
+    }
+
+    function saveListenTotalSeconds(contactId, seconds) {
+        try {
+            const saved = localStorage.getItem(LISTEN_STATE_KEY);
+            const data = saved ? JSON.parse(saved) : {};
+            data[contactId] = seconds;
+            localStorage.setItem(LISTEN_STATE_KEY, JSON.stringify(data));
+        } catch(e) {}
+    }
+
+    function getListenCoverUrl(contactId) {
+        try {
+            const saved = localStorage.getItem(LISTEN_COVER_KEY);
+            const data = saved ? JSON.parse(saved) : {};
+            return data[contactId] || '';
+        } catch(e) { return ''; }
+    }
+
+    function saveListenCoverUrl(contactId, url) {
+        try {
+            const saved = localStorage.getItem(LISTEN_COVER_KEY);
+            const data = saved ? JSON.parse(saved) : {};
+            data[contactId] = url;
+            localStorage.setItem(LISTEN_COVER_KEY, JSON.stringify(data));
+        } catch(e) {}
+    }
+
+    function formatListenDuration(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        return `一起听了 ${hours}小时${minutes}分`;
+    }
+
+    function formatSongTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // LRC歌词解析
+    function parseLRC(lrcText) {
+        const lines = lrcText.split('\n');
+        const result = [];
+        const timeRegex = /\[(\d{1,2}):(\d{2})(?:[.:]\d{1,3})?\]/g;
+        for (const line of lines) {
+            const times = [];
+            let match;
+            while ((match = timeRegex.exec(line)) !== null) {
+                times.push(parseInt(match[1]) * 60 + parseInt(match[2]));
+            }
+            const text = line.replace(/\[\d{1,2}:\d{2}(?:[.:]\d{1,3})?\]/g, '').trim();
+            if (text && times.length > 0) {
+                for (const t of times) {
+                    result.push({ time: t, text });
+                }
+            }
+        }
+        result.sort((a, b) => a.time - b.time);
+        return result;
+    }
+
+    function getCurrentLyric(lrcData, currentTime) {
+        if (!lrcData || lrcData.length === 0) return null;
+        let current = null;
+        for (const item of lrcData) {
+            if (item.time <= currentTime) current = item.text;
+            else break;
+        }
+        return current;
+    }
+
+    // 结算播放时长：把当前播放段的时长累加到totalListenSeconds
+    function flushListenDuration() {
+        if (listenState.playStartTimestamp) {
+            const elapsed = Math.floor((Date.now() - listenState.playStartTimestamp) / 1000);
+            listenState.totalListenSeconds += elapsed;
+            listenState.playStartTimestamp = null;
+        }
+        if (currentChatContactId) {
+            saveListenTotalSeconds(currentChatContactId, listenState.totalListenSeconds);
+        }
+    }
+
+    let listenPopupInitialized = false; // 弹窗是否已初始化过（区分首次打开和收起后恢复）
+    let listenLastContactId = null; // 上次打开的角色ID
+
+    window.openListenTogetherPopup = () => {
+        if (!currentChatContactId) return;
+        if (String(currentChatContactId).startsWith('group_')) {
+            showToast('一起听仅支持私聊');
+            return;
+        }
+
+        // 如果是收起后恢复（同角色），直接显示弹窗，不重新初始化
+        if (listenPopupInitialized && listenLastContactId === currentChatContactId) {
+            // 检测音频是否还在播放
+            if (!listenAudio) listenAudio = document.getElementById('listen-audio-player');
+            const audioIsPlaying = listenAudio && !listenAudio.paused && !listenAudio.ended;
+            if (audioIsPlaying && !listenState.playStartTimestamp) {
+                listenState.playStartTimestamp = Date.now();
+            }
+            // 恢复进度显示
+            if (audioIsPlaying) {
+                const ct = listenAudio.currentTime;
+                const dur = listenAudio.duration || 0;
+                listenState.currentTime = ct;
+                if (dur > 0) {
+                    document.getElementById('listen-progress-fill').style.width = (ct / dur * 100) + '%';
+                    document.getElementById('listen-total-time').textContent = formatSongTime(dur);
+                }
+                document.getElementById('listen-current-time').textContent = formatSongTime(ct);
+                updateLyricHighlight(ct);
+            }
+            updateListenDurationDisplay();
+            updateListenPlayButton();
+            startListenDurationTimer();
+            document.getElementById('listen-together-overlay').classList.add('active');
+            return;
+        }
+
+        // 首次打开（或切换了角色）：完整初始化
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+        if (!contact) return;
+
+        const globalProfile = getUserProfile();
+
+        // 设置角色头像和名字
+        document.getElementById('listen-char-avatar').style.backgroundImage = contact.avatar ? `url(${contact.avatar})` : '';
+        document.getElementById('listen-char-name').textContent = contact.alias || contact.name || '角色';
+
+        // 设置用户头像和名字
+        const userAvatar = contact.userAvatar || globalProfile.avatar || '';
+        document.getElementById('listen-user-avatar').style.backgroundImage = userAvatar ? `url(${userAvatar})` : '';
+        document.getElementById('listen-user-name').textContent = contact.userName || globalProfile.nickname || '我';
+
+        // 设置音乐封面（优先自定义URL，否则使用角色头像）
+        const customCover = getListenCoverUrl(currentChatContactId);
+        document.getElementById('listen-cover').style.backgroundImage = customCover ? `url(${customCover})` : (contact.avatar ? `url(${contact.avatar})` : '');
+
+        // 读取累计时长
+        listenState.totalListenSeconds = getListenTotalSeconds(currentChatContactId);
+        listenState.playStartTimestamp = null;
+        listenState.currentSongIndex = 0;
+        listenState.currentTime = 0;
+        listenState.isPlaying = false;
+        listenShowLyrics = false;
+        const lyricsBg = document.getElementById('listen-lyrics-bg');
+        lyricsBg.classList.remove('fade-in');
+        lyricsBg.style.display = 'none';
+
+        updateListenDurationDisplay();
+        updateListenSongUI();
+        updateListenPlayButton();
+
+        listenPopupInitialized = true;
+        listenLastContactId = currentChatContactId;
+
+        // 显示弹窗
+        document.getElementById('listen-together-overlay').classList.add('active');
+
+        // 开始更新时长显示
+        startListenDurationTimer();
+    };
+
+    window.closeListenTogetherPopup = () => {
+        // 收起弹窗（不是关闭），音乐继续后台播放，状态全部保留
+        flushListenDuration();
+        clearInterval(listenTimerInterval);
+        document.getElementById('listen-together-overlay').classList.remove('active');
+    };
+
+    function updateListenDurationDisplay() {
+        let totalNow = listenState.totalListenSeconds;
+        if (listenState.playStartTimestamp) {
+            totalNow += Math.floor((Date.now() - listenState.playStartTimestamp) / 1000);
+        }
+        document.getElementById('listen-duration').textContent = formatListenDuration(totalNow);
+    }
+
+    function startListenDurationTimer() {
+        clearInterval(listenTimerInterval);
+        listenTimerInterval = setInterval(() => {
+            if (listenState.isPlaying) {
+                updateListenDurationDisplay();
+            }
+        }, 5000);
+    }
+
+    let listenShowLyrics = false; // 是否显示歌词视图
+
+    function updateListenSongUI() {
+        const songs = getListenSongs();
+        const song = songs[listenState.currentSongIndex];
+        if (!song) return;
+        document.getElementById('listen-song-title').textContent = `${song.title} - ${song.artist}`;
+        document.getElementById('listen-current-time').textContent = '0:00';
+        document.getElementById('listen-progress-fill').style.width = '0%';
+        listenState.currentTime = 0;
+
+        // 渲染完整歌词
+        renderFullLyrics(song);
+    }
+
+    function renderFullLyrics(song) {
+        const inner = document.getElementById('listen-full-lyrics-inner');
+        if (song && song.lrcData && song.lrcData.length > 0) {
+            inner.innerHTML = song.lrcData.map((l, i) =>
+                `<div class="listen-lyric-line" data-idx="${i}">${l.text}</div>`
+            ).join('');
+        } else {
+            inner.innerHTML = '<div class="listen-lyric-no">暂无歌词</div>';
+        }
+    }
+
+    window.toggleListenCoverLyrics = () => {
+        const lyricsBg = document.getElementById('listen-lyrics-bg');
+        listenShowLyrics = !listenShowLyrics;
+
+        if (listenShowLyrics) {
+            lyricsBg.style.display = '';
+            requestAnimationFrame(() => { lyricsBg.classList.add('fade-in'); });
+            updateLyricHighlight(listenState.currentTime);
+        } else {
+            lyricsBg.classList.remove('fade-in');
+            setTimeout(() => { lyricsBg.style.display = 'none'; }, 500);
+        }
+    };
+
+    function updateListenPlayButton() {
+        const playIcon = document.getElementById('listen-play-icon');
+        const pauseIcon = document.getElementById('listen-pause-icon');
+        if (listenState.isPlaying) {
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+        } else {
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+        }
+    }
+
+    // 播放真实音频
+    async function listenPlayAudio() {
+        const songs = getListenSongs();
+        const song = songs[listenState.currentSongIndex];
+        if (!song) return;
+
+        if (!listenAudio) listenAudio = document.getElementById('listen-audio-player');
+
+        // 如果有真实音频文件
+        if (song.audioId) {
+            try {
+                const blob = await getAudioFromDB(song.audioId);
+                if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    listenAudio.src = url;
+                    listenAudio.currentTime = listenState.currentTime;
+                    listenAudio.play();
+                    // 监听结束事件
+                    listenAudio.onended = () => { listenNextSong(); };
+                    // 监听时间更新
+                    listenAudio.ontimeupdate = () => {
+                        if (!listenState.isPlaying) return;
+                        const ct = listenAudio.currentTime;
+                        const dur = listenAudio.duration || 0;
+                        listenState.currentTime = ct;
+                        if (dur > 0) {
+                            const percent = (ct / dur) * 100;
+                            document.getElementById('listen-progress-fill').style.width = percent + '%';
+                        }
+                        document.getElementById('listen-current-time').textContent = formatSongTime(ct);
+                        // 更新歌词
+                        updateLyricHighlight(ct);
+                    };
+                    listenAudio.onloadedmetadata = () => {
+                        document.getElementById('listen-total-time').textContent = formatSongTime(listenAudio.duration || 0);
+                    };
+                    return;
+                }
+            } catch(e) { console.warn('音频加载失败，使用模拟播放', e); }
+        }
+
+        // 无真实音频，使用模拟播放
+        document.getElementById('listen-total-time').textContent = formatSongTime(song.duration || 225);
+        startSimulatedProgress();
+    }
+
+    function listenPauseAudio() {
+        if (listenAudio && !listenAudio.paused) {
+            listenAudio.pause();
+        }
+        clearInterval(listenState._simInterval);
+    }
+
+    // 歌词高亮 + 自动滚动 + 单行预览
+    function updateLyricHighlight(currentTime) {
+        const songs = getListenSongs();
+        const song = songs[listenState.currentSongIndex];
+        const previewEl = document.getElementById('listen-lyric-preview');
+
+        if (!song || !song.lrcData || song.lrcData.length === 0) {
+            if (previewEl) previewEl.textContent = '暂无歌词';
+            return;
+        }
+
+        // 找到当前歌词索引
+        let activeIdx = -1;
+        for (let i = song.lrcData.length - 1; i >= 0; i--) {
+            if (song.lrcData[i].time <= currentTime) { activeIdx = i; break; }
+        }
+
+        // 更新单行歌词预览
+        if (previewEl) {
+            previewEl.textContent = activeIdx >= 0 ? song.lrcData[activeIdx].text : '暂无歌词';
+        }
+
+        // 更新全屏歌词高亮和滚动
+        const inner = document.getElementById('listen-full-lyrics-inner');
+        const lines = inner.querySelectorAll('.listen-lyric-line');
+        lines.forEach((el, i) => {
+            if (i === activeIdx) {
+                el.classList.add('active');
+            } else {
+                el.classList.remove('active');
+            }
+        });
+
+        // 自动滚动：让当前行居中
+        if (activeIdx >= 0 && listenShowLyrics && lines[activeIdx]) {
+            const container = inner;
+            const lineEl = lines[activeIdx];
+            const containerH = container.clientHeight;
+            const lineTop = lineEl.offsetTop;
+            const lineH = lineEl.clientHeight;
+            const scrollTarget = lineTop - containerH / 2 + lineH / 2;
+            container.scrollTo({ top: Math.max(0, scrollTarget), behavior: 'smooth' });
+        }
+    }
+
+    // 模拟播放进度（无真实音频时使用）
+    function startSimulatedProgress() {
+        clearInterval(listenState._simInterval);
+        const songs = getListenSongs();
+        const song = songs[listenState.currentSongIndex];
+        const totalDuration = song.duration || 225;
+
+        listenState._simInterval = setInterval(() => {
+            if (!listenState.isPlaying) return;
+            listenState.currentTime += 1;
+            if (listenState.currentTime >= totalDuration) {
+                listenNextSong();
+                return;
+            }
+            const percent = (listenState.currentTime / totalDuration) * 100;
+            document.getElementById('listen-progress-fill').style.width = percent + '%';
+            document.getElementById('listen-current-time').textContent = formatSongTime(listenState.currentTime);
+            updateLyricHighlight(listenState.currentTime);
+        }, 1000);
+    }
+
+    window.listenTogglePlay = () => {
+        listenState.isPlaying = !listenState.isPlaying;
+        updateListenPlayButton();
+
+        if (listenState.isPlaying) {
+            // 开始播放，记录播放开始时间
+            listenState.playStartTimestamp = Date.now();
+            listenPlayAudio();
+        } else {
+            // 暂停播放，结算这段播放时长
+            flushListenDuration();
+            listenPauseAudio();
+        }
+    };
+
+    window.listenPrevSong = () => {
+        const songs = getListenSongs();
+        if (songs.length === 0) return;
+        listenPauseAudio();
+        listenState.currentSongIndex = (listenState.currentSongIndex - 1 + songs.length) % songs.length;
+        listenState.currentTime = 0;
+        updateListenSongUI();
+        if (listenState.isPlaying) {
+            listenPlayAudio();
+        }
+    };
+
+    window.listenNextSong = () => {
+        const songs = getListenSongs();
+        if (songs.length === 0) return;
+        listenPauseAudio();
+
+        if (listenState.playMode === 'loop') {
+            // 单曲循环：重新播放当前歌曲
+        } else if (listenState.playMode === 'shuffle') {
+            // 随机播放：随机选一首（避免连续相同）
+            if (songs.length > 1) {
+                let next;
+                do { next = Math.floor(Math.random() * songs.length); } while (next === listenState.currentSongIndex);
+                listenState.currentSongIndex = next;
+            }
+        } else {
+            // 顺序播放
+            listenState.currentSongIndex = (listenState.currentSongIndex + 1) % songs.length;
+        }
+
+        listenState.currentTime = 0;
+        updateListenSongUI();
+        if (listenState.isPlaying) {
+            listenPlayAudio();
+        }
+    };
+
+    // 播放模式切换
+    window.toggleListenMode = () => {
+        const modes = ['seq', 'loop', 'shuffle'];
+        const modeNames = { seq: '顺序播放', loop: '单曲循环', shuffle: '随机播放' };
+        const idx = modes.indexOf(listenState.playMode);
+        listenState.playMode = modes[(idx + 1) % modes.length];
+        // 更新图标显示
+        document.getElementById('listen-mode-seq').style.display = listenState.playMode === 'seq' ? '' : 'none';
+        document.getElementById('listen-mode-loop').style.display = listenState.playMode === 'loop' ? '' : 'none';
+        document.getElementById('listen-mode-shuffle').style.display = listenState.playMode === 'shuffle' ? '' : 'none';
+        // 更新tooltip
+        document.getElementById('listen-mode-btn').title = modeNames[listenState.playMode];
+        showToast(modeNames[listenState.playMode]);
+    };
+
+    // 进度条点击跳转
+    document.addEventListener('DOMContentLoaded', () => {
+        const bar = document.getElementById('listen-progress-bar-click');
+        if (bar) {
+            bar.addEventListener('click', (e) => {
+                const rect = bar.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                // 如果有真实音频
+                if (listenAudio && listenAudio.duration && !isNaN(listenAudio.duration)) {
+                    listenAudio.currentTime = percent * listenAudio.duration;
+                    listenState.currentTime = listenAudio.currentTime;
+                } else {
+                    const songs = getListenSongs();
+                    const song = songs[listenState.currentSongIndex];
+                    listenState.currentTime = Math.floor(percent * (song.duration || 225));
+                }
+                document.getElementById('listen-progress-fill').style.width = (percent * 100) + '%';
+                document.getElementById('listen-current-time').textContent = formatSongTime(listenState.currentTime);
+            });
+        }
+    });
+
+    // ========================= 一起听-设置弹窗 =========================
+    window.openListenSettingsPopup = () => {
+        if (!currentChatContactId) return;
+        const coverUrl = getListenCoverUrl(currentChatContactId);
+        document.getElementById('listen-cover-url-input').value = coverUrl;
+        document.getElementById('listen-settings-overlay').classList.add('active');
+    };
+
+    window.closeListenSettingsPopup = () => {
+        document.getElementById('listen-settings-overlay').classList.remove('active');
+    };
+
+    window.saveListenCoverUrl = () => {
+        if (!currentChatContactId) return;
+        const url = document.getElementById('listen-cover-url-input').value.trim();
+        saveListenCoverUrl(currentChatContactId, url);
+        // 更新封面显示
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+        document.getElementById('listen-cover').style.backgroundImage = url ? `url(${url})` : (contact && contact.avatar ? `url(${contact.avatar})` : '');
+        showToast('封面已更新');
+    };
+
+    // ========================= 一起听-管理音乐弹窗 =========================
+    window.openListenManagePopup = () => {
+        renderListenManageList();
+        document.getElementById('listen-manage-overlay').classList.add('active');
+    };
+
+    window.closeListenManagePopup = () => {
+        document.getElementById('listen-manage-overlay').classList.remove('active');
+    };
+
+    let listenEditingIndex = -1; // 当前编辑的歌曲索引，-1表示无编辑
+
+    function renderListenManageList() {
+        const songs = getListenSongs();
+        const listEl = document.getElementById('listen-manage-list');
+        if (songs.length === 0) {
+            listEl.innerHTML = '<div style="text-align:center;color:#b08a8a;font-size:12px;padding:20px 0;">暂无歌曲</div>';
+            return;
+        }
+        listEl.innerHTML = songs.map((song, i) => {
+            if (i === listenEditingIndex) {
+                // 编辑模式
+                return `
+                    <div class="listen-manage-item listen-manage-item-editing">
+                        <div class="listen-manage-item-info">
+                            <input type="text" class="listen-edit-input" id="listen-edit-title-${i}" value="${song.title}" placeholder="歌曲名称" style="margin-bottom:4px;">
+                            <input type="text" class="listen-edit-input" id="listen-edit-artist-${i}" value="${song.artist}" placeholder="歌手名">
+                        </div>
+                        <div class="listen-manage-edit-btns">
+                            <button class="listen-manage-save" onclick="saveListenSongEdit(${i})" title="保存">✓</button>
+                            <button class="listen-manage-cancel" onclick="cancelListenSongEdit()" title="取消">✕</button>
+                        </div>
+                    </div>`;
+            }
+            return `
+                <div class="listen-manage-item">
+                    <div class="listen-manage-item-info">
+                        <div class="listen-manage-item-title">${song.title}${song.audioId ? '<span class="listen-manage-item-badge">有音频</span>' : ''}</div>
+                        <div class="listen-manage-item-artist">${song.artist}${song.lrcData ? ' · 有歌词' : ''}</div>
+                    </div>
+                    <div style="display:flex;gap:4px;">
+                        <button class="listen-manage-edit" onclick="editListenSong(${i})" title="编辑">✎</button>
+                        <button class="listen-manage-del" onclick="deleteListenSong(${i})" title="删除">✕</button>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    window.editListenSong = (index) => {
+        listenEditingIndex = index;
+        renderListenManageList();
+        // 聚焦到标题输入框
+        const titleInput = document.getElementById(`listen-edit-title-${index}`);
+        if (titleInput) titleInput.focus();
+    };
+
+    window.cancelListenSongEdit = () => {
+        listenEditingIndex = -1;
+        renderListenManageList();
+    };
+
+    window.saveListenSongEdit = (index) => {
+        const songs = getListenSongs();
+        const song = songs[index];
+        if (!song) return;
+        const newTitle = document.getElementById(`listen-edit-title-${index}`).value.trim();
+        const newArtist = document.getElementById(`listen-edit-artist-${index}`).value.trim();
+        if (!newTitle) { showToast('歌曲名称不能为空'); return; }
+        song.title = newTitle;
+        song.artist = newArtist || '未知歌手';
+        saveListenSongs(songs);
+        listenEditingIndex = -1;
+        renderListenManageList();
+        // 如果正在播放这首，更新主弹窗显示
+        if (listenState.currentSongIndex === index && document.getElementById('listen-together-overlay').classList.contains('active')) {
+            updateListenSongUI();
+        }
+        showToast('已修改');
+    };
+
+    window.deleteListenSong = async (index) => {
+        const songs = getListenSongs();
+        const song = songs[index];
+        if (!song) return;
+        // 删除音频文件
+        if (song.audioId) {
+            try { await deleteAudioFromDB(song.audioId); } catch(e) {}
+        }
+        songs.splice(index, 1);
+        saveListenSongs(songs);
+        // 修正当前播放索引
+        if (listenState.currentSongIndex >= songs.length) {
+            listenState.currentSongIndex = Math.max(0, songs.length - 1);
+        }
+        renderListenManageList();
+        // 如果主弹窗在显示，更新UI
+        if (document.getElementById('listen-together-overlay').classList.contains('active')) {
+            updateListenSongUI();
+        }
+    };
+
+    window.addListenSong = async () => {
+        const title = document.getElementById('listen-add-title').value.trim();
+        const artist = document.getElementById('listen-add-artist').value.trim() || '未知歌手';
+        const audioFile = document.getElementById('listen-add-audio').files[0];
+        const lrcFile = document.getElementById('listen-add-lrc').files[0];
+
+        if (!title) { showToast('请输入歌曲名称'); return; }
+        if (!audioFile) { showToast('请选择音乐文件'); return; }
+
+        const audioId = 'listen_audio_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+
+        // 保存音频文件到IndexedDB
+        try {
+            await saveAudioToDB(audioId, audioFile);
+        } catch(e) {
+            showToast('音频文件保存失败');
+            return;
+        }
+
+        // 解析LRC歌词
+        let lrcData = null;
+        if (lrcFile) {
+            try {
+                const lrcText = await lrcFile.text();
+                lrcData = parseLRC(lrcText);
+            } catch(e) {
+                console.warn('歌词解析失败', e);
+            }
+        }
+
+        // 获取音频时长（创建临时audio元素）
+        const duration = await new Promise((resolve) => {
+            const tempAudio = new Audio();
+            const url = URL.createObjectURL(audioFile);
+            tempAudio.src = url;
+            tempAudio.onloadedmetadata = () => {
+                resolve(Math.floor(tempAudio.duration) || 225);
+                URL.revokeObjectURL(url);
+            };
+            tempAudio.onerror = () => {
+                resolve(225);
+                URL.revokeObjectURL(url);
+            };
+            // 超时保护
+            setTimeout(() => { resolve(225); URL.revokeObjectURL(url); }, 5000);
+        });
+
+        const songObj = { title, artist, duration, audioId };
+        if (lrcData && lrcData.length > 0) {
+            songObj.lrcData = lrcData;
+        }
+
+        const songs = getListenSongs();
+        songs.push(songObj);
+        saveListenSongs(songs);
+
+        // 清空输入
+        document.getElementById('listen-add-title').value = '';
+        document.getElementById('listen-add-artist').value = '';
+        document.getElementById('listen-add-audio').value = '';
+        document.getElementById('listen-add-lrc').value = '';
+        document.getElementById('listen-audio-filename').textContent = '未选择';
+        document.getElementById('listen-lrc-filename').textContent = '未选择';
+
+        renderListenManageList();
+        showToast('歌曲已添加');
+    };
+
+    // 文件选择时更新文件名显示
+    document.addEventListener('DOMContentLoaded', () => {
+        const audioInput = document.getElementById('listen-add-audio');
+        const lrcInput = document.getElementById('listen-add-lrc');
+        if (audioInput) {
+            audioInput.addEventListener('change', (e) => {
+                const fn = e.target.files[0] ? e.target.files[0].name : '未选择';
+                document.getElementById('listen-audio-filename').textContent = fn;
+            });
+        }
+        if (lrcInput) {
+            lrcInput.addEventListener('change', (e) => {
+                const fn = e.target.files[0] ? e.target.files[0].name : '未选择';
+                document.getElementById('listen-lrc-filename').textContent = fn;
+            });
+        }
+    });
 
     // --- Role Settings & Styling ---
     window.openRoleSettings = () => {
@@ -37051,6 +38209,7 @@ window.openTransferConfirmPopup = (amount) => {
         document.getElementById('role-setting-alias').value = contact.alias || '';
         document.getElementById('role-setting-signature').value = contact.signature || '';
         document.getElementById('role-setting-persona').value = contact.persona || '';
+        document.getElementById('role-setting-online-rules').value = contact.onlineRules || '';
         const roleAvatarImg = document.getElementById('role-setting-avatar');
         roleAvatarImg.removeAttribute('data-loaded');
         roleAvatarImg.src = contact.avatar || '';
@@ -37159,6 +38318,7 @@ window.openTransferConfirmPopup = (amount) => {
         const alias = document.getElementById('role-setting-alias').value.trim();
         const signature = document.getElementById('role-setting-signature').value.trim();
         const persona = document.getElementById('role-setting-persona').value.trim();
+        const onlineRules = document.getElementById('role-setting-online-rules').value.trim();
         const timeEnabled = document.getElementById('role-time-perception-switch').checked;
         const memoryDepth = parseInt(document.getElementById('role-memory-depth').value) || 15;
         
@@ -37201,6 +38361,7 @@ window.openTransferConfirmPopup = (amount) => {
             contacts[idx].alias = alias;
             contacts[idx].signature = signature;
             contacts[idx].persona = persona;
+            contacts[idx].onlineRules = onlineRules;
             contacts[idx].backgroundImage = tempRoleBgUrl;
             contacts[idx].timePerceptionEnabled = timeEnabled;
             contacts[idx].memoryDepth = memoryDepth;
@@ -37951,7 +39112,7 @@ window.openTransferConfirmPopup = (amount) => {
         // 构建完整系统提示
         let sysPrompt = `你现在扮演角色：${charName}。
 角色设定：${contact.persona || ''}
-
+${contact.onlineRules ? `\n线上规则（在线上聊天时必须遵守的规则）：\n${contact.onlineRules}\n` : ''}
 与你对话的用户是：${uName}
 用户的设定：${uPersona}`;
 
@@ -39321,6 +40482,7 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
 
           let sysPrompt = `你现在扮演角色：${contact.alias || contact.name}。
 角色设定：${contact.persona}
+${contact.onlineRules ? `\n线上规则（在线上聊天时必须遵守的规则）：\n${contact.onlineRules}\n` : ''}
 ${worldbookContext ? `\n背景设定(世界书)：\n${worldbookContext}\n` : ''}
 ${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionContext}\n` : ''}
 ${albumContext}
@@ -40203,6 +41365,7 @@ ${emotionFreq !== 'none' ? (isForceEmotionTurn
         
         const sysPrompt = `你现在扮演角色：${contact.alias || contact.name}。
 角色设定：${contact.persona}
+${contact.onlineRules ? `\n线上规则（在线上聊天时必须遵守的规则）：\n${contact.onlineRules}\n` : ''}
 ${worldbookContext ? `\n背景设定(世界书)：\n${worldbookContext}\n` : ''}
 ${recollectionContext ? `\n近期经历(回忆)：\n${recollectionContext}\n` : ''}
 ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
@@ -41462,6 +42625,9 @@ window.executeDisableLock = () => {
         
         if (roleContact) {
             sysPrompt += `\n这是你的人设：${roleContact.persona}`;
+            if (roleContact.onlineRules) {
+                sysPrompt += `\n线上规则（在线上聊天时必须遵守的规则）：\n${roleContact.onlineRules}`;
+            }
             // 携带角色的世界书设定
             let worldbookContext = "";
             if (roleContact.worldbookIds && roleContact.worldbookIds.length > 0) {
