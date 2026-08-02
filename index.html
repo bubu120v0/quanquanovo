@@ -12091,6 +12091,187 @@ body.phone-frame-active #mall-received-gifts-page .mall-favorite-header { paddin
             border-top: none;
         }
 
+        /* 已抽好牌入口 */
+        .tarot-predrawn-entry {
+            margin-top: 16px; padding: 12px 28px;
+            font-size: 14px; color: #F0A0B8;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            cursor: pointer; letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-align: center;
+            animation: tarotPredrawnShimmer 2s ease-in-out infinite;
+        }
+        .tarot-predrawn-entry:hover { color: #E58AAB; transform: scale(1.05); }
+        @keyframes tarotPredrawnShimmer {
+            0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(255,182,193,0.4); }
+            50% { opacity: 0.5; text-shadow: 0 0 4px rgba(255,182,193,0.2); }
+        }
+
+        /* 已抽好牌 - 全屏页面 */
+        .tarot-predrawn-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #fff5f7, #fff0f3); z-index: 1009;
+            display: none; flex-direction: column;
+        }
+        .tarot-predrawn-overlay.active { display: flex; }
+        .tarot-predrawn-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 85px 16px 12px; background: transparent; border-bottom: none;
+        }
+        .tarot-predrawn-header .tarot-back-btn { margin-left: 20px; }
+        .tarot-predrawn-title {
+            font-size: 18px; font-weight: bold; color: #C08090;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+        .tarot-predrawn-content {
+            flex: 1; overflow-y: auto; padding: 10px 16px 20px;
+        }
+        .tarot-predrawn-step { width: 100%; max-width: 360px; margin: 0 auto; }
+        .tarot-predrawn-hint {
+            font-size: 15px; color: #D4A0B0; text-align: center;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            margin-bottom: 16px; letter-spacing: 1px;
+        }
+        .tarot-predrawn-spread-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 10px; width: 100%;
+        }
+        .tarot-predrawn-spread-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,240,245,0.9));
+            border-radius: 16px; padding: 14px 10px;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 6px; cursor: pointer;
+            box-shadow: 0 3px 12px rgba(255,182,193,0.15);
+            border: 1.5px solid rgba(255,182,193,0.25);
+            transition: all 0.3s ease;
+        }
+        .tarot-predrawn-spread-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,182,193,0.25); }
+        .tarot-predrawn-spread-card.selected {
+            border-color: #F8B4C8; background: linear-gradient(135deg, rgba(255,240,245,1), rgba(255,228,235,1));
+        }
+        .tarot-predrawn-spread-card-icon { font-size: 28px; }
+        .tarot-predrawn-spread-card-name {
+            font-size: 13px; color: #8B4557; font-weight: bold;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+        .tarot-predrawn-spread-card-count { font-size: 10px; color: #D4A0B0; }
+        .tarot-predrawn-cards-grid {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 12px; margin-bottom: 20px;
+        }
+        .tarot-predrawn-card-slot {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px; width: 80px; cursor: pointer;
+        }
+        .tarot-predrawn-card-slot-img {
+            width: 70px; height: 105px; border-radius: 12px; overflow: hidden;
+            border: 2px dashed rgba(255,182,193,0.5);
+            background: rgba(255,240,245,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: #D4A0B0;
+            transition: all 0.3s ease; position: relative;
+        }
+        .tarot-predrawn-card-slot-img.has-card {
+            border-style: solid; border-color: rgba(255,182,193,0.6);
+            box-shadow: 0 3px 10px rgba(248,180,200,0.2);
+        }
+        .tarot-predrawn-card-slot-img.has-card img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .tarot-predrawn-card-slot-img.has-card.reversed img { transform: rotate(180deg); }
+        .tarot-predrawn-card-slot-pos {
+            font-size: 10px; color: #D4A0B0;
+            font-family: 'ZCOOL KuaiLe', cursive; text-align: center;
+        }
+        .tarot-predrawn-card-slot-name { font-size: 10px; color: #C08090; font-weight: bold; text-align: center; }
+        .tarot-predrawn-card-slot-dir { font-size: 9px; color: #D4A0B0; }
+        .tarot-predrawn-card-slot-toggle {
+            font-size: 9px; color: #F8B4C8; cursor: pointer; padding: 2px 8px;
+            background: rgba(248,180,200,0.15); border-radius: 8px; margin-top: 2px;
+            display: none;
+        }
+        .tarot-predrawn-card-slot .tarot-predrawn-card-slot-toggle.has-card { display: block; }
+        .tarot-predrawn-actions {
+            display: flex; gap: 10px; justify-content: center; margin-top: 10px;
+        }
+
+        /* 已抽好牌 - 牌选择弹窗 */
+        .tarot-card-picker-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.5); z-index: 1010;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+        .tarot-card-picker-overlay.active { display: flex; }
+        .tarot-card-picker-modal {
+            width: 360px; max-width: 92vw; max-height: 80vh;
+            background: linear-gradient(160deg, #fff8f8, #fff0f2);
+            border-radius: 24px; padding: 20px;
+            box-shadow: 0 20px 60px rgba(248,180,200,0.4);
+            display: flex; flex-direction: column;
+        }
+        .tarot-card-picker-header { margin-bottom: 12px; }
+        .tarot-card-picker-title {
+            font-size: 18px; font-weight: bold; color: #8B4557;
+            text-align: center; margin-bottom: 12px;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+        .tarot-card-picker-search-wrap {
+            position: relative; display: flex; align-items: center;
+        }
+        .tarot-card-picker-search-icon {
+            position: absolute; left: 12px; width: 16px; height: 16px; pointer-events: none;
+        }
+        .tarot-card-picker-search {
+            width: 100%; padding: 10px 12px 10px 36px;
+            border: 1px solid rgba(248,180,200,0.5);
+            border-radius: 12px; font-size: 13px; color: #6A4A5A;
+            background: rgba(255,255,255,0.8); outline: none;
+            box-sizing: border-box; font-family: inherit;
+        }
+        .tarot-card-picker-search:focus { border-color: #F8B4C8; }
+        .tarot-card-picker-search::placeholder { color: #D4B0B0; }
+        .tarot-card-picker-list {
+            flex: 1; overflow-y: auto; margin-bottom: 12px;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 8px; padding: 4px;
+        }
+        .tarot-card-picker-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 3px; padding: 6px; border-radius: 12px;
+            cursor: pointer; transition: all 0.2s;
+            border: 1.5px solid transparent;
+        }
+        .tarot-card-picker-item:hover { background: rgba(248,180,200,0.15); }
+        .tarot-card-picker-item.selected {
+            border-color: #F8B4C8; background: rgba(248,180,200,0.2);
+        }
+        .tarot-card-picker-item-img {
+            width: 55px; height: 82px; border-radius: 8px; overflow: hidden;
+            border: 1.5px solid rgba(255,182,193,0.3);
+        }
+        .tarot-card-picker-item-img img { width: 100%; height: 100%; object-fit: cover; }
+        .tarot-card-picker-item-name {
+            font-size: 9px; color: #C08090; text-align: center;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px;
+        }
+        .tarot-card-picker-dir-toggle {
+            display: flex; gap: 4px; margin-top: 8px; justify-content: center;
+        }
+        .tarot-card-picker-dir-btn {
+            padding: 6px 16px; border-radius: 10px; font-size: 12px;
+            border: 1.5px solid rgba(248,180,200,0.4); cursor: pointer;
+            background: rgba(255,255,255,0.6); color: #D4A0B0;
+            font-family: 'ZCOOL KuaiLe', cursive; transition: all 0.2s;
+        }
+        .tarot-card-picker-dir-btn.active {
+            background: linear-gradient(135deg, #F8B4C8, #E8A0B8);
+            color: #fff; border-color: #F8B4C8;
+        }
+        .tarot-card-picker-actions {
+            display: flex; gap: 10px; justify-content: center;
+        }
+
         /* 存储箱弹窗 */
         .tarot-storage-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -15482,6 +15663,8 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
                 <div id="tarot-custom-spreads-list"></div>
             </div>
         </div>
+        <!-- 已抽好牌入口 -->
+        <div class="tarot-predrawn-entry" onclick="openTarotPreDrawnPage()">已抽好牌</div>
     </div>
 
     <!-- 洗牌区域 -->
@@ -15629,6 +15812,48 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
         <div class="tarot-editor-actions">
             <button class="tarot-btn tarot-btn-secondary" onclick="closeTarotSpreadEditor()">取消</button>
             <button class="tarot-btn tarot-btn-primary" onclick="saveCustomSpread()">保存牌阵</button>
+        </div>
+    </div>
+</div>
+
+<!-- 已抽好牌 - 全屏页面 -->
+<div class="tarot-predrawn-overlay" id="tarot-predrawn-overlay">
+    <div class="tarot-predrawn-header">
+        <img src="https://img.heliar.top/file/1770068142146_骨头_bone.png" class="tarot-back-btn" onclick="closeTarotPreDrawnPage()">
+        <div class="tarot-predrawn-title" id="tarot-predrawn-title-text">🃏 已抽好牌</div>
+        <div style="width:30px;"></div>
+    </div>
+    <div class="tarot-predrawn-content" id="tarot-predrawn-content">
+        <!-- 步骤1: 选择牌阵 -->
+        <div class="tarot-predrawn-step" id="tarot-predrawn-step-spread">
+            <div class="tarot-predrawn-hint">选择牌阵</div>
+            <div class="tarot-predrawn-spread-grid" id="tarot-predrawn-spread-grid"></div>
+        </div>
+        <!-- 步骤2: 为每个位置选牌 -->
+        <div class="tarot-predrawn-step" id="tarot-predrawn-step-cards" style="display:none;">
+            <div class="tarot-predrawn-hint" id="tarot-predrawn-spread-name">为每个位置选择牌</div>
+            <div class="tarot-predrawn-cards-grid" id="tarot-predrawn-cards-grid"></div>
+            <div class="tarot-predrawn-actions">
+                <button class="tarot-btn tarot-btn-secondary" onclick="tarotPreDrawnBackToSpread()">返回</button>
+                <button class="tarot-btn tarot-btn-primary" onclick="tarotPreDrawnConfirm()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 已抽好牌 - 牌选择弹窗（含搜索） -->
+<div class="tarot-card-picker-overlay" id="tarot-card-picker-overlay" onclick="if(event.target===this)closeTarotCardPicker()">
+    <div class="tarot-card-picker-modal">
+        <div class="tarot-card-picker-header">
+            <div class="tarot-card-picker-title">选择塔罗牌</div>
+            <div class="tarot-card-picker-search-wrap">
+                <svg class="tarot-card-picker-search-icon" viewBox="0 0 24 24" fill="none" stroke="#D4A0B0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="tarot-card-picker-search" id="tarot-card-picker-search" placeholder="搜索塔罗牌..." oninput="filterTarotCards()">
+            </div>
+        </div>
+        <div class="tarot-card-picker-list" id="tarot-card-picker-list"></div>
+        <div class="tarot-card-picker-actions">
+            <button class="tarot-btn tarot-btn-secondary" onclick="closeTarotCardPicker()">取消</button>
         </div>
     </div>
 </div>
@@ -22382,6 +22607,237 @@ ${cardsInfo}
         renderSettingsSpreadsList();
         renderManageSpreadsList();
     };
+
+    // ========================= 已抽好牌功能 =========================
+    let preDrawnState = {
+        selectedSpread: null,   // 选中的牌阵对象 {name, count, positions}
+        slotCards: [],          // 每个位置的牌 {cardIdx, isReversed} 或 null
+        currentSlot: -1,        // 当前正在选牌的位置
+        pickerReversed: false   // 牌选择弹窗中当前选的逆位状态
+    };
+
+    // 打开已抽好牌页面
+    window.openTarotPreDrawnPage = () => {
+        preDrawnState = { selectedSpread: null, slotCards: [], currentSlot: -1, pickerReversed: false };
+        document.getElementById('tarot-predrawn-step-spread').style.display = '';
+        document.getElementById('tarot-predrawn-step-cards').style.display = 'none';
+        renderPreDrawnSpreadGrid();
+        document.getElementById('tarot-predrawn-overlay').classList.add('active');
+    };
+    window.closeTarotPreDrawnPage = () => {
+        document.getElementById('tarot-predrawn-overlay').classList.remove('active');
+    };
+
+    // 渲染牌阵选择网格（预设+自定义）
+    function renderPreDrawnSpreadGrid() {
+        const grid = document.getElementById('tarot-predrawn-spread-grid');
+        const icons = { daily: '🌟', triangle: '🔺', timeline: '⏳', choice: '⚖️', celtic: '✨' };
+        let html = Object.entries(TAROT_SPREADS).map(([key, sp]) => `
+            <div class="tarot-predrawn-spread-card" onclick="selectPreDrawnSpread('${key}', null)">
+                <div class="tarot-predrawn-spread-card-icon">${icons[key] || '🔮'}</div>
+                <div class="tarot-predrawn-spread-card-name">${sp.name}</div>
+                <div class="tarot-predrawn-spread-card-count">${sp.count}张牌</div>
+            </div>
+        `).join('');
+        // 自定义牌阵
+        const customs = loadCustomSpreads();
+        customs.forEach((sp, i) => {
+            const count = sp.positions ? sp.positions.length : 0;
+            html += `
+                <div class="tarot-predrawn-spread-card" onclick="selectPreDrawnSpread(null, ${i})">
+                    <div class="tarot-predrawn-spread-card-icon">✨</div>
+                    <div class="tarot-predrawn-spread-card-name">${escapeHtml(sp.name || '自定义')}</div>
+                    <div class="tarot-predrawn-spread-card-count">${count}张牌</div>
+                </div>
+            `;
+        });
+        grid.innerHTML = html;
+    }
+
+    // 选择牌阵，进入牌位选择步骤
+    window.selectPreDrawnSpread = (presetKey, customIdx) => {
+        let spread;
+        if (presetKey) {
+            spread = { ...TAROT_SPREADS[presetKey] };
+        } else {
+            const customs = loadCustomSpreads();
+            const cs = customs[customIdx];
+            if (!cs) return;
+            spread = { name: cs.name, count: cs.positions ? cs.positions.length : 0, positions: cs.positions || [] };
+        }
+        preDrawnState.selectedSpread = spread;
+        preDrawnState.slotCards = new Array(spread.count).fill(null);
+        document.getElementById('tarot-predrawn-spread-name').textContent = `${spread.name} · 为每个位置选择牌`;
+        renderPreDrawnCardSlots();
+        document.getElementById('tarot-predrawn-step-spread').style.display = 'none';
+        document.getElementById('tarot-predrawn-step-cards').style.display = '';
+    };
+
+    // 返回牌阵选择
+    window.tarotPreDrawnBackToSpread = () => {
+        document.getElementById('tarot-predrawn-step-spread').style.display = '';
+        document.getElementById('tarot-predrawn-step-cards').style.display = 'none';
+    };
+
+    // 渲染牌位格子
+    function renderPreDrawnCardSlots() {
+        const grid = document.getElementById('tarot-predrawn-cards-grid');
+        const spread = preDrawnState.selectedSpread;
+        if (!spread) return;
+        grid.innerHTML = spread.positions.map((pos, i) => {
+            const card = preDrawnState.slotCards[i];
+            const hasCard = card !== null;
+            const cardData = hasCard ? TAROT_CARDS[card.cardIdx] : null;
+            const img = hasCard ? tarotData.cards[card.cardIdx].image : '';
+            return `
+                <div class="tarot-predrawn-card-slot" onclick="openTarotCardPicker(${i})">
+                    <div class="tarot-predrawn-card-slot-img ${hasCard ? 'has-card' : ''} ${hasCard && card.isReversed ? 'reversed' : ''}">
+                        ${hasCard ? `<img src="${img}" alt="${cardData.name}">` : '+'}
+                    </div>
+                    <div class="tarot-predrawn-card-slot-pos">${escapeHtml(pos)}</div>
+                    <div class="tarot-predrawn-card-slot-name">${hasCard ? escapeHtml(cardData.name) : '点击选牌'}</div>
+                    <div class="tarot-predrawn-card-slot-dir">${hasCard ? (card.isReversed ? '逆位' : '正位') : ''}</div>
+                    <div class="tarot-predrawn-card-slot-toggle ${hasCard ? 'has-card' : ''}" onclick="event.stopPropagation(); togglePreDrawnCardDir(${i})">${hasCard ? (card.isReversed ? '切正位' : '切逆位') : ''}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 切换正逆位
+    window.togglePreDrawnCardDir = (slotIdx) => {
+        if (preDrawnState.slotCards[slotIdx]) {
+            preDrawnState.slotCards[slotIdx].isReversed = !preDrawnState.slotCards[slotIdx].isReversed;
+            renderPreDrawnCardSlots();
+        }
+    };
+
+    // 打开牌选择弹窗
+    window.openTarotCardPicker = (slotIdx) => {
+        preDrawnState.currentSlot = slotIdx;
+        preDrawnState.pickerReversed = preDrawnState.slotCards[slotIdx] ? preDrawnState.slotCards[slotIdx].isReversed : false;
+        document.getElementById('tarot-card-picker-search').value = '';
+        renderTarotCardPickerList();
+        document.getElementById('tarot-card-picker-overlay').classList.add('active');
+    };
+    window.closeTarotCardPicker = () => {
+        document.getElementById('tarot-card-picker-overlay').classList.remove('active');
+    };
+
+    // 渲染牌选择列表
+    function renderTarotCardPickerList(filter) {
+        const list = document.getElementById('tarot-card-picker-list');
+        const currentCard = preDrawnState.currentSlot >= 0 && preDrawnState.slotCards[preDrawnState.currentSlot]
+            ? preDrawnState.slotCards[preDrawnState.currentSlot].cardIdx : -1;
+        let cards = TAROT_CARDS.map((c, i) => ({ ...c, idx: i }));
+        if (filter) {
+            const f = filter.toLowerCase();
+            cards = cards.filter(c => c.name.toLowerCase().includes(f) || c.en.toLowerCase().includes(f));
+        }
+        if (cards.length === 0) {
+            list.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#D4A0B0;font-size:13px;">未找到匹配的塔罗牌</div>';
+            return;
+        }
+        list.innerHTML = cards.map(c => `
+            <div class="tarot-card-picker-item ${c.idx === currentCard ? 'selected' : ''}" onclick="pickTarotCard(${c.idx})">
+                <div class="tarot-card-picker-item-img"><img src="${tarotData.cards[c.idx].image}" alt="${c.name}"></div>
+                <div class="tarot-card-picker-item-name">${escapeHtml(c.name)}</div>
+            </div>
+        `).join('') + `
+            <div class="tarot-card-picker-dir-toggle" style="grid-column:1/-1;">
+                <div class="tarot-card-picker-dir-btn ${!preDrawnState.pickerReversed ? 'active' : ''}" onclick="setPickerReversed(false)">正位</div>
+                <div class="tarot-card-picker-dir-btn ${preDrawnState.pickerReversed ? 'active' : ''}" onclick="setPickerReversed(true)">逆位</div>
+            </div>
+        `;
+    }
+
+    // 设置正逆位
+    window.setPickerReversed = (reversed) => {
+        preDrawnState.pickerReversed = reversed;
+        renderTarotCardPickerList(document.getElementById('tarot-card-picker-search').value.trim());
+    };
+
+    // 搜索过滤
+    window.filterTarotCards = () => {
+        const val = document.getElementById('tarot-card-picker-search').value.trim();
+        renderTarotCardPickerList(val);
+    };
+
+    // 选定一张牌
+    window.pickTarotCard = (cardIdx) => {
+        if (preDrawnState.currentSlot < 0) return;
+        preDrawnState.slotCards[preDrawnState.currentSlot] = { cardIdx, isReversed: preDrawnState.pickerReversed };
+        closeTarotCardPicker();
+        renderPreDrawnCardSlots();
+    };
+
+    // 确定完成选牌 → 进入解牌流程
+    window.tarotPreDrawnConfirm = () => {
+        const spread = preDrawnState.selectedSpread;
+        if (!spread) return;
+        // 检查是否所有位置都选了牌
+        const empty = preDrawnState.slotCards.findIndex(c => c === null);
+        if (empty !== -1) {
+            showToast(`请为「${spread.positions[empty]}」选择牌`);
+            return;
+        }
+        // 设置 tarotState，绕过洗牌抽牌流程
+        tarotState.currentSpread = spread;
+        tarotState.drawnCards = preDrawnState.slotCards.map((c, i) => ({
+            cardIdx: c.cardIdx,
+            isReversed: c.isReversed,
+            slotIdx: i
+        }));
+        // 关闭已抽好牌页面，打开AI解牌对话框
+        closeTarotPreDrawnPage();
+        // 关闭牌阵选择区，显示解读区
+        document.getElementById('tarot-spread-section').style.display = 'none';
+        // 直接显示解读区并渲染牌
+        showPreDrawnReadingArea();
+    };
+
+    // 显示已选牌的解读区域
+    function showPreDrawnReadingArea() {
+        const readingArea = document.getElementById('tarot-reading-area');
+        const cardsContainer = document.getElementById('tarot-reading-cards');
+        const detailsContainer = document.getElementById('tarot-reading-details');
+        const spread = tarotState.currentSpread;
+
+        document.getElementById('tarot-reading-title').textContent = `${spread.name} · 解读`;
+
+        // 渲染牌
+        cardsContainer.innerHTML = tarotState.drawnCards.map((drawn, i) => {
+            const card = TAROT_CARDS[drawn.cardIdx];
+            const posIdx = drawn.slotIdx !== undefined ? drawn.slotIdx : i;
+            return `
+                <div class="tarot-reading-card">
+                    <div class="tarot-reading-card-img ${drawn.isReversed ? 'reversed' : ''}">
+                        <img src="${tarotData.cards[drawn.cardIdx].image}" alt="${card.name}">
+                    </div>
+                    <div class="tarot-reading-card-label">${spread.positions[posIdx] || ''}</div>
+                    <div class="tarot-reading-card-name">${card.name}</div>
+                    <div class="tarot-reading-card-pos">${drawn.isReversed ? '逆位' : '正位'}</div>
+                </div>
+            `;
+        }).join('');
+
+        // 渲染牌义
+        detailsContainer.innerHTML = tarotState.drawnCards.map((drawn, i) => {
+            const card = TAROT_CARDS[drawn.cardIdx];
+            const meaning = drawn.isReversed ? card.reverse : card.meaning;
+            const posText = drawn.isReversed ? '逆位' : '正位';
+            const posIdx = drawn.slotIdx !== undefined ? drawn.slotIdx : i;
+            return `
+                <div class="tarot-reading-detail">
+                    <div class="tarot-reading-detail-title">${spread.positions[posIdx] || ''} · ${card.name}（${posText}）</div>
+                    <div class="tarot-reading-detail-text">${meaning}</div>
+                </div>
+            `;
+        }).join('');
+
+        readingArea.classList.add('active');
+        // 打开AI解牌对话框（选择好友解牌）
+        setTimeout(() => openTarotAIOverlay(), 300);
+    }
 
     // ========================= 塔罗牌逻辑结束 =========================
     // --- 新增：店铺详情 Tabs 切换 ---
