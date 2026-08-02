@@ -3746,6 +3746,14 @@
     background-color: #eee;
     color: #888;
 }
+.app-icon-upload-btn {
+    width: 34px; height: 34px; border-radius: 8px; border: 1px dashed #ccc;
+    background: #fafafa; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-size: 15px; color: #aaa; flex-shrink: 0;
+    transition: all 0.2s; padding: 0;
+}
+.app-icon-upload-btn:hover { border-color: #E58AAB; color: #E58AAB; background: #fff5f8; }
+.app-icon-upload-btn.has-upload { border-style: solid; border-color: #E58AAB; color: #E58AAB; background: #fff5f8; }
         
         /* --- iOS Mode Switch Styles (Generic row with switch) --- */
         .settings-row-with-switch {
@@ -15951,7 +15959,11 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
             <div class="settings-row" style="margin-top: 10px;">
                 <label for="lock-wallpaper-url">修改锁屏壁纸</label>
                 <div class="input-with-preview">
-                    <input type="text" id="lock-wallpaper-url" placeholder="留空则与主屏幕一致">
+                    <div class="app-icon-input-group" style="width:100%;">
+                        <input type="text" id="lock-wallpaper-url" placeholder="留空则与主屏幕一致" style="flex:1;">
+                        <button class="app-icon-upload-btn" onclick="uploadLockWallpaper()" title="上传图片">📁</button>
+                        <button class="app-icon-upload-btn" onclick="resetLockWallpaper()" title="重置" style="font-size:12px;">✕</button>
+                    </div>
                     <div class="url-preview" id="lock-wallpaper-preview"></div>
                 </div>
             </div>
@@ -16099,7 +16111,11 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
             <div class="settings-row">
                 <label for="wallpaper-url">主屏幕壁纸 URL</label>
                 <div class="input-with-preview">
-                    <input type="text" id="wallpaper-url" placeholder="输入图片 URL">
+                    <div class="app-icon-input-group" style="width:100%;">
+                        <input type="text" id="wallpaper-url" placeholder="输入图片 URL" style="flex:1;">
+                        <button class="app-icon-upload-btn" onclick="uploadWallpaper()" title="上传图片">📁</button>
+                        <button class="app-icon-upload-btn" onclick="resetWallpaper()" title="重置" style="font-size:12px;">✕</button>
+                    </div>
                     <div class="url-preview" id="wallpaper-preview"></div>
                 </div>
             </div>
@@ -16107,7 +16123,11 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
             <div class="settings-row">
                 <label for="photo-widget-url">右下角图片组件 URL</label>
                 <div class="input-with-preview">
-                    <input type="text" id="photo-widget-url" placeholder="输入图片 URL">
+                    <div class="app-icon-input-group" style="width:100%;">
+                        <input type="text" id="photo-widget-url" placeholder="输入图片 URL" style="flex:1;">
+                        <button class="app-icon-upload-btn" onclick="uploadPhotoWidget()" title="上传图片">📁</button>
+                        <button class="app-icon-upload-btn" onclick="resetPhotoWidget()" title="重置" style="font-size:12px;">✕</button>
+                    </div>
                     <div class="url-preview" id="photo-widget-preview"></div>
                 </div>
             </div>
@@ -16160,7 +16180,11 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
             <div class="settings-row">
                 <label for="couple-avatar-left-url">左侧头像 URL</label>
                 <div class="input-with-preview">
-                    <input type="text" id="couple-avatar-left-url" placeholder="输入图片 URL">
+                    <div class="app-icon-input-group" style="width:100%;">
+                        <input type="text" id="couple-avatar-left-url" placeholder="输入图片 URL" style="flex:1;">
+                        <button class="app-icon-upload-btn" onclick="uploadCoupleAvatar('left')" title="上传图片">📁</button>
+                        <button class="app-icon-upload-btn" onclick="resetCoupleAvatar('left')" title="重置" style="font-size:12px;">✕</button>
+                    </div>
                     <div class="url-preview" id="couple-avatar-left-preview"></div>
                 </div>
             </div>
@@ -16179,7 +16203,11 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
             <div class="settings-row">
                 <label for="couple-avatar-right-url">右侧头像 URL</label>
                 <div class="input-with-preview">
-                    <input type="text" id="couple-avatar-right-url" placeholder="输入图片 URL">
+                    <div class="app-icon-input-group" style="width:100%;">
+                        <input type="text" id="couple-avatar-right-url" placeholder="输入图片 URL" style="flex:1;">
+                        <button class="app-icon-upload-btn" onclick="uploadCoupleAvatar('right')" title="上传图片">📁</button>
+                        <button class="app-icon-upload-btn" onclick="resetCoupleAvatar('right')" title="重置" style="font-size:12px;">✕</button>
+                    </div>
                     <div class="url-preview" id="couple-avatar-right-preview"></div>
                 </div>
             </div>
@@ -39439,13 +39467,21 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
                         if(settings.visual) {
 
             document.getElementById('wallpaper-url').value = settings.visual.wallpaper || '';
-            if(settings.visual.wallpaper) document.getElementById('wallpaper-preview').style.backgroundImage = `url(${settings.visual.wallpaper})`;
+            const uploadedWpPreview = getVisualUpload('wallpaper');
+            const wpPreviewSrc = uploadedWpPreview || settings.visual.wallpaper || '';
+            if(wpPreviewSrc) document.getElementById('wallpaper-preview').style.backgroundImage = `url(${wpPreviewSrc})`;
             document.getElementById('photo-widget-url').value = settings.visual.photoWidget || '';
-            if(settings.visual.photoWidget) document.getElementById('photo-widget-preview').style.backgroundImage = `url(${settings.visual.photoWidget})`;
+            const uploadedPwPreview = getVisualUpload('photoWidget');
+            const pwPreviewSrc = uploadedPwPreview || settings.visual.photoWidget || '';
+            if(pwPreviewSrc) document.getElementById('photo-widget-preview').style.backgroundImage = `url(${pwPreviewSrc})`;
             document.getElementById('couple-avatar-left-url').value = settings.visual.mainAvatar1 || '';
-                      if(settings.visual.mainAvatar1) document.getElementById('couple-avatar-left-preview').style.backgroundImage = `url(${settings.visual.mainAvatar1})`;
+            const uploadedLeftAvatar = getVisualUpload('coupleAvatar_left');
+            const leftAvatarSrc = uploadedLeftAvatar || settings.visual.mainAvatar1 || '';
+            if(leftAvatarSrc) document.getElementById('couple-avatar-left-preview').style.backgroundImage = `url(${leftAvatarSrc})`;
             document.getElementById('couple-avatar-right-url').value = settings.visual.mainAvatar2 || '';
-            if(settings.visual.mainAvatar2) document.getElementById('couple-avatar-right-preview').style.backgroundImage = `url(${settings.visual.mainAvatar2})`;
+            const uploadedRightAvatar = getVisualUpload('coupleAvatar_right');
+            const rightAvatarSrc = uploadedRightAvatar || settings.visual.mainAvatar2 || '';
+            if(rightAvatarSrc) document.getElementById('couple-avatar-right-preview').style.backgroundImage = `url(${rightAvatarSrc})`;
             document.getElementById('couple-city-left-input').value = settings.visual.coupleCityLeft || '';
             document.getElementById('couple-weather-left-input').value = settings.visual.coupleWeatherLeft || '';
             document.getElementById('couple-name-left-input').value = settings.visual.coupleNameLeft || '';
@@ -39506,6 +39542,285 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         document.getElementById('photo-widget-placeholder').style.display = 'none';
         showToast('图片已设置');
     };
+
+    // === App图标上传功能（IndexedDB存储） ===
+    const APP_ICON_DB_NAME = 'AppIconUploadDB';
+    const APP_ICON_STORE = 'icons';
+    let appIconDB = null;
+
+    function openAppIconDB() {
+        return new Promise((resolve, reject) => {
+            if (appIconDB) { resolve(appIconDB); return; }
+            const req = indexedDB.open(APP_ICON_DB_NAME, 1);
+            req.onupgradeneeded = (e) => {
+                e.target.result.createObjectStore(APP_ICON_STORE);
+            };
+            req.onsuccess = (e) => { appIconDB = e.target.result; resolve(appIconDB); };
+            req.onerror = (e) => reject(e);
+        });
+    }
+
+    function getAppIconUpload(appId) {
+        // 同步版本：从localStorage缓存读取base64
+        try {
+            return localStorage.getItem(`appIconUpload_${appId}`) || '';
+        } catch(e) { return ''; }
+    }
+
+    async function saveAppIconUpload(appId, base64) {
+        try {
+            // 存IndexedDB
+            const db = await openAppIconDB();
+            const tx = db.transaction(APP_ICON_STORE, 'readwrite');
+            tx.objectStore(APP_ICON_STORE).put(base64, appId);
+            // 同时存localStorage缓存（用于同步读取）
+            try { localStorage.setItem(`appIconUpload_${appId}`, base64); } catch(e) {}
+        } catch(e) { console.error('保存图标上传失败', e); }
+    }
+
+    async function removeAppIconUpload(appId) {
+        try {
+            const db = await openAppIconDB();
+            const tx = db.transaction(APP_ICON_STORE, 'readwrite');
+            tx.objectStore(APP_ICON_STORE).delete(appId);
+            localStorage.removeItem(`appIconUpload_${appId}`);
+        } catch(e) {}
+    }
+
+    // 页面加载时从IndexedDB恢复到localStorage缓存
+    (async function() {
+        try {
+            const db = await openAppIconDB();
+            const tx = db.transaction(APP_ICON_STORE, 'readonly');
+            const store = tx.objectStore(APP_ICON_STORE);
+            const req = store.openCursor();
+            req.onsuccess = (e) => {
+                const cursor = e.target.result;
+                if (cursor) {
+                    try { localStorage.setItem(`appIconUpload_${cursor.key}`, cursor.value); } catch(e) {}
+                    cursor.continue();
+                }
+            };
+        } catch(e) {}
+    })();
+
+    window.uploadAppIcon = (appId) => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                // 压缩图片：用canvas缩放到最大120x120
+                const img = new Image();
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    const max = 120;
+                    let w = img.width, h = img.height;
+                    if (w > max || h > max) {
+                        if (w > h) { h = Math.round(h * max / w); w = max; }
+                        else { w = Math.round(w * max / h); h = max; }
+                    }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    const base64 = canvas.toDataURL('image/png', 0.9);
+                    await saveAppIconUpload(appId, base64);
+                    // 刷新设置列表和主屏图标
+                    const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+                    renderSettingsAppList(settings.apps || {});
+                    applyVisualSettings();
+                    showToast('图标已上传');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    };
+
+    // === 壁纸和图片组件上传功能 ===
+    window.uploadWallpaper = () => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const url = ev.target.result;
+                document.getElementById('wallpaper-url').value = '';
+                document.getElementById('wallpaper-preview').style.backgroundImage = `url(${url})`;
+                // 存储上传的壁纸到IndexedDB
+                saveVisualUpload('wallpaper', url);
+                applyVisualSettings();
+                showToast('壁纸已上传');
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    };
+
+    window.resetWallpaper = () => {
+        document.getElementById('wallpaper-url').value = '';
+        document.getElementById('wallpaper-preview').style.backgroundImage = '';
+        removeVisualUpload('wallpaper');
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        if (settings.visual) { settings.visual.wallpaper = ''; localStorage.setItem(ALL_SETTINGS_KEY, JSON.stringify(settings)); }
+        applyVisualSettings();
+        showToast('壁纸已重置');
+    };
+
+    window.uploadPhotoWidget = () => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const url = ev.target.result;
+                document.getElementById('photo-widget-url').value = '';
+                document.getElementById('photo-widget-preview').style.backgroundImage = `url(${url})`;
+                saveVisualUpload('photoWidget', url);
+                applyVisualSettings();
+                showToast('图片组件已上传');
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    };
+
+    window.resetPhotoWidget = () => {
+        document.getElementById('photo-widget-url').value = '';
+        document.getElementById('photo-widget-preview').style.backgroundImage = '';
+        removeVisualUpload('photoWidget');
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        if (settings.visual) { settings.visual.photoWidget = ''; localStorage.setItem(ALL_SETTINGS_KEY, JSON.stringify(settings)); }
+        document.getElementById('photo-widget-img').style.display = 'none';
+        document.getElementById('photo-widget-placeholder').style.display = 'block';
+        applyVisualSettings();
+        showToast('图片组件已重置');
+    };
+
+    window.uploadCoupleAvatar = (side) => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const url = ev.target.result;
+                const urlInput = document.getElementById(side === 'left' ? 'couple-avatar-left-url' : 'couple-avatar-right-url');
+                const preview = document.getElementById(side === 'left' ? 'couple-avatar-left-preview' : 'couple-avatar-right-preview');
+                urlInput.value = '';
+                preview.style.backgroundImage = `url(${url})`;
+                saveVisualUpload(`coupleAvatar_${side}`, url);
+                applyVisualSettings();
+                showToast(`${side === 'left' ? '左侧' : '右侧'}头像已上传`);
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    };
+
+    window.resetCoupleAvatar = (side) => {
+        const urlInput = document.getElementById(side === 'left' ? 'couple-avatar-left-url' : 'couple-avatar-right-url');
+        const preview = document.getElementById(side === 'left' ? 'couple-avatar-left-preview' : 'couple-avatar-right-preview');
+        urlInput.value = '';
+        preview.style.backgroundImage = '';
+        removeVisualUpload(`coupleAvatar_${side}`);
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        if (settings.visual) {
+            if (side === 'left') settings.visual.mainAvatar1 = '';
+            else settings.visual.mainAvatar2 = '';
+            localStorage.setItem(ALL_SETTINGS_KEY, JSON.stringify(settings));
+        }
+        applyVisualSettings();
+        showToast(`${side === 'left' ? '左侧' : '右侧'}头像已重置`);
+    };
+
+    window.uploadLockWallpaper = () => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const url = ev.target.result;
+                document.getElementById('lock-wallpaper-url').value = '';
+                document.getElementById('lock-wallpaper-preview').style.backgroundImage = `url(${url})`;
+                saveVisualUpload('lockWallpaper', url);
+                applyVisualSettings();
+                showToast('锁屏壁纸已上传');
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    };
+
+    window.resetLockWallpaper = () => {
+        document.getElementById('lock-wallpaper-url').value = '';
+        document.getElementById('lock-wallpaper-preview').style.backgroundImage = '';
+        removeVisualUpload('lockWallpaper');
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        if (settings.visual) { settings.visual.lockWallpaper = ''; localStorage.setItem(ALL_SETTINGS_KEY, JSON.stringify(settings)); }
+        applyVisualSettings();
+        showToast('锁屏壁纸已重置');
+    };
+
+    const VISUAL_UPLOAD_DB = 'VisualUploadDB';
+    const VISUAL_UPLOAD_STORE = 'visuals';
+    let visualDB = null;
+
+    function openVisualDB() {
+        return new Promise((resolve, reject) => {
+            if (visualDB) { resolve(visualDB); return; }
+            const req = indexedDB.open(VISUAL_UPLOAD_DB, 1);
+            req.onupgradeneeded = (e) => { e.target.result.createObjectStore(VISUAL_UPLOAD_STORE); };
+            req.onsuccess = (e) => { visualDB = e.target.result; resolve(visualDB); };
+            req.onerror = (e) => reject(e);
+        });
+    }
+
+    async function saveVisualUpload(key, base64) {
+        try {
+            const db = await openVisualDB();
+            const tx = db.transaction(VISUAL_UPLOAD_STORE, 'readwrite');
+            tx.objectStore(VISUAL_UPLOAD_STORE).put(base64, key);
+            try { localStorage.setItem(`visualUpload_${key}`, base64); } catch(e) {}
+        } catch(e) { console.error('保存上传失败', e); }
+    }
+
+    function getVisualUpload(key) {
+        try { return localStorage.getItem(`visualUpload_${key}`) || ''; } catch(e) { return ''; }
+    }
+
+    async function removeVisualUpload(key) {
+        try {
+            const db = await openVisualDB();
+            const tx = db.transaction(VISUAL_UPLOAD_STORE, 'readwrite');
+            tx.objectStore(VISUAL_UPLOAD_STORE).delete(key);
+            localStorage.removeItem(`visualUpload_${key}`);
+        } catch(e) {}
+    }
+
+    // 页面加载时恢复上传的壁纸和图片组件
+    (async function() {
+        try {
+            const db = await openVisualDB();
+            const tx = db.transaction(VISUAL_UPLOAD_STORE, 'readonly');
+            const store = tx.objectStore(VISUAL_UPLOAD_STORE);
+            const req = store.openCursor();
+            req.onsuccess = (e) => {
+                const cursor = e.target.result;
+                if (cursor) {
+                    try { localStorage.setItem(`visualUpload_${cursor.key}`, cursor.value); } catch(e) {}
+                    cursor.continue();
+                }
+            };
+        } catch(e) {}
+    })();
 
             window.saveAppIconUrl = (appId, newUrl) => {
         const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
@@ -39642,13 +39957,15 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
             const currentName = appSettings[appId]?.name || '';
             const placeholderName = appSettings[appId]?.name || defaultName;
             const currentIconUrl = appSettings[appId]?.icon || '';
-            
+            const hasUpload = getAppIconUpload(appId);
+
             const row = document.createElement('div');
-            row.className = 'settings-app-icon-item'; 
-            // [修改] 移除了点击上传的功能，增加了 URL 输入框
+            row.className = 'settings-app-icon-item';
+            // 预览图标优先使用上传的图片
+            const previewSrc = hasUpload || (appSettings[appId]?.icon ? appSettings[appId].icon : '');
             row.innerHTML = `
                 <div class="app-icon-preview-new">
-                    ${appSettings[appId]?.icon ? `<img src="${appSettings[appId].icon}">` : '🖼️'}
+                    ${previewSrc ? `<img src="${previewSrc}">` : '🖼️'}
                 </div>
                 <div class="app-icon-info">
                     <span class="app-icon-name">${defaultName}</span>
@@ -39658,6 +39975,7 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
                     </div>
                     <div class="app-icon-input-group" style="margin-top: 5px;">
                         <input type="text" value="${currentIconUrl}" placeholder="输入图标 URL" onchange="saveAppIconUrl('${appId}', this.value)">
+                        <button class="app-icon-upload-btn ${hasUpload ? 'has-upload' : ''}" onclick="uploadAppIcon('${appId}')" title="上传图片">📁</button>
                     </div>
                 </div>
             `;
@@ -39677,17 +39995,22 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         if(settings.apps && settings.apps[appId]) {
             delete settings.apps[appId];
             localStorage.setItem(ALL_SETTINGS_KEY, JSON.stringify(settings));
-            renderSettingsAppList(settings.apps);
-            applyVisualSettings();
-            showToast("已重置该App自定义");
         }
+        // 同时删除上传的图标
+        removeAppIconUpload(appId);
+        const updatedSettings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        renderSettingsAppList(updatedSettings.apps || {});
+        applyVisualSettings();
+        showToast("已重置该App自定义");
     };
 
         function applyVisualSettings() {
         const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
         const phoneScreen = document.getElementById('phone-screen-content');
         const appWrapper = document.getElementById('app-wrapper');
-        const wp = settings.visual?.wallpaper || '';
+        // 壁纸优先级：上传图片 > URL > 默认渐变
+        const uploadedWp = getVisualUpload('wallpaper');
+        const wp = uploadedWp || settings.visual?.wallpaper || '';
 
         // 手机框模式开启时，壁纸贴在屏幕内
                 if (document.body.classList.contains('phone-frame-active')) {
@@ -39711,7 +40034,9 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         }
         
                 // 新增：如果有独立锁屏壁纸则优先使用，否则同步主屏壁纸
-        const lockWp = settings.visual?.lockWallpaper || wp;
+        // 锁屏壁纸优先级：上传图片 > URL > 主屏壁纸
+        const uploadedLockWp = getVisualUpload('lockWallpaper');
+        const lockWp = uploadedLockWp || settings.visual?.lockWallpaper || wp;
         const lockScreen = document.getElementById('lock-screen');
         if (lockScreen) {
             if (lockWp) {
@@ -39736,7 +40061,9 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         // 设置页的回显预览
         if (document.getElementById('lock-wallpaper-url')) {
             document.getElementById('lock-wallpaper-url').value = settings.visual?.lockWallpaper || '';
-            document.getElementById('lock-wallpaper-preview').style.backgroundImage = settings.visual?.lockWallpaper ? `url(${settings.visual.lockWallpaper})` : '';
+            const uploadedLockWpPreview = getVisualUpload('lockWallpaper');
+            const lockWpPreviewSrc = uploadedLockWpPreview || settings.visual?.lockWallpaper || '';
+            document.getElementById('lock-wallpaper-preview').style.backgroundImage = lockWpPreviewSrc ? `url(${lockWpPreviewSrc})` : '';
         }
         if (document.getElementById('lock-time-color-input')) {
             document.getElementById('lock-time-color-input').value = settings.visual?.lockTimeColor || '#ffcee1';
@@ -39745,11 +40072,16 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         const avatar1 = document.getElementById('couple-avatar-left');
         const avatar2 = document.getElementById('couple-avatar-right');
 
-        if (settings.visual?.mainAvatar1) {
-            avatar1.style.backgroundImage = `url(${settings.visual.mainAvatar1})`;
+        // 头像优先级：上传图片 > URL
+        const uploadedAvatar1 = getVisualUpload('coupleAvatar_left');
+        const uploadedAvatar2 = getVisualUpload('coupleAvatar_right');
+        const avatar1Src = uploadedAvatar1 || settings.visual?.mainAvatar1 || '';
+        const avatar2Src = uploadedAvatar2 || settings.visual?.mainAvatar2 || '';
+        if (avatar1Src) {
+            avatar1.style.backgroundImage = `url(${avatar1Src})`;
         }
-        if (settings.visual?.mainAvatar2) {
-            avatar2.style.backgroundImage = `url(${settings.visual.mainAvatar2})`;
+        if (avatar2Src) {
+            avatar2.style.backgroundImage = `url(${avatar2Src})`;
         }
 
         // 情侣卡片文字
@@ -39782,6 +40114,13 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         // [修改] 将第二页的App也纳入管理范围
         const screenApps = document.querySelectorAll('#grid-area .app-item, .second-page-grid .app-item, #dock-area .app-item'); 
 
+        const defaultIcons = {
+            'icon-app1': '☁️', 'icon-app2': '🎵', 'icon-app3': '💬', 'icon-app4': '🔮',
+            'icon-app5': '🧭', 'icon-app6': '🎮', 'icon-app7': '🥡', 'icon-app8': '💰',
+            'icon-app9': '🖼️', 'icon-app-pet': '🐾', 'icon-app-meet': '🤝',
+            'icon-dock-settings': '⚙️', 'icon-dock-ai': '🤖', 'icon-dock-safari': '🧭',
+            'icon-dock-messages': '⭐', 'icon-dock-gallery': '🖼️', 'icon-dock-tarot': '🔮'
+        };
         
         screenApps.forEach((app, index) => {
             const nameEl = app.querySelector('.app-name');
@@ -39795,49 +40134,43 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
                 nameEl.innerText = nameEl.dataset.appName;
             }
             
-            // [关键修改]
-            // 如果有自定义设置，则应用
-            if (settings.apps && settings.apps[appId]) {
-                const appSetting = settings.apps[appId];
-                // 应用自定义名称
-                if (nameEl && appSetting.name) {
-                    nameEl.innerText = appSetting.name;
-                }
-                // 应用自定义图标
-                if (appSetting.icon) {
-                    iconEl.innerHTML = ''; // 清空内部的emoji
-                    iconEl.style.backgroundImage = `url(${appSetting.icon})`;
-                    iconEl.style.backgroundSize = 'cover';
-                    iconEl.style.backgroundPosition = 'center';
-                } else {
-                    // 如果只设置了名字没设置图标，需要恢复默认图标内容
-                    iconEl.style.backgroundImage = '';
-                    // 这里需要一种方式恢复默认的emoji，我们假设ID和默认内容有映射
-                                    const defaultIcons = {
-                        'icon-app1': '☁️', 'icon-app2': '🎵', 'icon-app3': '💬', 'icon-app4': '🔮',
-                        'icon-app5': '🧭', 'icon-app6': '🎮', 'icon-app7': '🥡', 'icon-app8': '💰',
-                        'icon-app9': '🖼️', /* 新增：图库的默认图标 */
-                        'icon-dock-settings': '⚙️', 'icon-dock-ai': '🤖', 'icon-dock-safari': '🧭', 'icon-dock-messages': '⭐'
-                    };
+            // 优先级：上传图片 > URL图标 > 默认emoji
+            const uploadedIcon = getAppIconUpload(appId);
+            const urlIcon = settings.apps?.[appId]?.icon || '';
 
-                    if (defaultIcons[appId]) iconEl.innerHTML = defaultIcons[appId];
+            if (uploadedIcon) {
+                // 上传图片优先
+                iconEl.innerHTML = '';
+                iconEl.style.backgroundImage = `url(${uploadedIcon})`;
+                iconEl.style.backgroundSize = 'cover';
+                iconEl.style.backgroundPosition = 'center';
+                if (nameEl && settings.apps?.[appId]?.name) {
+                    nameEl.innerText = settings.apps[appId].name;
+                }
+            } else if (urlIcon) {
+                // URL图标
+                iconEl.innerHTML = '';
+                iconEl.style.backgroundImage = `url(${urlIcon})`;
+                iconEl.style.backgroundSize = 'cover';
+                iconEl.style.backgroundPosition = 'center';
+                if (nameEl && settings.apps?.[appId]?.name) {
+                    nameEl.innerText = settings.apps[appId].name;
                 }
             } else {
-                 // 如果没有自定义设置，确保恢复默认状态
-                 iconEl.style.backgroundImage = '';
-                 const defaultIcons = {
-                        'icon-app1': '☁️', 'icon-app2': '🎵', 'icon-app3': '💬', 'icon-app4': '🔮',
-                        'icon-app5': '🧭', 'icon-app6': '🎮', 'icon-app7': '🥡', 'icon-app8': '💰',
-                        'icon-dock-settings': '⚙️', 'icon-dock-ai': '🤖', 'icon-dock-safari': '🧭', 'icon-dock-messages': '⭐'
-                    };
-                 if (defaultIcons[appId] && iconEl.innerHTML.trim().length > 10) { // 检查是否是img标签
-                     iconEl.innerHTML = defaultIcons[appId];
-                 }
+                // 默认emoji
+                iconEl.style.backgroundImage = '';
+                if (settings.apps?.[appId]?.name && nameEl) {
+                    nameEl.innerText = settings.apps[appId].name;
+                }
+                if (defaultIcons[appId]) iconEl.innerHTML = defaultIcons[appId];
             }
         });
 
-             if (settings.visual?.photoWidget) {
-            document.getElementById('photo-widget-img').src = settings.visual.photoWidget;
+             // 图片组件优先级：上传图片 > URL
+             const uploadedPhotoWidget = getVisualUpload('photoWidget');
+             const photoWidgetSrc = uploadedPhotoWidget || settings.visual?.photoWidget || '';
+             if (photoWidgetSrc) {
+            document.getElementById('photo-widget-img').src = photoWidgetSrc;
             document.getElementById('photo-widget-img').style.display = 'block';
             document.getElementById('photo-widget-placeholder').style.display = 'none';
         }
@@ -39899,20 +40232,22 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
             const nameEl = app.querySelector('.app-name');
             const iconEl = app.querySelector('.app-icon');
             const defaultName = nameEl ? nameEl.dataset.appName : iconEl.id;
-            
+
             if(!defaultName) return;
 
             const appId = iconEl.id; // 使用ID
             const currentName = appSettings[appId]?.name || '';
             const placeholderName = appSettings[appId]?.name || defaultName;
             const currentIconUrl = appSettings[appId]?.icon || '';
+            const hasUpload = getAppIconUpload(appId);
 
             const row = document.createElement('div');
             row.className = 'settings-app-icon-item';
-            // [修改] 移除了点击上传的功能，增加了 URL 输入框
+            // 预览图标优先使用上传的图片
+            const previewSrc = hasUpload || (appSettings[appId]?.icon ? appSettings[appId].icon : '');
             row.innerHTML = `
                 <div class="app-icon-preview-new">
-                    ${appSettings[appId]?.icon ? `<img src="${appSettings[appId].icon}">` : '🖼️'}
+                    ${previewSrc ? `<img src="${previewSrc}">` : '🖼️'}
                 </div>
                 <div class="app-icon-info">
                     <span class="app-icon-name">${defaultName}</span>
@@ -39922,6 +40257,7 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
                     </div>
                     <div class="app-icon-input-group" style="margin-top: 5px;">
                         <input type="text" value="${currentIconUrl}" placeholder="输入图标 URL" onchange="saveAppIconUrl('${appId}', this.value)">
+                        <button class="app-icon-upload-btn ${hasUpload ? 'has-upload' : ''}" onclick="uploadAppIcon('${appId}')" title="上传图片">📁</button>
                     </div>
                 </div>
             `;
