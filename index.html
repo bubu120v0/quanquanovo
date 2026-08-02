@@ -14075,7 +14075,7 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 /* ========================= Beautiful App 样式 ========================= */
 #beautiful-app-page {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: linear-gradient(180deg, #fff5f7, #ffeef2);
+    background: linear-gradient(170deg, #fff8fa 0%, #fff0f5 40%, #ffe8ef 100%);
     z-index: 60; display: none;
     flex-direction: column; transform: translateY(100%) scale(0.85);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -14087,15 +14087,17 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
     padding: 55px 16px 12px; background: transparent; flex-shrink: 0;
 }
 .beautiful-back-btn {
-    font-size: 28px; color: #C08090; background: none; border: none;
-    cursor: pointer; line-height: 1; padding: 0 10px;
+    font-size: 28px; color: #e8a0b4; background: rgba(255,255,255,0.6);
+    border: none; cursor: pointer; line-height: 1; padding: 4px 12px;
+    border-radius: 16px; backdrop-filter: blur(8px);
 }
 .beautiful-title {
-    font-size: 18px; font-weight: bold; color: #C08090;
+    font-size: 18px; font-weight: bold; color: #e8a0b4;
     font-family: 'ZCOOL KuaiLe', cursive;
 }
 .beautiful-scroll {
-    flex: 1; overflow-y: auto; padding: 0 14px 80px;
+    flex: 1; overflow-y: auto; padding: 0 16px 90px;
+    -webkit-overflow-scrolling: touch;
 }
 .beautiful-page { display: none; flex-direction: column; height: 100%; }
 .beautiful-page.active { display: flex; }
@@ -14105,72 +14107,83 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
     position: absolute; bottom: calc(16px + env(safe-area-inset-bottom));
     left: 50%; transform: translateX(-50%);
     display: flex; justify-content: space-around; align-items: center;
-    background: rgba(255,255,255,0.85); backdrop-filter: blur(16px);
-    padding: 10px 16px; border-radius: 32px;
-    box-shadow: 0 4px 20px rgba(255,138,168,0.2);
-    border: 1px solid rgba(255,182,193,0.3);
-    z-index: 10; gap: 6px;
+    background: rgba(255,255,255,0.9); backdrop-filter: blur(20px);
+    padding: 8px 18px; border-radius: 50px;
+    box-shadow: 0 4px 24px rgba(255,138,168,0.25), 0 0 0 1px rgba(255,255,255,0.5) inset;
+    border: 1.5px solid rgba(255,220,230,0.5);
+    z-index: 10; gap: 4px;
 }
 .beautiful-tab-item {
-    font-size: 22px; cursor: pointer; opacity: 0.45;
-    width: 44px; height: 44px; border-radius: 50%;
+    font-size: 20px; cursor: pointer; opacity: 0.4;
+    width: 42px; height: 42px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    transition: all 0.25s;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .beautiful-tab-item.active {
-    opacity: 1; transform: scale(1.15);
-    background: linear-gradient(135deg, #ffb6c1, #ff9eb5);
-    box-shadow: 0 2px 8px rgba(255,158,181,0.4);
+    opacity: 1; transform: scale(1.18);
+    background: linear-gradient(135deg, #ffc8d6, #ffb6c1);
+    box-shadow: 0 3px 12px rgba(255,158,181,0.45);
 }
 
 /* 卡片 */
 .beautiful-card {
-    background: rgba(255,255,255,0.85); border-radius: 18px;
-    padding: 16px; margin-bottom: 12px;
-    box-shadow: 0 2px 12px rgba(255,182,193,0.15);
+    background: rgba(255,255,255,0.8); border-radius: 22px;
+    padding: 18px; margin-bottom: 14px;
+    box-shadow: 0 2px 16px rgba(255,182,193,0.12);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,240,245,0.6);
+    transition: transform 0.15s;
 }
 .beautiful-card-title {
-    font-size: 15px; font-weight: bold; color: #C08090;
-    margin-bottom: 10px; font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 15px; font-weight: bold; color: #d4879a;
+    margin-bottom: 12px; font-family: 'ZCOOL KuaiLe', cursive;
+    display: flex; align-items: center; gap: 4px;
 }
 .beautiful-card-count {
-    font-size: 12px; color: #D4A0B0; margin-left: 6px;
+    font-size: 12px; color: #e8a0b4; margin-left: 6px;
 }
 .beautiful-card:active { transform: scale(0.98); }
 
 /* 角色陪伴卡片 */
 .beautiful-companion-card {
-    display: flex; align-items: center; gap: 12px;
-    background: linear-gradient(135deg, #ffd0e0, #ffb6c1);
-    border-radius: 18px; padding: 14px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(135deg, #ffd4e0, #ffb8c8);
+    border-radius: 22px; padding: 16px; margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(255,160,180,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
 }
 .beautiful-companion-avatar {
-    width: 48px; height: 48px; border-radius: 50%;
-    background: rgba(255,255,255,0.6); display: flex;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(255,255,255,0.7); display: flex;
     align-items: center; justify-content: center;
-    font-size: 24px; overflow: hidden; background-size: cover; background-position: center;
+    font-size: 26px; overflow: hidden; background-size: cover; background-position: center;
+    box-shadow: 0 2px 10px rgba(255,150,170,0.2);
+    border: 2px solid rgba(255,255,255,0.5);
 }
 .beautiful-companion-info { flex: 1; }
 .beautiful-companion-name {
-    font-size: 15px; font-weight: bold; color: #fff;
+    font-size: 16px; font-weight: bold; color: #fff;
     font-family: 'ZCOOL KuaiLe', cursive;
+    text-shadow: 0 1px 4px rgba(200,100,130,0.2);
 }
 .beautiful-companion-desc {
-    font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px;
+    font-size: 12px; color: rgba(255,255,255,0.85); margin-top: 2px;
 }
 
 /* 体重展示 */
 .beautiful-weight-today {
     display: flex; align-items: baseline; gap: 4px;
-    justify-content: center; margin: 10px 0;
+    justify-content: center; margin: 12px 0 6px;
 }
 .beautiful-weight-num {
-    font-size: 42px; font-weight: bold; color: #E8829E;
+    font-size: 46px; font-weight: bold; color: #e8829e;
     font-family: 'ZCOOL KuaiLe', cursive;
+    text-shadow: 0 2px 8px rgba(255,150,175,0.2);
 }
-.beautiful-weight-unit { font-size: 14px; color: #D4A0B0; }
+.beautiful-weight-unit { font-size: 14px; color: #d4a0b0; }
 .beautiful-weight-change {
-    text-align: center; font-size: 13px; color: #D4A0B0;
+    text-align: center; font-size: 13px; color: #d4a0b0;
+    padding: 4px 0;
 }
 .beautiful-emoji-feedback {
     text-align: center; font-size: 36px; margin-top: 8px;
@@ -14179,142 +14192,292 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 .beautiful-emoji-feedback img { width: 48px; height: 48px; }
 
 /* 体重输入 */
+.beautiful-am-pm-tabs {
+    display: flex; gap: 6px; margin-bottom: 10px;
+}
+.beautiful-am-pm-tab {
+    flex: 1; padding: 8px; border: 1.5px solid #f8d0dc;
+    background: rgba(255,255,255,0.6); border-radius: 14px; font-size: 13px;
+    color: #d4a0b0; cursor: pointer; font-family: 'ZCOOL KuaiLe', cursive;
+    transition: all 0.2s;
+}
+.beautiful-am-pm-tab.active {
+    background: linear-gradient(135deg, #ffc8d6, #ffb0c4);
+    color: #fff; border-color: transparent;
+    box-shadow: 0 2px 10px rgba(255,160,180,0.3);
+}
 .beautiful-weight-input-row {
     display: flex; align-items: center; gap: 8px;
 }
 .beautiful-weight-input {
-    flex: 1; padding: 10px; border: 2px solid #FADBE6;
-    border-radius: 12px; font-size: 16px; outline: none;
+    flex: 1; padding: 12px 14px; border: 2px solid #f8d0dc;
+    border-radius: 16px; font-size: 16px; outline: none;
+    background: rgba(255,255,255,0.6);
+    transition: border-color 0.2s, background 0.2s;
 }
-.beautiful-weight-unit-label { font-size: 14px; color: #D4A0B0; }
+.beautiful-weight-input:focus {
+    border-color: #ffb6c1; background: #fff;
+    box-shadow: 0 0 0 3px rgba(255,182,193,0.15);
+}
+.beautiful-weight-unit-label { font-size: 14px; color: #d4a0b0; font-weight: 500; }
 .beautiful-btn-primary {
-    background: linear-gradient(135deg, #ffb6c1, #ff9eb5);
-    color: #fff; border: none; border-radius: 12px;
-    padding: 10px 18px; font-size: 14px; font-weight: bold;
+    background: linear-gradient(135deg, #ffc8d6, #ffb0c4);
+    color: #fff; border: none; border-radius: 16px;
+    padding: 11px 20px; font-size: 14px; font-weight: bold;
     cursor: pointer; font-family: 'ZCOOL KuaiLe', cursive;
+    box-shadow: 0 3px 12px rgba(255,160,180,0.3);
+    transition: all 0.15s;
 }
-.beautiful-btn-primary:active { transform: scale(0.95); }
+.beautiful-btn-primary:active {
+    transform: scale(0.95);
+    box-shadow: 0 1px 6px rgba(255,160,180,0.3);
+}
 .beautiful-input {
-    width: 100%; padding: 10px; border: 2px solid #FADBE6;
-    border-radius: 12px; font-size: 14px; outline: none; margin-bottom: 8px;
+    width: 100%; padding: 11px 14px; border: 2px solid #f8d0dc;
+    border-radius: 16px; font-size: 14px; outline: none; margin-bottom: 8px;
+    background: rgba(255,255,255,0.6);
+    transition: border-color 0.2s, background 0.2s;
+}
+.beautiful-input:focus {
+    border-color: #ffb6c1; background: #fff;
+    box-shadow: 0 0 0 3px rgba(255,182,193,0.15);
 }
 
 /* 图表 */
 .beautiful-chart-tabs {
-    display: flex; gap: 8px; margin-bottom: 10px;
+    display: flex; gap: 6px; margin-bottom: 12px;
 }
 .beautiful-chart-tab {
-    flex: 1; padding: 6px; border: 1px solid #FADBE6;
-    background: #fff; border-radius: 10px; font-size: 13px;
-    color: #D4A0B0; cursor: pointer;
+    flex: 1; padding: 7px; border: 1.5px solid #f8d0dc;
+    background: rgba(255,255,255,0.6); border-radius: 14px; font-size: 13px;
+    color: #d4a0b0; cursor: pointer; font-family: 'ZCOOL KuaiLe', cursive;
+    transition: all 0.2s;
 }
 .beautiful-chart-tab.active {
-    background: linear-gradient(135deg, #ffb6c1, #ff9eb5);
+    background: linear-gradient(135deg, #ffc8d6, #ffb0c4);
     color: #fff; border-color: transparent;
+    box-shadow: 0 2px 10px rgba(255,160,180,0.3);
 }
 #beautiful-weight-chart { width: 100%; max-width: 100%; }
 .beautiful-weight-stats {
     display: flex; justify-content: space-around;
-    margin-top: 10px; font-size: 12px; color: #D4A0B0;
+    margin-top: 12px; font-size: 12px; color: #d4a0b0;
 }
-.beautiful-weight-stats span { text-align: center; }
-.beautiful-weight-stats b { display: block; font-size: 14px; color: #E8829E; }
+.beautiful-weight-stats span {
+    text-align: center; padding: 6px 8px;
+    background: rgba(255,240,245,0.5); border-radius: 12px;
+}
+.beautiful-weight-stats b { display: block; font-size: 14px; color: #e8829e; }
 
 /* 体重记录列表 */
 .beautiful-weight-item {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid #fff0f5;
+    padding: 10px 12px; margin-bottom: 6px;
+    background: rgba(255,255,255,0.5); border-radius: 14px;
     font-size: 14px; color: #888;
+    transition: background 0.15s;
 }
-.beautiful-weight-item:last-child { border-bottom: none; }
-.beautiful-weight-item .bw-date { color: #B08090; font-size: 13px; }
-.beautiful-weight-item .bw-val { font-weight: bold; color: #E8829E; font-size: 16px; }
+.beautiful-weight-item:last-child { margin-bottom: 0; }
+.beautiful-weight-item .bw-date { color: #c08898; font-size: 13px; }
+.beautiful-weight-item .bw-val {
+    font-weight: bold; color: #e8829e; font-size: 16px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
 .beautiful-weight-del {
-    color: #ddd; cursor: pointer; font-size: 16px; padding: 4px;
+    color: #e8c8d0; cursor: pointer; font-size: 16px; padding: 4px 6px;
+    border-radius: 8px; transition: all 0.15s;
 }
-.beautiful-weight-del:hover { color: #ff9eb5; }
+.beautiful-weight-del:hover { color: #ff9eb5; background: rgba(255,158,181,0.1); }
 
 /* 运动任务 */
 .beautiful-exercise-item {
     display: flex; align-items: center; gap: 10px;
-    padding: 12px; background: rgba(255,255,255,0.6);
-    border-radius: 14px; margin-bottom: 8px;
+    padding: 12px 14px; background: rgba(255,255,255,0.65);
+    border-radius: 18px; margin-bottom: 8px;
+    border: 1px solid rgba(255,240,245,0.5);
+    transition: all 0.15s;
 }
+.beautiful-exercise-item:active { transform: scale(0.98); }
 .beautiful-exercise-check {
-    width: 32px; height: 32px; border-radius: 50%;
-    border: 2px dashed #ffb6c1; display: flex;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 2.5px dashed #ffc8d6; display: flex;
     align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; flex-shrink: 0;
-    transition: all 0.3s;
+    cursor: pointer; font-size: 15px; flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: transparent;
 }
 .beautiful-exercise-check.done {
-    background: linear-gradient(135deg, #ffb6c1, #ff9eb5);
+    background: linear-gradient(135deg, #ffc8d6, #ffb0c4);
     border-style: solid; border-color: transparent;
+    color: #fff; font-size: 14px;
+    box-shadow: 0 2px 8px rgba(255,160,180,0.3);
 }
 .beautiful-exercise-info { flex: 1; }
 .beautiful-exercise-name {
-    font-size: 14px; color: #888; font-weight: 500;
+    font-size: 14px; color: #a07080; font-weight: 500;
 }
 .beautiful-exercise-bvid {
-    font-size: 11px; color: #ccc; margin-top: 2px;
+    font-size: 11px; color: #d4b0bc; margin-top: 2px;
 }
 .beautiful-exercise-play {
-    background: #ffb6c1; color: #fff; border: none;
-    border-radius: 8px; padding: 6px 12px; font-size: 12px;
-    cursor: pointer;
+    background: linear-gradient(135deg, #ffc8d6, #ffb6c1);
+    color: #fff; border: none;
+    border-radius: 12px; padding: 7px 14px; font-size: 12px;
+    cursor: pointer; font-weight: bold;
+    box-shadow: 0 2px 8px rgba(255,160,180,0.2);
 }
 .beautiful-exercise-del {
-    color: #ddd; cursor: pointer; padding: 4px; font-size: 16px;
+    color: #e8c8d0; cursor: pointer; padding: 4px; font-size: 16px;
+    border-radius: 8px; transition: all 0.15s;
 }
-.beautiful-exercise-del:hover { color: #ff9eb5; }
+.beautiful-exercise-del:hover { color: #ff9eb5; background: rgba(255,158,181,0.1); }
 .beautiful-exercise-empty {
-    text-align: center; color: #D4A0B0; font-size: 13px; padding: 20px;
+    text-align: center; color: #d4a0b0; font-size: 13px; padding: 20px;
 }
 
-/* 减肥日记 */
-.beautiful-diary-weight-tag {
-    display: inline-block; background: #ffe0ec; color: #E8829E;
-    padding: 4px 12px; border-radius: 12px; font-size: 12px;
-    margin-bottom: 8px;
+/* 减肥日记 - 信纸样式 */
+.beautiful-diary-paper {
+    width: 92%; max-width: 360px; margin: 16px auto;
+    background: #fffdf9;
+    border-radius: 6px;
+    box-shadow: 0 2px 20px rgba(255,180,200,0.18), 0 0 0 1px rgba(255,220,230,0.3);
+    position: relative; overflow: hidden;
+    animation: beautifulPaperIn 0.3s ease;
 }
-.beautiful-diary-input {
-    width: 100%; padding: 10px; border: 2px solid #FADBE6;
-    border-radius: 12px; font-size: 14px; outline: none;
-    resize: none; font-family: inherit;
+@keyframes beautifulPaperIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-.beautiful-diary-item {
-    background: rgba(255,255,255,0.85); border-radius: 18px;
-    padding: 16px; margin-bottom: 12px;
-    box-shadow: 0 2px 12px rgba(255,182,193,0.15);
+.beautiful-diary-paper::before {
+    content: ''; position: absolute; left: 40px; top: 0; bottom: 0;
+    width: 1px; background: rgba(255,180,200,0.25); z-index: 1;
 }
-.beautiful-diary-date {
-    font-size: 12px; color: #D4A0B0; margin-bottom: 6px;
+.beautiful-diary-paper-header {
+    padding: 18px 20px 10px 20px; text-align: center;
+    border-bottom: 1px dashed rgba(255,180,200,0.3);
 }
-.beautiful-diary-weight {
-    display: inline-block; background: #ffe0ec; color: #E8829E;
-    padding: 2px 10px; border-radius: 10px; font-size: 11px; margin-bottom: 8px;
+.beautiful-diary-paper-date {
+    font-size: 13px; color: #d4a0b0; font-weight: 500;
 }
-.beautiful-diary-text {
-    font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 10px;
+.beautiful-diary-paper-weight {
+    display: inline-block; background: linear-gradient(135deg, #ffe8f0, #ffd8e4);
+    color: #e8829e; padding: 3px 12px; border-radius: 12px; font-size: 11px;
+    margin-top: 6px;
 }
-.beautiful-diary-reply {
-    background: linear-gradient(135deg, #fff5f7, #ffe0ec);
-    border-radius: 14px; padding: 12px; margin-top: 8px;
+.beautiful-diary-paper-body {
+    padding: 12px 20px 16px 20px;
+    min-height: 180px;
+    position: relative;
 }
-.beautiful-diary-reply-name {
-    font-size: 12px; color: #E8829E; font-weight: bold; margin-bottom: 4px;
+.beautiful-diary-paper-body textarea {
+    width: 100%; border: none; outline: none; resize: none;
+    font-size: 14px; color: #786068; line-height: 2;
+    background: transparent; font-family: inherit;
+    min-height: 160px; padding: 0;
+    background-image: repeating-linear-gradient(
+        transparent, transparent 27px, rgba(255,180,200,0.2) 27px, rgba(255,180,200,0.2) 28px
+    );
+    background-size: 100% 28px;
+    background-position: 0 0;
 }
-.beautiful-diary-reply-text {
-    font-size: 13px; color: #888; line-height: 1.6;
+.beautiful-diary-paper-body textarea::placeholder {
+    color: #ddd0d6;
 }
-.beautiful-diary-loading {
-    font-size: 12px; color: #D4A0B0; text-align: center; padding: 8px;
+.beautiful-diary-paper-footer {
+    padding: 0 20px 16px 20px;
+    display: flex; justify-content: flex-end;
 }
-.beautiful-diary-loading span {
+.beautiful-diary-send-btn {
+    padding: 8px 24px; border-radius: 20px;
+    background: linear-gradient(135deg, #ffd8e4, #ffb6c1);
+    color: #fff; border: none; font-size: 13px; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255,182,193,0.3);
+    transition: all 0.2s; font-weight: 500;
+}
+.beautiful-diary-send-btn:active { transform: scale(0.95); }
+
+/* 历史记录按钮 */
+.beautiful-diary-history-btn {
+    font-size: 18px; background: rgba(255,255,255,0.6);
+    border: none; cursor: pointer; padding: 4px 10px;
+    border-radius: 14px; backdrop-filter: blur(8px);
+    transition: all 0.2s;
+}
+.beautiful-diary-history-btn:active { transform: scale(0.9); }
+
+/* 历史记录弹窗 */
+.beautiful-diary-history-popup {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255,200,214,0.3); backdrop-filter: blur(8px);
+    display: none; align-items: flex-end; justify-content: center;
+    z-index: 200;
+}
+.beautiful-diary-history-popup.active { display: flex; }
+.beautiful-diary-history-content {
+    background: rgba(255,255,255,0.97); border-radius: 24px 24px 0 0;
+    padding: 20px; width: 100%; max-height: 80vh;
+    box-shadow: 0 -4px 40px rgba(255,160,180,0.2);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,220,230,0.5);
+    overflow-y: auto; animation: beautifulHistorySlideUp 0.25s ease;
+}
+@keyframes beautifulHistorySlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+.beautiful-diary-history-title {
+    font-size: 16px; font-weight: 600; color: #c08090;
+    text-align: center; margin-bottom: 14px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+.beautiful-diary-history-close {
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(255,220,230,0.4); border: none;
+    width: 30px; height: 30px; border-radius: 50%;
+    font-size: 14px; cursor: pointer; color: #c08090;
+    display: flex; align-items: center; justify-content: center;
+}
+.beautiful-diary-history-item {
+    background: #fffdf9; border-radius: 12px;
+    padding: 14px; margin-bottom: 10px;
+    border: 1px solid rgba(255,220,230,0.4);
+    box-shadow: 0 1px 6px rgba(255,182,193,0.08);
+}
+.beautiful-diary-history-date {
+    font-size: 11px; color: #d4a0b0; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+}
+.beautiful-diary-history-weight {
+    display: inline-block; background: linear-gradient(135deg, #ffe8f0, #ffd8e4);
+    color: #e8829e; padding: 2px 8px; border-radius: 10px; font-size: 10px;
+}
+.beautiful-diary-history-text {
+    font-size: 13px; color: #786068; line-height: 1.7; margin-bottom: 8px;
+    white-space: pre-wrap;
+}
+.beautiful-diary-history-reply {
+    background: linear-gradient(135deg, #fff8fa, #ffe8f0);
+    border-radius: 12px; padding: 10px 12px;
+    border: 1px solid rgba(255,220,230,0.3);
+}
+.beautiful-diary-history-reply-name {
+    font-size: 11px; color: #e8829e; font-weight: bold; margin-bottom: 4px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+.beautiful-diary-history-reply-text {
+    font-size: 12px; color: #a08088; line-height: 1.7; white-space: pre-wrap;
+}
+.beautiful-diary-history-loading {
+    font-size: 12px; color: #d4a0b0; text-align: center; padding: 6px;
+}
+.beautiful-diary-history-loading span {
     display: inline-block; animation: beautifulDot 1.4s infinite;
 }
-.beautiful-diary-loading span:nth-child(2) { animation-delay: 0.2s; }
-.beautiful-diary-loading span:nth-child(3) { animation-delay: 0.4s; }
+.beautiful-diary-history-loading span:nth-child(2) { animation-delay: 0.2s; }
+.beautiful-diary-history-loading span:nth-child(3) { animation-delay: 0.4s; }
+.beautiful-diary-history-empty {
+    text-align: center; color: #D4A0B0; font-size: 13px; padding: 30px;
+}
 @keyframes beautifulDot {
     0%,60%,100% { opacity: 0.3; } 30% { opacity: 1; }
 }
@@ -14322,22 +14485,77 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 /* 设置 */
 .beautiful-settings-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 0; border-bottom: 1px solid #fff0f5; font-size: 14px; color: #888;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,230,240,0.4);
+    font-size: 14px; color: #a08088;
 }
 .beautiful-settings-row:last-child { border-bottom: none; }
 .beautiful-settings-input {
-    width: 80px; padding: 6px 10px; border: 1px solid #FADBE6;
-    border-radius: 8px; font-size: 14px; text-align: right; outline: none;
+    width: 80px; padding: 7px 10px; border: 1.5px solid #f8d0dc;
+    border-radius: 12px; font-size: 14px; text-align: right; outline: none;
+    background: rgba(255,255,255,0.6);
+}
+.beautiful-settings-input:focus {
+    border-color: #ffb6c1; background: #fff;
 }
 .beautiful-character-item {
     display: flex; align-items: center; gap: 10px;
-    padding: 10px; border-radius: 12px; cursor: pointer;
-    margin-bottom: 4px;
+    padding: 10px 12px; border-radius: 14px; cursor: pointer;
+    margin-bottom: 4px; transition: all 0.15s;
 }
-.beautiful-character-item:hover { background: rgba(255,182,193,0.1); }
+.beautiful-character-item:hover { background: rgba(255,220,230,0.2); }
 .beautiful-character-item.selected {
-    background: linear-gradient(135deg, #fff0f5, #ffe0ec);
+    background: linear-gradient(135deg, #fff5f8, #ffe8f0);
+    border: 1px solid rgba(255,200,214,0.4);
 }
+
+/* 体重记录右上角按钮 */
+.beautiful-weight-record-btn {
+    font-size: 20px; background: rgba(255,255,255,0.6);
+    border: none; cursor: pointer; padding: 4px 10px;
+    border-radius: 14px; backdrop-filter: blur(8px);
+    transition: all 0.2s;
+}
+.beautiful-weight-record-btn:active { transform: scale(0.9); }
+
+/* 体重记录弹窗 */
+.beautiful-weight-popup {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255,200,214,0.3); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 200;
+}
+.beautiful-weight-popup.active { display: flex; }
+.beautiful-weight-popup-content {
+    background: rgba(255,255,255,0.95); border-radius: 24px;
+    padding: 24px; width: 85%; max-width: 320px;
+    box-shadow: 0 8px 40px rgba(255,160,180,0.25);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,220,230,0.5);
+    animation: beautifulPopupIn 0.25s ease;
+}
+@keyframes beautifulPopupIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.beautiful-weight-popup-title {
+    font-size: 18px; font-weight: bold; color: #d4879a;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    text-align: center; margin-bottom: 16px;
+}
+.beautiful-weight-popup-input-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+}
+.beautiful-weight-popup-btns {
+    display: flex; gap: 10px;
+}
+.beautiful-weight-popup-cancel {
+    background: rgba(255,230,240,0.5); color: #d4879a;
+    border: 1.5px solid rgba(255,200,214,0.4);
+    border-radius: 16px; padding: 11px 20px; font-size: 14px;
+    cursor: pointer; font-family: 'ZCOOL KuaiLe', cursive;
+    transition: all 0.15s;
+}
+.beautiful-weight-popup-cancel:active { transform: scale(0.95); }
 .beautiful-character-avatar {
     width: 36px; height: 36px; border-radius: 50%;
     background: #ffe0ec; display: flex; align-items: center;
@@ -15607,6 +15825,14 @@ body.phone-frame-active #beautiful-app-page {
         <div class="wb-modal-scroll-area">
             <div class="wb-input-label">世界书名</div>
             <input type="text" id="wb-title-input" class="wb-main-input" placeholder="输入世界书名称...">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="font-size:13px;color:#999;white-space:nowrap;">优先级</span>
+                <select id="wb-add-priority" style="flex:1;padding:8px 10px;border:1px solid #FADBE6;border-radius:8px;font-size:13px;background:#fff;color:#666;outline:none;">
+                    <option value="high">高</option>
+                    <option value="medium" selected>中</option>
+                    <option value="low">低</option>
+                </select>
+            </div>
             <div id="wb-dynamic-entries">
                 <div class="wb-entry-row wb-dynamic-row">
                     <input type="text" class="wb-entry-input key" placeholder="名称（可选）">
@@ -15643,7 +15869,7 @@ body.phone-frame-active #beautiful-app-page {
         <div id="wb-detail-normal-actions">
             <button class="wb-delete-book-btn" onclick="toggleWbDetailEdit()">编辑</button>
         </div>
-        <!-- 编辑状态下显示的 删除、添加、全局、完成 按钮 -->
+        <!-- 编辑状态下显示的 删除、添加、全局、优先级、完成 按钮 -->
         <div id="wb-detail-edit-actions" style="display: none; align-items: center; gap: 12px;">
             <img src="https://img.heliar.top/file/1770357709135_删除_delete.png" style="width: 22px; height: 22px; cursor: pointer; opacity: 0.8;" onclick="deleteCurrentWorldBook()">
             <div style="font-size: 28px; font-weight: 300; color: var(--theme-pink-btn); cursor: pointer; line-height: 1; padding-bottom: 2px;" onclick="openAddWbEntryModal()">+</div>
@@ -15653,6 +15879,11 @@ body.phone-frame-active #beautiful-app-page {
                     <div id="wb-detail-global-knob" style="width: 14px; height: 14px; border-radius: 50%; background: white; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>
                 </div>
             </div>
+            <select id="wb-detail-priority" onchange="saveWbDetailPriority()" style="padding:4px 6px;border:1px solid #FADBE6;border-radius:6px;font-size:11px;background:#fff;color:#666;outline:none;">
+                <option value="high">高</option>
+                <option value="medium">中</option>
+                <option value="low">低</option>
+            </select>
             <button class="wb-delete-book-btn" style="background: transparent; color: var(--theme-pink-text); border: 1px solid var(--theme-pink-btn);" onclick="toggleWbDetailEdit()">完成</button>
         </div>
     </div>
@@ -17314,18 +17545,9 @@ body.phone-frame-active #beautiful-app-page {
         <div class="beautiful-header">
             <button class="beautiful-back-btn" onclick="closeBeautifulApp()">‹</button>
             <div class="beautiful-title">体重记录</div>
-            <div style="width:30px;"></div>
+            <button class="beautiful-weight-record-btn" onclick="beautifulShowWeightPopup()">✏️</button>
         </div>
         <div class="beautiful-scroll">
-            <!-- 记录体重 -->
-            <div class="beautiful-card">
-                <div class="beautiful-card-title">记录体重</div>
-                <div class="beautiful-weight-input-row">
-                    <input type="number" id="beautiful-weight-input" placeholder="输入体重" step="0.1" class="beautiful-weight-input">
-                    <span class="beautiful-weight-unit-label">kg</span>
-                    <button class="beautiful-btn-primary" onclick="beautifulSaveWeight()">记录</button>
-                </div>
-            </div>
             <!-- 体重趋势图 -->
             <div class="beautiful-card">
                 <div class="beautiful-chart-tabs">
@@ -17372,18 +17594,33 @@ body.phone-frame-active #beautiful-app-page {
         <div class="beautiful-header">
             <button class="beautiful-back-btn" onclick="closeBeautifulApp()">‹</button>
             <div class="beautiful-title">减肥日记</div>
-            <div style="width:30px;"></div>
+            <button class="beautiful-diary-history-btn" onclick="beautifulShowDiaryHistory()">📜</button>
         </div>
         <div class="beautiful-scroll">
-            <!-- 写日记 -->
-            <div class="beautiful-card">
-                <div class="beautiful-card-title">写日记</div>
-                <div class="beautiful-diary-weight-tag" id="beautiful-diary-weight-tag"></div>
-                <textarea id="beautiful-diary-input" class="beautiful-diary-input" placeholder="今天的心情、饮食、运动感受..." rows="4"></textarea>
-                <button class="beautiful-btn-primary" onclick="beautifulSaveDiary()" style="width:100%;margin-top:8px;">发送给TA 💌</button>
+            <!-- 信纸 -->
+            <div class="beautiful-diary-paper">
+                <div class="beautiful-diary-paper-header">
+                    <div class="beautiful-diary-paper-date" id="beautiful-diary-paper-date"></div>
+                    <div class="beautiful-diary-paper-weight" id="beautiful-diary-paper-weight" style="display:none;"></div>
+                </div>
+                <div class="beautiful-diary-paper-body">
+                    <textarea id="beautiful-diary-input" placeholder="今天的心情、饮食、运动感受..."></textarea>
+                </div>
+                <div class="beautiful-diary-paper-footer">
+                    <button class="beautiful-diary-send-btn" onclick="beautifulSaveDiary()">寄给TA ✉️</button>
+                </div>
             </div>
-            <!-- 日记列表 -->
-            <div id="beautiful-diary-list"></div>
+        </div>
+    </div>
+
+    <!-- 历史记录弹窗 -->
+    <div class="beautiful-diary-history-popup" id="beautiful-diary-history-popup">
+        <div class="beautiful-diary-history-content">
+            <div style="position:relative;">
+                <div class="beautiful-diary-history-title">往期日记</div>
+                <button class="beautiful-diary-history-close" onclick="beautifulCloseDiaryHistory()">✕</button>
+            </div>
+            <div id="beautiful-diary-history-list"></div>
         </div>
     </div>
 
@@ -17488,9 +17725,26 @@ body.phone-frame-active #beautiful-app-page {
             </div>
         </div>
     </div>
-</div>
 
-<!-- 漂浮宠物组件 -->
+    <!-- 体重记录弹窗 -->
+    <div class="beautiful-weight-popup" id="beautiful-weight-popup">
+        <div class="beautiful-weight-popup-content">
+            <div class="beautiful-weight-popup-title">记录体重</div>
+            <div class="beautiful-am-pm-tabs" id="beautiful-popup-am-pm">
+                <button class="beautiful-am-pm-tab active" id="beautiful-popup-am-tab" onclick="beautifulSwitchAMPM('am')">🌅 早上</button>
+                <button class="beautiful-am-pm-tab" id="beautiful-popup-pm-tab" onclick="beautifulSwitchAMPM('pm')">🌙 晚上</button>
+            </div>
+            <div class="beautiful-weight-popup-input-row">
+                <input type="number" id="beautiful-weight-input" placeholder="输入体重" step="0.1" class="beautiful-weight-input">
+                <span class="beautiful-weight-unit-label">kg</span>
+            </div>
+            <div class="beautiful-weight-popup-btns">
+                <button class="beautiful-btn-primary" onclick="beautifulSaveWeight()" style="flex:1;">记录</button>
+                <button class="beautiful-weight-popup-cancel" onclick="beautifulCloseWeightPopup()">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="floating-pet" onclick="onFloatingPetClick()">
     <img class="floating-pet-img" id="floating-pet-img" src="" style="width:60px;height:60px;display:none;">
 </div>
@@ -30028,7 +30282,7 @@ ${actionInstruction}
         knob.style.left = '2px';
     };
     window.addWorldBookEntryRow = () => { const container = document.getElementById('wb-dynamic-entries'); const row = document.createElement('div'); row.className = 'wb-entry-row wb-dynamic-row'; row.innerHTML = `<input type="text" class="wb-entry-input key" placeholder="名称（可选）"><input type="text" class="wb-entry-input keywords" placeholder="关键词（逗号分隔，可选）"><textarea class="wb-entry-input val" placeholder="世界书内容"></textarea>`; container.appendChild(row); };
-    window.saveWorldBook = () => { const title = document.getElementById('wb-title-input').value.trim(); if(!title) { showToast("请输入世界书名"); return; } const rows = document.querySelectorAll('.wb-dynamic-row'); const entries = []; let hasContent = false; rows.forEach(row => { const key = row.querySelector('.key').value.trim(); const val = row.querySelector('.val').value.trim(); const keywords = row.querySelector('.keywords').value.trim(); if(val) { entries.push({ key: key, content: val, keywords: keywords }); hasContent = true; } }); if (!hasContent) { showToast("请至少输入一条世界书内容"); return; } const newBook = { id: Date.now(), title: title, entries: entries, coverColor: '#EAEAEA', coverImage: '', isGlobal: wbAddGlobalEnabled }; let books = []; try { books = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]'); } catch(e) {} books.push(newBook); localStorage.setItem(WORLDBOOK_DATA_KEY, JSON.stringify(books)); if (wbAddGlobalEnabled) { autoBindGlobalWorldbook(newBook.id); } showToast("世界书已保存"); closeWorldBookAddModal(); renderWorldBooks(); };
+    window.saveWorldBook = () => { const title = document.getElementById('wb-title-input').value.trim(); if(!title) { showToast("请输入世界书名"); return; } const priority = document.getElementById('wb-add-priority').value; const rows = document.querySelectorAll('.wb-dynamic-row'); const entries = []; let hasContent = false; rows.forEach(row => { const key = row.querySelector('.key').value.trim(); const val = row.querySelector('.val').value.trim(); const keywords = row.querySelector('.keywords').value.trim(); if(val) { entries.push({ key: key, content: val, keywords: keywords }); hasContent = true; } }); if (!hasContent) { showToast("请至少输入一条世界书内容"); return; } const newBook = { id: Date.now(), title: title, entries: entries, coverColor: '#EAEAEA', coverImage: '', isGlobal: wbAddGlobalEnabled, priority: priority }; let books = []; try { books = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]'); } catch(e) {} books.push(newBook); localStorage.setItem(WORLDBOOK_DATA_KEY, JSON.stringify(books)); if (wbAddGlobalEnabled) { autoBindGlobalWorldbook(newBook.id); } showToast("世界书已保存"); closeWorldBookAddModal(); renderWorldBooks(); };
        window.renderWorldBooks = () => { 
         const container = document.getElementById('worldbook-list'); 
         container.innerHTML = ''; 
@@ -30043,11 +30297,10 @@ ${actionInstruction}
 
         let books = []; 
         try { books = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]'); } catch(e) { books = []; } 
-        books.sort((a,b) => b.id - a.id).forEach(book => { 
-            const item = document.createElement('div'); 
-            item.className = 'wb-book-item'; 
-            item.onclick = () => viewWorldBook(book.id); 
-            // 新增：添加下方位置的名称文字层
+        books.sort((a,b) => b.id - a.id).forEach(book => {
+            const item = document.createElement('div');
+            item.className = 'wb-book-item';
+            item.onclick = () => viewWorldBook(book.id);
             item.innerHTML = `
                 <div class="wb-book-cover"><div class="wb-book-name">${escapeHtml(book.title)}</div></div>
                 <div class="wb-book-name-outer">${escapeHtml(book.title)}</div>
@@ -30123,15 +30376,19 @@ ${actionInstruction}
     };
 
     // 每次点开世界书时，恢复非编辑的默认状态
-    window.viewWorldBook = (id) => { 
-        currentWorldBookId = id; 
+    window.viewWorldBook = (id) => {
+        currentWorldBookId = id;
         document.getElementById('wb-detail-normal-actions').style.display = 'block';
         document.getElementById('wb-detail-edit-actions').style.display = 'none';
-        renderWorldBookDetailView(); 
+        renderWorldBookDetailView();
         document.getElementById('worldbook-detail-modal').classList.add('active');
         let books = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]');
         const book = books.find(b => b.id === id);
-        if (book) updateWbDetailGlobalToggle(!!book.isGlobal);
+        if (book) {
+            updateWbDetailGlobalToggle(!!book.isGlobal);
+            const prioritySelect = document.getElementById('wb-detail-priority');
+            if (prioritySelect) prioritySelect.value = book.priority || 'medium';
+        }
     };
     
     function renderWorldBookDetailView() { 
@@ -30179,7 +30436,7 @@ ${actionInstruction}
     };
     window.editWorldBookEntry = (index) => { const itemEl = document.getElementById(`wb-entry-item-${index}`); if (!itemEl) return; const books = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]'); const book = books.find(b => b.id === currentWorldBookId); if (!book || !book.entries[index]) return; const entry = book.entries[index]; const currentPriority = entry.priority || 'medium'; itemEl.innerHTML = `<div class="edit-form"><input type="text" class="wb-entry-input key" placeholder="名称（可选）" value="${escapeHtml(entry.key)}"><input type="text" class="wb-entry-input keywords" placeholder="关键词（逗号分隔，可选）" value="${escapeHtml(entry.keywords || '')}"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:13px;color:#999;white-space:nowrap;">优先级</span><select class="wb-entry-input priority" style="flex:1;padding:8px 10px;border:1px solid #FADBE6;border-radius:8px;font-size:13px;background:#fff;color:#666;outline:none;margin-bottom:0;"><option value="high" ${currentPriority==='high'?'selected':''}>高</option><option value="medium" ${currentPriority==='medium'?'selected':''}>中</option><option value="low" ${currentPriority==='low'?'selected':''}>低</option></select></div><textarea class="wb-entry-input val" placeholder="世界书内容">${escapeHtml(entry.content)}</textarea></div><div class="wb-detail-item-actions"><button class="save" onclick="saveWorldBookEntry(${index})">保存</button><button onclick="renderWorldBookDetailView()">取消</button></div>`; };
     window.saveWorldBookEntry = (index) => { const itemEl = document.getElementById(`wb-entry-item-${index}`); const newKey = itemEl.querySelector('.key').value.trim(); const newVal = itemEl.querySelector('.val').value.trim(); const newKeywords = itemEl.querySelector('.keywords').value.trim(); const newPriority = itemEl.querySelector('.priority').value; if (!newVal) { showToast("内容不能为空"); return; } let books = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]'); const bookIndex = books.findIndex(b => b.id === currentWorldBookId); if (bookIndex !== -1 && books[bookIndex].entries[index]) { books[bookIndex].entries[index] = { key: newKey, content: newVal, keywords: newKeywords, priority: newPriority }; localStorage.setItem(WORLDBOOK_DATA_KEY, JSON.stringify(books)); showToast("已保存"); renderWorldBookDetailView(); } };
-        function buildWorldbookContext(allWb, activeWbIds, userMessage) { const priorityOrder = { high: 0, medium: 1, low: 2 }; let context = ""; const activeWbs = allWb.filter(b => activeWbIds.includes(b.id)); activeWbs.forEach(wb => { context += `\n[世界书: ${wb.title}]\n`; const matched = []; const unmatched = []; wb.entries.forEach(e => { if (userMessage && e.keywords) { const keywords = e.keywords.split(',').map(k => k.trim()).filter(Boolean); if (keywords.some(kw => userMessage.includes(kw))) { matched.push(e); return; } } unmatched.push(e); }); const sortByPriority = (a, b) => (priorityOrder[a.priority || 'medium'] || 1) - (priorityOrder[b.priority || 'medium'] || 1); matched.sort(sortByPriority).forEach(e => { context += `${e.key ? e.key+': ' : ''}${e.content}\n`; }); unmatched.sort(sortByPriority).forEach(e => { context += `${e.key ? e.key+': ' : ''}${e.content}\n`; }); }); return context; }
+        function buildWorldbookContext(allWb, activeWbIds, userMessage) { const priorityOrder = { high: 0, medium: 1, low: 2 }; let context = ""; const activeWbs = allWb.filter(b => activeWbIds.includes(b.id)); activeWbs.sort((a, b) => (priorityOrder[a.priority || 'medium'] || 1) - (priorityOrder[b.priority || 'medium'] || 1)); activeWbs.forEach(wb => { context += `\n[世界书: ${wb.title}]\n`; const matched = []; const unmatched = []; wb.entries.forEach(e => { if (userMessage && e.keywords) { const keywords = e.keywords.split(',').map(k => k.trim()).filter(Boolean); if (keywords.some(kw => userMessage.includes(kw))) { matched.push(e); return; } } unmatched.push(e); }); const sortByPriority = (a, b) => (priorityOrder[a.priority || 'medium'] || 1) - (priorityOrder[b.priority || 'medium'] || 1); matched.sort(sortByPriority).forEach(e => { context += `${e.key ? e.key+': ' : ''}${e.content}\n`; }); unmatched.sort(sortByPriority).forEach(e => { context += `${e.key ? e.key+': ' : ''}${e.content}\n`; }); }); return context; }
         function autoBindGlobalWorldbook(wbId) {
             let contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
             let changed = false;
@@ -30229,6 +30486,18 @@ ${actionInstruction}
                 knob.style.left = '2px';
             }
         }
+        window.saveWbDetailPriority = () => {
+            const prioritySelect = document.getElementById('wb-detail-priority');
+            if (!prioritySelect) return;
+            let books = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]');
+            const idx = books.findIndex(b => b.id === currentWorldBookId);
+            if (idx === -1) return;
+            books[idx].priority = prioritySelect.value;
+            localStorage.setItem(WORLDBOOK_DATA_KEY, JSON.stringify(books));
+            const priorityMap = { high: '高', medium: '中', low: '低' };
+            showToast(`世界书优先级已设为「${priorityMap[prioritySelect.value]}」`);
+            renderWorldBooks();
+        };
         let pendingWbDeleteCallback = null;
 
     // 新增：执行自定义弹窗确认后的删除动作
@@ -47180,7 +47449,7 @@ window.executeDisableLock = () => {
         return d.diaries || [];
     }
 
-    const BEAUTIFUL_PWD = '4666';
+    const BEAUTIFUL_PWD = '6666';
     let beautifulPwdBuffer = '';
     window.openBeautifulApp = () => {
         // 先显示密码锁
@@ -47345,26 +47614,40 @@ window.executeDisableLock = () => {
         const weightTodayEl = document.getElementById('beautiful-weight-today');
         const weightChangeEl = document.getElementById('beautiful-weight-change');
         const emojiFeedbackEl = document.getElementById('beautiful-emoji-feedback');
-        if (todayWeight) {
-            weightTodayEl.textContent = todayWeight.value;
-            // 与上一次比较
+        if (todayWeight && (todayWeight.am || todayWeight.pm)) {
+            const amVal = todayWeight.am || '--';
+            const pmVal = todayWeight.pm || '--';
+            weightTodayEl.innerHTML = `<span style="font-size:22px;">🌅 ${amVal}</span><span style="margin:0 8px;color:#e8c8d0;">|</span><span style="font-size:22px;">🌙 ${pmVal}</span><span style="font-size:14px;color:#d4a0b0;margin-left:4px;">kg</span>`;
+            weightTodayEl.style.fontSize = '';
+            // 与上一次比较（用最近有值的记录）
             const sortedWeights = [...weights].sort((a, b) => a.date.localeCompare(b.date));
             const todayIdx = sortedWeights.findIndex(w => w.date === today);
             if (todayIdx > 0) {
-                const prev = sortedWeights[todayIdx - 1];
-                const diff = todayWeight.value - prev.value;
-                if (diff < 0) {
-                    weightChangeEl.textContent = `比上次轻了 ${Math.abs(diff).toFixed(1)}kg`;
-                    weightChangeEl.style.color = '#ff9eb5';
-                    emojiFeedbackEl.innerHTML = settings.emojiLight ? `<img src="${settings.emojiLight}">` : '🎉';
-                } else if (diff > 0) {
-                    weightChangeEl.textContent = `比上次重了 ${diff.toFixed(1)}kg`;
-                    weightChangeEl.style.color = '#E8829E';
-                    emojiFeedbackEl.innerHTML = settings.emojiHeavy ? `<img src="${settings.emojiHeavy}">` : '💪';
+                const curVal = todayWeight.pm || todayWeight.am;
+                let prevVal = null;
+                for (let i = todayIdx - 1; i >= 0; i--) {
+                    prevVal = sortedWeights[i].pm || sortedWeights[i].am;
+                    if (prevVal) break;
+                }
+                if (curVal && prevVal) {
+                    const diff = curVal - prevVal;
+                    if (diff < 0) {
+                        weightChangeEl.textContent = `比上次轻了 ${Math.abs(diff).toFixed(1)}kg`;
+                        weightChangeEl.style.color = '#ff9eb5';
+                        emojiFeedbackEl.innerHTML = settings.emojiLight ? `<img src="${settings.emojiLight}">` : '🎉';
+                    } else if (diff > 0) {
+                        weightChangeEl.textContent = `比上次重了 ${diff.toFixed(1)}kg`;
+                        weightChangeEl.style.color = '#E8829E';
+                        emojiFeedbackEl.innerHTML = settings.emojiHeavy ? `<img src="${settings.emojiHeavy}">` : '💪';
+                    } else {
+                        weightChangeEl.textContent = '体重没有变化';
+                        weightChangeEl.style.color = '#D4A0B0';
+                        emojiFeedbackEl.innerHTML = '😊';
+                    }
                 } else {
-                    weightChangeEl.textContent = '体重没有变化';
+                    weightChangeEl.textContent = '第一次记录，加油！';
                     weightChangeEl.style.color = '#D4A0B0';
-                    emojiFeedbackEl.innerHTML = '😊';
+                    emojiFeedbackEl.innerHTML = '🌟';
                 }
             } else {
                 weightChangeEl.textContent = '第一次记录，加油！';
@@ -47373,6 +47656,7 @@ window.executeDisableLock = () => {
             }
         } else {
             weightTodayEl.textContent = '--';
+            weightTodayEl.style.fontSize = '';
             weightChangeEl.textContent = '今天还没记录体重';
             emojiFeedbackEl.innerHTML = '';
         }
@@ -47400,13 +47684,39 @@ window.executeDisableLock = () => {
 
     // ===== 体重记录 =====
     let beautifulChartMode = 'week';
+    let beautifulCurrentAMPM = 'am';
+    window.beautifulSwitchAMPM = (period) => {
+        beautifulCurrentAMPM = period;
+        // 同步弹窗中的tab
+        const popupAmTab = document.getElementById('beautiful-popup-am-tab');
+        const popupPmTab = document.getElementById('beautiful-popup-pm-tab');
+        if (popupAmTab) popupAmTab.classList.toggle('active', period === 'am');
+        if (popupPmTab) popupPmTab.classList.toggle('active', period === 'pm');
+        // 回显已记录的值
+        const today = new Date().toISOString().slice(0, 10);
+        const weights = getBeautifulWeights();
+        const todayWeight = weights.find(w => w.date === today);
+        const input = document.getElementById('beautiful-weight-input');
+        if (todayWeight) {
+            input.value = period === 'am' ? (todayWeight.am || '') : (todayWeight.pm || '');
+        } else {
+            input.value = '';
+        }
+    };
+    window.beautifulShowWeightPopup = () => {
+        const popup = document.getElementById('beautiful-weight-popup');
+        // 自动判断时段
+        const hour = new Date().getHours();
+        if (hour >= 15) beautifulSwitchAMPM('pm');
+        else beautifulSwitchAMPM('am');
+        popup.classList.add('active');
+    };
+    window.beautifulCloseWeightPopup = () => {
+        document.getElementById('beautiful-weight-popup').classList.remove('active');
+    };
     function beautifulRefreshWeight() {
         const settings = getBeautifulSettings();
         const weights = getBeautifulWeights().sort((a, b) => a.date.localeCompare(b.date));
-        // 填充输入框默认值
-        const today = new Date().toISOString().slice(0, 10);
-        const todayWeight = weights.find(w => w.date === today);
-        if (todayWeight) document.getElementById('beautiful-weight-input').value = todayWeight.value;
         // 图表
         beautifulDrawChart();
         // 统计
@@ -47414,29 +47724,38 @@ window.executeDisableLock = () => {
         if (weights.length === 0) {
             statsEl.innerHTML = '<span>暂无数据</span>';
         } else {
-            const values = weights.map(w => w.value);
-            const max = Math.max(...values).toFixed(1);
-            const min = Math.min(...values).toFixed(1);
-            const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
-            statsEl.innerHTML = `
-                <span>最高<b>${max}</b>kg</span>
-                <span>最低<b>${min}</b>kg</span>
-                <span>平均<b>${avg}</b>kg</span>
-                ${settings.goal ? `<span>目标<b>${settings.goal}</b>kg</span>` : ''}
-            `;
+            const values = [];
+            weights.forEach(w => { if (w.am) values.push(w.am); if (w.pm) values.push(w.pm); });
+            if (values.length === 0) { statsEl.innerHTML = '<span>暂无数据</span>'; }
+            else {
+                const max = Math.max(...values).toFixed(1);
+                const min = Math.min(...values).toFixed(1);
+                const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
+                statsEl.innerHTML = `
+                    <span>最高<b>${max}</b>kg</span>
+                    <span>最低<b>${min}</b>kg</span>
+                    <span>平均<b>${avg}</b>kg</span>
+                    ${settings.goal ? `<span>目标<b>${settings.goal}</b>kg</span>` : ''}
+                `;
+            }
         }
         // 历史列表
         const listEl = document.getElementById('beautiful-weight-list');
         if (weights.length === 0) {
             listEl.innerHTML = '<div style="text-align:center;color:#D4A0B0;font-size:13px;padding:20px;">还没有记录</div>';
         } else {
-            listEl.innerHTML = [...weights].reverse().map(w => `
-                <div class="beautiful-weight-item">
-                    <span class="bw-date">${w.date}</span>
-                    <span class="bw-val">${w.value} kg</span>
-                    <span class="beautiful-weight-del" onclick="beautifulDeleteWeight('${w.date}')">✕</span>
-                </div>
-            `).join('');
+            listEl.innerHTML = [...weights].reverse().map(w => {
+                const amStr = w.am ? `🌅 ${w.am}kg` : '';
+                const pmStr = w.pm ? `🌙 ${w.pm}kg` : '';
+                const valStr = [amStr, pmStr].filter(Boolean).join(' / ') || '--';
+                return `
+                    <div class="beautiful-weight-item">
+                        <span class="bw-date">${w.date}</span>
+                        <span class="bw-val">${valStr}</span>
+                        <span class="beautiful-weight-del" onclick="beautifulDeleteWeight('${w.date}')">✕</span>
+                    </div>
+                `;
+            }).join('');
         }
     }
     window.beautifulSaveWeight = () => {
@@ -47447,11 +47766,18 @@ window.executeDisableLock = () => {
         if (!data.weights) data.weights = [];
         const today = new Date().toISOString().slice(0, 10);
         const idx = data.weights.findIndex(w => w.date === today);
-        if (idx >= 0) data.weights[idx].value = val;
-        else data.weights.push({ date: today, value: val });
+        if (idx >= 0) {
+            data.weights[idx][beautifulCurrentAMPM] = val;
+        } else {
+            const newEntry = { date: today };
+            newEntry[beautifulCurrentAMPM] = val;
+            data.weights.push(newEntry);
+        }
         saveBeautifulData(data);
         input.value = '';
-        showToast('体重已记录');
+        beautifulCloseWeightPopup();
+        const periodLabel = beautifulCurrentAMPM === 'am' ? '早上' : '晚上';
+        showToast(`${periodLabel}体重已记录`);
         beautifulRefreshWeight();
         beautifulRefreshHome();
         beautifulCheckAchievements();
@@ -47498,18 +47824,21 @@ window.executeDisableLock = () => {
             filtered = weights.filter(w => new Date(w.date) >= monthAgo);
         }
         if (filtered.length === 0) filtered = weights.slice(-1);
-        const values = filtered.map(w => w.value);
-        const minV = Math.min(...values) - 1;
-        const maxV = Math.max(...values) + 1;
+        // 收集所有有效值计算范围
+        const allVals = [];
+        filtered.forEach(w => { if (w.am) allVals.push(w.am); if (w.pm) allVals.push(w.pm); });
+        if (allVals.length === 0) {
+            ctx.fillStyle = '#D4A0B0'; ctx.font = '14px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText('暂无体重数据', cw / 2, ch / 2); return;
+        }
+        const minV = Math.min(...allVals) - 1;
+        const maxV = Math.max(...allVals) + 1;
         const padL = 40, padR = 15, padT = 20, padB = 30;
         const plotW = cw - padL - padR;
         const plotH = ch - padT - padB;
         // Y轴刻度
-        ctx.strokeStyle = '#ffe0ec';
-        ctx.lineWidth = 1;
-        ctx.fillStyle = '#D4A0B0';
-        ctx.font = '10px sans-serif';
-        ctx.textAlign = 'right';
+        ctx.strokeStyle = '#ffe0ec'; ctx.lineWidth = 1;
+        ctx.fillStyle = '#D4A0B0'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
         for (let i = 0; i <= 4; i++) {
             const y = padT + (plotH / 4) * i;
             const val = maxV - ((maxV - minV) / 4) * i;
@@ -47521,60 +47850,64 @@ window.executeDisableLock = () => {
         if (settings.goal) {
             const goalY = padT + plotH - ((parseFloat(settings.goal) - minV) / (maxV - minV)) * plotH;
             if (goalY >= padT && goalY <= padT + plotH) {
-                ctx.strokeStyle = '#ffb6c1';
-                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = '#ffb6c1'; ctx.setLineDash([4, 4]);
                 ctx.beginPath(); ctx.moveTo(padL, goalY); ctx.lineTo(cw - padR, goalY); ctx.stroke();
                 ctx.setLineDash([]);
-                ctx.fillStyle = '#E8829E';
-                ctx.textAlign = 'left';
+                ctx.fillStyle = '#E8829E'; ctx.textAlign = 'left';
                 ctx.fillText('目标', padL + 5, goalY - 4);
             }
         }
-        // 折线
-        const points = filtered.map((w, i) => {
-            const x = padL + (filtered.length === 1 ? plotW / 2 : (plotW / (filtered.length - 1)) * i);
-            const y = padT + plotH - ((w.value - minV) / (maxV - minV)) * plotH;
-            return { x, y, w };
-        });
-        // 渐变填充
-        const grad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
-        grad.addColorStop(0, 'rgba(255,182,193,0.4)');
-        grad.addColorStop(1, 'rgba(255,182,193,0.05)');
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, padT + plotH);
-        points.forEach(p => ctx.lineTo(p.x, p.y));
-        ctx.lineTo(points[points.length - 1].x, padT + plotH);
-        ctx.closePath();
-        ctx.fillStyle = grad;
-        ctx.fill();
-        // 线
-        ctx.strokeStyle = '#E8829E';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        points.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
-        ctx.stroke();
-        // 点
-        points.forEach(p => {
+        // 绘制折线函数
+        function drawLine(points, color, fillColor) {
+            if (points.length === 0) return;
+            // 渐变填充
+            const grad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
+            grad.addColorStop(0, fillColor);
+            grad.addColorStop(1, 'rgba(255,182,193,0.02)');
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff';
-            ctx.fill();
-            ctx.strokeStyle = '#E8829E';
-            ctx.lineWidth = 2;
+            ctx.moveTo(points[0].x, padT + plotH);
+            points.forEach(p => ctx.lineTo(p.x, p.y));
+            ctx.lineTo(points[points.length - 1].x, padT + plotH);
+            ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+            // 线
+            ctx.strokeStyle = color; ctx.lineWidth = 2;
+            ctx.beginPath();
+            points.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
             ctx.stroke();
+            // 点
+            points.forEach(p => {
+                ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff'; ctx.fill();
+                ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+            });
+        }
+        // 计算X位置
+        const xStep = filtered.length === 1 ? plotW / 2 : plotW / (filtered.length - 1);
+        // 早上折线（橙色）
+        const amPoints = [];
+        filtered.forEach((w, i) => {
+            if (w.am) amPoints.push({ x: padL + xStep * i, y: padT + plotH - ((w.am - minV) / (maxV - minV)) * plotH });
         });
+        drawLine(amPoints, '#FFB347', 'rgba(255,179,71,0.2)');
+        // 晚上折线（粉色）
+        const pmPoints = [];
+        filtered.forEach((w, i) => {
+            if (w.pm) pmPoints.push({ x: padL + xStep * i, y: padT + plotH - ((w.pm - minV) / (maxV - minV)) * plotH });
+        });
+        drawLine(pmPoints, '#E8829E', 'rgba(232,130,158,0.2)');
         // X轴日期
-        ctx.fillStyle = '#D4A0B0';
-        ctx.font = '9px sans-serif';
-        ctx.textAlign = 'center';
-        const showCount = Math.min(points.length, 5);
-        const step = Math.max(1, Math.floor(points.length / showCount));
-        points.forEach((p, i) => {
-            if (i % step === 0 || i === points.length - 1) {
-                const dateStr = p.w.date.slice(5);
-                ctx.fillText(dateStr, p.x, ch - 10);
+        ctx.fillStyle = '#D4A0B0'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+        const showCount = Math.min(filtered.length, 5);
+        const step = Math.max(1, Math.floor(filtered.length / showCount));
+        filtered.forEach((w, i) => {
+            if (i % step === 0 || i === filtered.length - 1) {
+                ctx.fillText(w.date.slice(5), padL + xStep * i, ch - 10);
             }
         });
+        // 图例
+        ctx.font = '10px sans-serif';
+        ctx.fillStyle = '#FFB347'; ctx.fillText('● 早上', cw - 80, 14);
+        ctx.fillStyle = '#E8829E'; ctx.fillText('● 晚上', cw - 35, 14);
     }
 
     // ===== 运动任务 =====
@@ -47633,21 +47966,10 @@ window.executeDisableLock = () => {
 
     // B站视频播放
     window.beautifulPlayVideo = (bvid, title) => {
-        // 从链接或BV号中提取BV号
         const match = bvid.match(/(BV\w+)/i);
         const bv = match ? match[1] : bvid;
-        const overlay = document.getElementById('beautiful-video-overlay');
-        const player = document.getElementById('beautiful-video-player');
-        const titleEl = document.getElementById('beautiful-video-title');
-        titleEl.textContent = title || '运动视频';
-        player.innerHTML = `<iframe src="https://player.bilibili.com/player.html?bvid=${bv}&high_quality=1&autoplay=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>`;
-        overlay.classList.add('active');
-    };
-    window.beautifulCloseVideo = () => {
-        const overlay = document.getElementById('beautiful-video-overlay');
-        const player = document.getElementById('beautiful-video-player');
-        player.innerHTML = '';
-        overlay.classList.remove('active');
+        // B站禁止iframe嵌入，直接在新窗口打开
+        window.open(`https://www.bilibili.com/video/${bv}`, '_blank');
     };
 
     // ===== 减肥日记 =====
@@ -47655,31 +47977,50 @@ window.executeDisableLock = () => {
         const weights = getBeautifulWeights();
         const today = new Date().toISOString().slice(0, 10);
         const todayWeight = weights.find(w => w.date === today);
-        const tagEl = document.getElementById('beautiful-diary-weight-tag');
-        tagEl.textContent = todayWeight ? `今日体重：${todayWeight.value}kg` : '今日未记录体重';
-        // 日记列表
-        const diaries = getBeautifulDiaries().sort((a, b) => b.date.localeCompare(a.date));
-        const listEl = document.getElementById('beautiful-diary-list');
-        if (diaries.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:#D4A0B0;font-size:13px;padding:20px;">还没有日记，写第一篇吧~</div>';
-            return;
+        // 更新信纸头部日期
+        const dateEl = document.getElementById('beautiful-diary-paper-date');
+        const now = new Date();
+        const weekDays = ['日','一','二','三','四','五','六'];
+        dateEl.textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 星期${weekDays[now.getDay()]}`;
+        // 更新信纸体重标签
+        const weightEl = document.getElementById('beautiful-diary-paper-weight');
+        if (todayWeight && (todayWeight.am || todayWeight.pm)) {
+            weightEl.textContent = `今日体重：${todayWeight.pm || todayWeight.am}kg`;
+            weightEl.style.display = 'inline-block';
+        } else {
+            weightEl.style.display = 'none';
         }
-        listEl.innerHTML = diaries.map(d => `
-            <div class="beautiful-diary-item">
-                <div class="beautiful-diary-date">${d.date}</div>
-                ${d.weight ? `<div class="beautiful-diary-weight">体重 ${d.weight}kg</div>` : ''}
-                <div class="beautiful-diary-text">${d.text}</div>
-                ${d.reply ? `
-                    <div class="beautiful-diary-reply">
-                        <div class="beautiful-diary-reply-name">${d.replyName || 'TA'}</div>
-                        <div class="beautiful-diary-reply-text">${d.reply}</div>
-                    </div>
-                ` : d.loading ? `
-                    <div class="beautiful-diary-loading">TA正在回复<span>.</span><span>.</span><span>.</span></div>
-                ` : ''}
-            </div>
-        `).join('');
     }
+    window.beautifulShowDiaryHistory = () => {
+        const popup = document.getElementById('beautiful-diary-history-popup');
+        const listEl = document.getElementById('beautiful-diary-history-list');
+        const diaries = getBeautifulDiaries().sort((a, b) => b.date.localeCompare(a.date));
+        if (diaries.length === 0) {
+            listEl.innerHTML = '<div class="beautiful-diary-history-empty">还没有日记，写第一篇吧~</div>';
+        } else {
+            listEl.innerHTML = diaries.map(d => `
+                <div class="beautiful-diary-history-item">
+                    <div class="beautiful-diary-history-date">
+                        ${d.date}
+                        ${d.weight ? `<span class="beautiful-diary-history-weight">${d.weight}kg</span>` : ''}
+                    </div>
+                    <div class="beautiful-diary-history-text">${d.text}</div>
+                    ${d.reply ? `
+                        <div class="beautiful-diary-history-reply">
+                            <div class="beautiful-diary-history-reply-name">${d.replyName || 'TA'}</div>
+                            <div class="beautiful-diary-history-reply-text">${d.reply}</div>
+                        </div>
+                    ` : d.loading ? `
+                        <div class="beautiful-diary-history-loading">TA正在回复<span>.</span><span>.</span><span>.</span></div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        popup.classList.add('active');
+    };
+    window.beautifulCloseDiaryHistory = () => {
+        document.getElementById('beautiful-diary-history-popup').classList.remove('active');
+    };
     window.beautifulSaveDiary = async () => {
         const text = document.getElementById('beautiful-diary-input').value.trim();
         if (!text) { showToast('请写点什么'); return; }
@@ -47692,7 +48033,7 @@ window.executeDisableLock = () => {
             id: Date.now(),
             date: today,
             text: text,
-            weight: todayWeight ? todayWeight.value : null,
+            weight: todayWeight ? (todayWeight.pm || todayWeight.am) : null,
             reply: '',
             replyName: '',
             loading: true
@@ -47703,7 +48044,7 @@ window.executeDisableLock = () => {
         saveBeautifulData(data);
         document.getElementById('beautiful-diary-input').value = '';
         beautifulRefreshDiary();
-        showToast('日记已发送');
+        showToast('信已寄出 ✉️');
         // 调用AI回复
         try {
             const reply = await beautifulCallDiaryAI(settings.characterId, diary);
@@ -47755,9 +48096,16 @@ window.executeDisableLock = () => {
         let weightInfo = '';
         if (weights.length > 0) {
             const recent = weights.slice(-7);
-            weightInfo = recent.map(w => `${w.date}: ${w.value}kg`).join('\n');
+            weightInfo = recent.map(w => {
+                const parts = [];
+                if (w.am) parts.push(`🌅${w.am}kg`);
+                if (w.pm) parts.push(`🌙${w.pm}kg`);
+                return `${w.date}: ${parts.join(' ')}`;
+            }).join('\n');
             if (weights.length >= 2) {
-                const diff = weights[weights.length - 1].value - weights[0].value;
+                const firstVal = weights[0].pm || weights[0].am || weights[0].value;
+                const lastVal = weights[weights.length - 1].pm || weights[weights.length - 1].am || weights[weights.length - 1].value;
+                const diff = lastVal - firstVal;
                 weightInfo += `\n总变化: ${diff > 0 ? '+' : ''}${diff.toFixed(1)}kg`;
             }
         }
@@ -47784,7 +48132,8 @@ window.executeDisableLock = () => {
 3. 提到用户时使用"你"或"${uName}"
 4. 可以根据体重变化给予鼓励或建议
 5. 不要输出思考过程，直接输出评语
-6. 语言要自然亲切，像朋友间的对话`;
+6. 语言要自然亲切，像朋友间的对话
+7. 绝对禁止使用诋毁、羞辱性的词语（如"好胖""太胖了""这么重"等），可以带点小毒舌调侃但不许伤害用户自尊，始终保持善意的底线`;
 
         const isGemini = settings.api.url.includes('generativelanguage');
         let fetchUrl, bodyData, headers = { 'Content-Type': 'application/json' };
@@ -47940,7 +48289,9 @@ window.executeDisableLock = () => {
             if (maxStreak >= 30) unlocked.add('streak_30');
             // 减重
             if (sorted.length >= 2) {
-                const loss = sorted[0].value - sorted[sorted.length - 1].value;
+                const firstVal = sorted[0].pm || sorted[0].am || sorted[0].value;
+                const lastVal = sorted[sorted.length - 1].pm || sorted[sorted.length - 1].am || sorted[sorted.length - 1].value;
+                const loss = firstVal - lastVal;
                 if (loss >= 1) unlocked.add('weight_loss_1');
                 if (loss >= 3) unlocked.add('weight_loss_3');
                 if (loss >= 5) unlocked.add('weight_loss_5');
@@ -47949,7 +48300,8 @@ window.executeDisableLock = () => {
         // 达成目标
         if (settings.goal && weights.length > 0) {
             const latest = weights.sort((a, b) => b.date.localeCompare(a.date))[0];
-            if (parseFloat(latest.value) <= parseFloat(settings.goal)) unlocked.add('goal_reached');
+            const latestVal = latest.pm || latest.am || latest.value;
+            if (parseFloat(latestVal) <= parseFloat(settings.goal)) unlocked.add('goal_reached');
         }
         const newUnlocked = [...unlocked].filter(id => !data.achievements.includes(id));
         data.achievements = [...unlocked];
