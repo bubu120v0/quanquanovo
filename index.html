@@ -2544,7 +2544,7 @@
         }
         .avatar-url-modal-btn.confirm:active { opacity: 0.8; }
 
-        .user-avatar-row { display: flex; align-items: center; width: 100%; margin-bottom: 15px; gap: 15px; }
+        .user-avatar-row { display: flex; align-items: center; width: 100%; margin-bottom: 15px; gap: 8px; }
         .user-avatar-edit-wrapper { 
             position: relative; width: 60px; height: 60px; flex-shrink: 0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: 50%; cursor: pointer;
@@ -14647,9 +14647,10 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
                 <span style="font-size:13px; color:#555;">角色头像</span>
                 <div id="role-avatar-preview" class="role-bg-preview" style="width: 36px; height: 36px; border-radius: 50%;"></div>
             </div>
-            <input type="text" id="role-avatar-url-input" placeholder="输入头像图片URL" style="width: 100%; padding: 10px; border: 1px solid #FADBE6; border-radius: 8px; font-size: 14px;" onkeydown="if(event.key==='Enter')applyRoleAvatarUrlInline()">
-            <div style="display: flex; gap: 10px;">
-                <button class="role-bg-btn" onclick="applyRoleAvatarUrlInline()">应用URL</button>
+            <div class="app-icon-input-group" style="width:100%;">
+                <input type="text" id="role-avatar-url-input" placeholder="输入头像图片URL" onkeydown="if(event.key==='Enter')applyRoleAvatarUrlInline()">
+                <button class="app-icon-upload-btn" onclick="uploadRoleAvatar()" title="上传图片">📁</button>
+                <button class="app-icon-upload-btn reset" onclick="resetRoleAvatar()" title="重置">✕</button>
             </div>
         </div>
 
@@ -14658,10 +14659,10 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
                 <span style="font-size:13px; color:#555;">聊天背景</span>
                 <div id="role-bg-preview" class="role-bg-preview"></div>
             </div>
-            <input type="text" id="role-bg-url-input" placeholder="输入背景图片URL" style="width: 100%; padding: 10px; border: 1px solid #FADBE6; border-radius: 8px; font-size: 14px;">
-            <div style="display: flex; gap: 10px;">
-                <button class="role-bg-btn" onclick="triggerRoleBgUpload()">上传图片</button>
-                <button class="role-bg-btn" onclick="setRoleBgByUrl()">应用URL</button>
+            <div class="app-icon-input-group" style="width:100%;">
+                <input type="text" id="role-bg-url-input" placeholder="输入背景图片URL" onkeydown="if(event.key==='Enter')setRoleBgByUrl()">
+                <button class="app-icon-upload-btn" onclick="triggerRoleBgUpload()" title="上传图片">📁</button>
+                <button class="app-icon-upload-btn reset" onclick="resetRoleBg()" title="重置">✕</button>
             </div>
         </div>
     </div>
@@ -14701,11 +14702,13 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
         <div class="settings-card-title">用户设置 (User)</div>
 
         <div class="user-avatar-row">
-            <div class="user-avatar-edit-wrapper" onclick="openUserAvatarModal()">
+            <div class="user-avatar-edit-wrapper" onclick="uploadUserAvatar()">
                 <img id="role-user-avatar" class="role-avatar-edit" src="">
                 <div class="avatar-edit-hint">✎</div>
             </div>
             <input type="text" id="role-user-name" class="user-name-input" placeholder="您的名字">
+            <button class="app-icon-upload-btn" onclick="uploadUserAvatar()" title="上传图片" style="width:28px;height:28px;font-size:12px;">📁</button>
+            <button class="app-icon-upload-btn reset" onclick="resetUserAvatar()" title="重置" style="width:28px;height:28px;font-size:10px;">✕</button>
         </div>
         <textarea id="role-user-persona" class="role-persona-input" placeholder="输入您的人设 (User Persona)..."></textarea>
     </div>
@@ -16657,12 +16660,16 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
             <div class="me-settings-row">
                 <div class="me-settings-label">头像</div>
                 <div class="me-settings-preview-wrapper" onclick="triggerProfileAvatarUpload()"><img id="me-settings-avatar-preview" class="me-settings-preview avatar" style="border-radius:50%; cursor:pointer;"></div>
-                <input type="text" id="me-settings-avatar-url" class="me-settings-input" placeholder="头像 URL">
+                <input type="text" id="me-settings-avatar-url" class="me-settings-input" placeholder="头像 URL" onkeydown="if(event.key==='Enter'){document.getElementById('me-settings-avatar-preview').src=this.value;}">
+                <button class="app-icon-upload-btn" onclick="triggerProfileAvatarUpload()" title="上传图片">📁</button>
+                <button class="app-icon-upload-btn reset" onclick="resetProfileAvatar()" title="重置">✕</button>
             </div>
             <div class="me-settings-row">
                 <div class="me-settings-label">背景</div>
-                <div class="me-settings-preview-wrapper"><img id="me-settings-cover-preview" class="me-settings-preview cover"></div>
-                <input type="text" id="me-settings-cover-url" class="me-settings-input" placeholder="背景图 URL">
+                <div class="me-settings-preview-wrapper" onclick="triggerProfileCoverUpload()" style="cursor:pointer;"><img id="me-settings-cover-preview" class="me-settings-preview cover"></div>
+                <input type="text" id="me-settings-cover-url" class="me-settings-input" placeholder="背景图 URL" onkeydown="if(event.key==='Enter'){document.getElementById('me-settings-cover-preview').src=this.value;}">
+                <button class="app-icon-upload-btn" onclick="triggerProfileCoverUpload()" title="上传图片">📁</button>
+                <button class="app-icon-upload-btn reset" onclick="resetProfileCover()" title="重置">✕</button>
             </div>
         </div>
         
@@ -16671,12 +16678,16 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
              <div class="me-settings-row">
                 <div class="me-settings-label">朋友圈头像</div>
                 <div class="me-settings-preview-wrapper" onclick="triggerMomentsAvatarUpload()"><img id="me-settings-moments-avatar-preview" class="me-settings-preview avatar" style="cursor:pointer;"></div>
-                <input type="text" id="me-settings-moments-avatar-url" class="me-settings-input" placeholder="朋友圈头像 URL">
+                <input type="text" id="me-settings-moments-avatar-url" class="me-settings-input" placeholder="朋友圈头像 URL" onkeydown="if(event.key==='Enter'){document.getElementById('me-settings-moments-avatar-preview').src=this.value;}">
+                <button class="app-icon-upload-btn" onclick="triggerMomentsAvatarUpload()" title="上传图片">📁</button>
+                <button class="app-icon-upload-btn reset" onclick="resetMomentsAvatar()" title="重置">✕</button>
             </div>
             <div class="me-settings-row">
                 <div class="me-settings-label">朋友圈背景</div>
-                <div class="me-settings-preview-wrapper"><img id="me-settings-moments-cover-preview" class="me-settings-preview cover"></div>
-                <input type="text" id="me-settings-moments-cover-url" class="me-settings-input" placeholder="朋友圈背景图 URL">
+                <div class="me-settings-preview-wrapper" onclick="triggerMomentsCoverUpload()" style="cursor:pointer;"><img id="me-settings-moments-cover-preview" class="me-settings-preview cover"></div>
+                <input type="text" id="me-settings-moments-cover-url" class="me-settings-input" placeholder="朋友圈背景图 URL" onkeydown="if(event.key==='Enter'){document.getElementById('me-settings-moments-cover-preview').src=this.value;}">
+                <button class="app-icon-upload-btn" onclick="triggerMomentsCoverUpload()" title="上传图片">📁</button>
+                <button class="app-icon-upload-btn reset" onclick="resetMomentsCover()" title="重置">✕</button>
             </div>
         </div>
 
@@ -18010,6 +18021,7 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 <input type="file" id="input-time-bg" class="file-input-hidden" accept="image/*" onchange="handleTimeBgUpload(event)">
 <input type="file" id="input-friend-avatar" class="file-input-hidden" accept="image/*" onchange="handleFriendAvatarUpload(event)">
 <input type="file" id="input-profile-avatar" class="file-input-hidden" accept="image/*" onchange="handleProfileAvatarUpload(event)">
+<input type="file" id="input-profile-cover" class="file-input-hidden" accept="image/*" onchange="handleProfileCoverUpload(event)">
 <input type="file" id="input-role-chat-bg" class="file-input-hidden" accept="image/*" onchange="handleRoleChatBgUpload(event)">
 <input type="file" id="input-moment-image" class="file-input-hidden" multiple accept="image/*" onchange="handleMomentImageUpload(event)">
 <input type="file" id="input-forum-avatar" class="file-input-hidden" accept="image/*" onchange="handleForumAvatarUpload(event)">
@@ -38813,11 +38825,78 @@ window.openTransferConfirmPopup = (amount) => {
         const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
         if (contact) { contact.avatar = url; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
     };
+    // 上传角色头像（本地上传）
+    window.uploadRoleAvatar = () => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            compressImage(file, 400, (base64) => {
+                document.getElementById('role-avatar-url-input').value = '';
+                const preview = document.getElementById('role-avatar-preview');
+                preview.style.backgroundImage = `url(${base64})`;
+                const avatarImg = document.getElementById('role-setting-avatar');
+                if (avatarImg) avatarImg.src = base64;
+                const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+                const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+                if (contact) { contact.avatar = base64; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                showToast('角色头像已上传');
+            });
+        };
+        input.click();
+    };
+    // 重置角色头像
+    window.resetRoleAvatar = () => {
+        document.getElementById('role-avatar-url-input').value = '';
+        document.getElementById('role-avatar-preview').style.backgroundImage = '';
+        const avatarImg = document.getElementById('role-setting-avatar');
+        if (avatarImg) avatarImg.src = '';
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+        if (contact) { contact.avatar = ''; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+        showToast('角色头像已重置');
+    };
+    // 重置聊天背景
+    window.resetRoleBg = () => {
+        document.getElementById('role-bg-url-input').value = '';
+        document.getElementById('role-bg-preview').style.backgroundImage = '';
+        tempRoleBgUrl = null;
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+        if (contact && contact.chatBg) { delete contact.chatBg; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); if (typeof applyChatBackground === 'function') applyChatBackground(); }
+        showToast('聊天背景已重置');
+    };
     window.openRoleAvatarModal = () => { const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); const contact = contacts.find(c => String(c.id) === String(currentChatContactId)); document.getElementById('role-avatar-modal-input').value = contact ? (contact.avatar || '') : ''; document.getElementById('role-avatar-modal-overlay').classList.add('active'); setTimeout(() => document.getElementById('role-avatar-modal-input').focus(), 300); };
     window.closeRoleAvatarModal = (e) => { if (e && e.target !== document.getElementById('role-avatar-modal-overlay')) return; document.getElementById('role-avatar-modal-overlay').classList.remove('active'); };
     window.applyUserAvatarUrl = () => { const url = document.getElementById('user-avatar-modal-input').value.trim(); const avatarImg = document.getElementById('role-user-avatar'); if (!url) { avatarImg.src = ''; showToast('已清除头像'); } else { avatarImg.onerror = function() { this.onerror = null; this.src = ''; }; avatarImg.src = url; showToast('头像已应用'); } const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); const contact = contacts.find(c => String(c.id) === String(currentChatContactId)); if (contact) { contact.userAvatar = url; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); } closeUserAvatarModal(); };
     window.openUserAvatarModal = () => { const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); const contact = contacts.find(c => String(c.id) === String(currentChatContactId)); document.getElementById('user-avatar-modal-input').value = contact ? (contact.userAvatar || '') : ''; document.getElementById('user-avatar-modal-overlay').classList.add('active'); setTimeout(() => document.getElementById('user-avatar-modal-input').focus(), 300); };
     window.closeUserAvatarModal = (e) => { if (e && e.target !== document.getElementById('user-avatar-modal-overlay')) return; document.getElementById('user-avatar-modal-overlay').classList.remove('active'); };
+    // 用户头像本地上传
+    window.uploadUserAvatar = () => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            compressImage(file, 200, (base64) => {
+                const avatarImg = document.getElementById('role-user-avatar');
+                avatarImg.src = base64;
+                const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+                const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+                if (contact) { contact.userAvatar = base64; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                showToast('用户头像已上传');
+            });
+        };
+        input.click();
+    };
+    // 用户头像重置
+    window.resetUserAvatar = () => {
+        const avatarImg = document.getElementById('role-user-avatar');
+        avatarImg.src = '';
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+        if (contact) { contact.userAvatar = ''; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+        showToast('用户头像已重置');
+    };
 
     // ========================= 消息提示音功能 =========================
     function updateRoleSoundUI() {
@@ -39343,7 +39422,7 @@ ${verifyHistory}
             const row = document.createElement('div');
             row.className = 'me-settings-row';
             row.style.marginTop = '5px';
-            row.innerHTML = `<div class="me-settings-label">图标 ${i+1}</div><input type="text" class="me-settings-input member-icon-input" placeholder="输入图片 URL" value="${memberIcons[i] || ''}">`;
+            row.innerHTML = `<div class="me-settings-label">图标 ${i+1}</div><input type="text" class="me-settings-input member-icon-input" placeholder="输入图片 URL" value="${memberIcons[i] || ''}"><button class="app-icon-upload-btn" onclick="uploadMemberIcon(${i})" title="上传图片">📁</button><button class="app-icon-upload-btn reset" onclick="resetMemberIcon(${i})" title="重置">✕</button>`;
             iconsListContainer.appendChild(row);
         }
 
@@ -39363,13 +39442,17 @@ ${verifyHistory}
             profile.avatar = document.getElementById('me-settings-avatar-preview').src;
         } else if (avatarUrl) {
             profile.avatar = avatarUrl;
+        } else {
+            profile.avatar = '';
         }
-        
+
         const coverUrl = document.getElementById('me-settings-cover-url').value.trim();
         if (coverUrl === '（已上传本地图片）') {
             profile.cover = document.getElementById('me-settings-cover-preview').src;
         } else if (coverUrl) {
             profile.cover = coverUrl;
+        } else {
+            profile.cover = '';
         }
         const pw = document.getElementById('me-settings-payment-password').value.trim();
         if (pw && !/^\d{6}$/.test(pw)) { showToast("支付密码必须是6位数字"); return; }
@@ -39385,12 +39468,16 @@ ${verifyHistory}
             momentsProfile.avatar = document.getElementById('me-settings-moments-avatar-preview').src;
         } else if (mAvatar) {
             momentsProfile.avatar = mAvatar;
+        } else {
+            momentsProfile.avatar = '';
         }
         const mCover = document.getElementById('me-settings-moments-cover-url').value.trim();
         if (mCover === '（已上传本地图片）') {
             momentsProfile.cover = document.getElementById('me-settings-moments-cover-preview').src;
         } else if (mCover) {
             momentsProfile.cover = mCover;
+        } else {
+            momentsProfile.cover = '';
         }
         saveMomentsProfile(momentsProfile);
 
@@ -39407,6 +39494,38 @@ ${verifyHistory}
     window.triggerMomentsAvatarUpload = () => { document.getElementById('input-moments-avatar').click(); };
     window.handleMomentsAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { const el = document.getElementById('me-settings-moments-avatar-preview'); el.removeAttribute('data-loaded'); el.src = base64; if (typeof processLocalImages === 'function') processLocalImages(el); document.getElementById('me-settings-moments-avatar-url').value = '（已上传本地图片）'; }); };
     window.handleMomentsCoverUpload = (event) => { compressImage(event.target.files[0], 800, (base64) => { const el = document.getElementById('me-settings-moments-cover-preview'); el.removeAttribute('data-loaded'); el.src = base64; if (typeof processLocalImages === 'function') processLocalImages(el); document.getElementById('me-settings-moments-cover-url').value = '（已上传本地图片）'; }); };
+    // 个人主页 - 背景上传
+    window.triggerProfileCoverUpload = () => { document.getElementById('input-profile-cover').click(); };
+    window.handleProfileCoverUpload = (event) => { compressImage(event.target.files[0], 800, (base64) => { const el = document.getElementById('me-settings-cover-preview'); el.removeAttribute('data-loaded'); el.src = base64; if (typeof processLocalImages === 'function') processLocalImages(el); document.getElementById('me-settings-cover-url').value = '（已上传本地图片）'; }); };
+    // 朋友圈背景上传触发
+    window.triggerMomentsCoverUpload = () => { document.getElementById('input-moments-cover').click(); };
+    // 重置：个人头像
+    window.resetProfileAvatar = () => { document.getElementById('me-settings-avatar-url').value = ''; document.getElementById('me-settings-avatar-preview').src = ''; const profile = getUserProfile(); profile.avatar = ''; saveUserProfile(profile); showToast('头像已重置'); };
+    // 重置：个人背景
+    window.resetProfileCover = () => { document.getElementById('me-settings-cover-url').value = ''; document.getElementById('me-settings-cover-preview').src = ''; const profile = getUserProfile(); profile.cover = ''; saveUserProfile(profile); showToast('背景已重置'); };
+    // 重置：朋友圈头像
+    window.resetMomentsAvatar = () => { document.getElementById('me-settings-moments-avatar-url').value = ''; document.getElementById('me-settings-moments-avatar-preview').src = ''; const momentsProfile = getMomentsProfile(); momentsProfile.avatar = ''; saveMomentsProfile(momentsProfile); showToast('朋友圈头像已重置'); };
+    // 重置：朋友圈背景
+    window.resetMomentsCover = () => { document.getElementById('me-settings-moments-cover-url').value = ''; document.getElementById('me-settings-moments-cover-preview').src = ''; const momentsProfile = getMomentsProfile(); momentsProfile.cover = ''; saveMomentsProfile(momentsProfile); showToast('朋友圈背景已重置'); };
+    // 会员图标上传
+    window.uploadMemberIcon = (index) => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0]; if (!file) return;
+            compressImage(file, 100, (base64) => {
+                const inputs = document.querySelectorAll('.member-icon-input');
+                if (inputs[index]) { inputs[index].value = base64; }
+                showToast(`图标 ${index+1} 已上传`);
+            });
+        };
+        input.click();
+    };
+    // 会员图标重置
+    window.resetMemberIcon = (index) => {
+        const inputs = document.querySelectorAll('.member-icon-input');
+        if (inputs[index]) { inputs[index].value = ''; showToast(`图标 ${index+1} 已重置`); }
+    };
     window.handleTakeoutMyAvatarUpload = (event) => { compressImage(event.target.files[0], 200, (base64) => { const el = document.getElementById('takeout-my-avatar-preview'); el.removeAttribute('data-loaded'); el.src = base64; el.style.display = 'block'; document.getElementById('takeout-my-avatar-placeholder').style.display = 'none'; document.getElementById('takeout-my-avatar-url-input').value = base64; if (typeof processLocalImages === 'function') processLocalImages(el); }); };
     window.takeoutPreviewAvatarUrl = (url) => { if (url.trim()) { document.getElementById('takeout-my-avatar-preview').src = url; document.getElementById('takeout-my-avatar-preview').style.display = 'block'; document.getElementById('takeout-my-avatar-placeholder').style.display = 'none'; } else { document.getElementById('takeout-my-avatar-preview').style.display = 'none'; document.getElementById('takeout-my-avatar-placeholder').style.display = 'block'; } };
 
