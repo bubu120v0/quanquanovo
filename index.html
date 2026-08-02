@@ -6557,10 +6557,11 @@
           height: 100%;
           display: none;
           justify-content: center;
-          align-items: flex-start;
-          padding-top: 20px;
+          align-items: center;
           background: linear-gradient(180deg, #FFF0F5 0%, #FFE4EC 50%, #FFDDE6 100%);
           z-index: 9999;
+          /* 适配主屏幕添加后的安全区域 */
+          padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
         
         body.phone-frame-active .phone-container {
