@@ -521,7 +521,7 @@
         #takeout-shop-detail-page, #forum-post-detail-page, #forum-user-profile-page,
         #forum-my-posts-page, #forum-all-forums-page, #forum-favorite-posts-page,
         #forum-all-liked-posts-page, #forum-following-page, #edit-forum-page,
-        #recollection-color-page, #worldbook-entry-fullscreen-page, #pet-app-page, #meet-app-page, #beautiful-app-page {
+        #recollection-color-page, #worldbook-entry-fullscreen-page, #pet-app-page, #meet-app-page, #beautiful-app-page, #mail-app-page {
             transform-origin: center center;
         }
                 body.settings-active #home-screen,
@@ -14289,7 +14289,7 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 }
 .beautiful-weight-del:hover { color: #ff9eb5; background: rgba(255,158,181,0.1); }
 
-/* 运动任务 */
+/* 每日计划 */
 .beautiful-exercise-item {
     display: flex; align-items: center; gap: 10px;
     padding: 12px 14px; background: rgba(255,255,255,0.65);
@@ -14316,15 +14316,8 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 .beautiful-exercise-name {
     font-size: 14px; color: #a07080; font-weight: 500;
 }
-.beautiful-exercise-bvid {
-    font-size: 11px; color: #d4b0bc; margin-top: 2px;
-}
-.beautiful-exercise-play {
-    background: linear-gradient(135deg, #ffc8d6, #ffb6c1);
-    color: #fff; border: none;
-    border-radius: 12px; padding: 7px 14px; font-size: 12px;
-    cursor: pointer; font-weight: bold;
-    box-shadow: 0 2px 8px rgba(255,160,180,0.2);
+.beautiful-exercise-name.done {
+    text-decoration: line-through; color: #d4b0bc;
 }
 .beautiful-exercise-del {
     color: #e8c8d0; cursor: pointer; padding: 4px; font-size: 16px;
@@ -14333,6 +14326,52 @@ body.phone-frame-active .meet-place-modal-content { width: 260px; padding: 18px;
 .beautiful-exercise-del:hover { color: #ff9eb5; background: rgba(255,158,181,0.1); }
 .beautiful-exercise-empty {
     text-align: center; color: #d4a0b0; font-size: 13px; padding: 20px;
+}
+.beautiful-exercise-history-group {
+    margin-bottom: 14px;
+}
+.beautiful-exercise-history-date {
+    font-size: 12px; color: #c08090; font-weight: 500; margin-bottom: 6px;
+    padding-left: 4px;
+}
+.beautiful-exercise-history-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: rgba(255,255,255,0.5);
+    border-radius: 14px; margin-bottom: 6px;
+    border: 1px solid rgba(255,240,245,0.4);
+}
+.beautiful-exercise-history-check {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid #ffc8d6; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0; color: transparent;
+}
+.beautiful-exercise-history-check.done {
+    background: linear-gradient(135deg, #ffc8d6, #ffb0c4);
+    border-color: transparent; color: #fff;
+}
+.beautiful-exercise-history-name {
+    font-size: 13px; color: #a07080; flex: 1;
+}
+.beautiful-exercise-history-name.done {
+    text-decoration: line-through; color: #d4b0bc;
+}
+.beautiful-exercise-add-row-btn {
+    width: 100%; padding: 8px; border: 1.5px dashed #ffc8d6;
+    background: rgba(255,248,250,0.5); border-radius: 12px;
+    color: #e8829e; font-size: 13px; cursor: pointer;
+    margin-bottom: 12px; transition: all 0.15s;
+}
+.beautiful-exercise-add-row-btn:active { transform: scale(0.97); }
+.beautiful-exercise-input-item {
+    padding: 10px 14px; border: 1.5px solid #f8d0dc;
+    border-radius: 14px; font-size: 14px; outline: none;
+    background: rgba(255,255,255,0.7); color: #786068;
+    box-sizing: border-box;
+}
+.beautiful-exercise-input-item:focus {
+    border-color: #ffb6c1; background: #fff;
+    box-shadow: 0 0 0 3px rgba(255,182,193,0.15);
 }
 
 /* 减肥日记 - 信纸样式 */
@@ -14647,6 +14686,217 @@ body.phone-frame-active #beautiful-app-page {
     top: var(--phone-top, 0); left: var(--phone-left, 0);
 }
 
+/* ========================= 邮箱 APP ========================= */
+#mail-app-page {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(170deg, #fff8fa 0%, #fff0f5 40%, #ffe8ef 100%);
+    z-index: 60; display: none;
+    flex-direction: column; transform: translateY(100%) scale(0.85);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+#mail-app-page.active { display: flex; transform: translateY(0) scale(var(--ps, 0.85)); }
+body.phone-frame-active #mail-app-page {
+    width: var(--phone-w, 375px); height: var(--phone-h, 812px);
+    top: var(--phone-top, 0); left: var(--phone-left, 0);
+}
+.mail-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 55px 16px 12px; background: transparent; flex-shrink: 0;
+}
+.mail-back-btn {
+    font-size: 28px; color: #e8a0b4; background: rgba(255,255,255,0.6);
+    border: none; border-radius: 50%; width: 36px; height: 36px;
+    cursor: pointer; backdrop-filter: blur(8px); transition: all 0.15s;
+}
+.mail-back-btn:active { transform: scale(0.85); }
+.mail-title {
+    font-size: 17px; font-weight: 600; color: #c08090;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+.mail-history-btn {
+    font-size: 18px; background: rgba(255,255,255,0.6);
+    border: none; cursor: pointer; padding: 4px 10px;
+    border-radius: 14px; backdrop-filter: blur(8px);
+    transition: all 0.2s;
+}
+.mail-history-btn:active { transform: scale(0.9); }
+.mail-scroll {
+    flex: 1; overflow-y: auto; padding: 0 0 20px 0;
+    -webkit-overflow-scrolling: touch;
+}
+/* 信纸样式 */
+.mail-paper {
+    width: 95%; max-width: 700px; margin: 16px auto;
+    background: #fffdf9;
+    border-radius: 6px;
+    box-shadow: 0 2px 20px rgba(255,180,200,0.18), 0 0 0 1px rgba(255,220,230,0.3);
+    position: relative; overflow: hidden;
+    animation: mailPaperIn 0.3s ease;
+}
+@keyframes mailPaperIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.mail-paper::before {
+    content: ''; position: absolute; left: 20px; top: 0; bottom: 0;
+    width: 1px; background: rgba(255,180,200,0.25); z-index: 1;
+}
+.mail-paper-header {
+    padding: 18px 20px 10px 45px; text-align: left;
+    border-bottom: 1px dashed rgba(255,180,200,0.3);
+}
+.mail-paper-date {
+    font-size: 13px; color: #d4a0b0; font-weight: 500; margin-bottom: 8px;
+}
+.mail-paper-to {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: #b08090;
+}
+.mail-paper-to-label { font-weight: 600; color: #c08090; }
+.mail-paper-to-select {
+    flex: 1; max-width: 300px;
+    border: 1px solid rgba(255,180,200,0.4); border-radius: 10px;
+    padding: 6px 12px; font-size: 13px; color: #786068;
+    background: rgba(255,250,252,0.8); outline: none;
+    font-family: inherit;
+}
+.mail-paper-to-select:focus { border-color: #ffb6c1; box-shadow: 0 0 0 3px rgba(255,182,193,0.12); }
+.mail-paper-body {
+    padding: 12px 20px 16px 45px;
+    min-height: 180px;
+    position: relative;
+}
+.mail-paper-body textarea {
+    width: 100%; border: none; outline: none; resize: none;
+    font-size: 14px; color: #786068; line-height: 2;
+    background: transparent; font-family: inherit;
+    min-height: 200px; padding: 0;
+    background-image: repeating-linear-gradient(
+        transparent, transparent 27px, rgba(255,180,200,0.2) 27px, rgba(255,180,200,0.2) 28px
+    );
+    background-size: 100% 28px;
+}
+.mail-paper-body textarea::placeholder { color: #ddd0d6; }
+.mail-paper-footer {
+    padding: 0 20px 16px 45px;
+    display: flex; justify-content: flex-end;
+}
+.mail-send-btn {
+    padding: 8px 24px; border-radius: 20px;
+    background: linear-gradient(135deg, #ffd8e4, #ffb6c1);
+    color: #fff; border: none; font-size: 13px; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255,182,193,0.3);
+    transition: all 0.2s; font-weight: 500;
+}
+.mail-send-btn:active { transform: scale(0.95); }
+/* 历史信件全屏页面 */
+.mail-history-page {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(170deg, #fff8fa 0%, #fff0f5 40%, #ffe8ef 100%);
+    z-index: 65; display: none;
+    flex-direction: column;
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+}
+.mail-history-page.active { display: flex; transform: translateY(0); }
+body.phone-frame-active .mail-history-page {
+    width: var(--phone-w, 375px); height: var(--phone-h, 812px);
+    top: var(--phone-top, 0); left: var(--phone-left, 0);
+}
+.mail-history-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 55px 16px 12px; flex-shrink: 0;
+}
+.mail-history-title {
+    font-size: 17px; font-weight: 600; color: #c08090;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+.mail-history-close-btn {
+    font-size: 28px; color: #e8a0b4; background: rgba(255,255,255,0.6);
+    border: none; border-radius: 50%; width: 36px; height: 36px;
+    cursor: pointer; backdrop-filter: blur(8px); transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+}
+.mail-history-close-btn:active { transform: scale(0.85); }
+.mail-history-list {
+    flex: 1; overflow-y: auto; padding: 0 16px 20px;
+    -webkit-overflow-scrolling: touch;
+}
+.mail-history-item {
+    background: #fffdf9; border-radius: 12px;
+    padding: 14px; margin-bottom: 12px;
+    border: 1px solid rgba(255,220,230,0.4);
+    box-shadow: 0 1px 6px rgba(255,182,193,0.08);
+}
+.mail-history-item-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+}
+.mail-history-date {
+    font-size: 11px; color: #d4a0b0;
+}
+.mail-history-to {
+    font-size: 11px; color: #c08090; font-weight: 500;
+}
+.mail-history-text {
+    font-size: 13px; color: #786068; line-height: 1.7; margin-bottom: 8px;
+    white-space: pre-wrap;
+}
+.mail-history-reply {
+    background: linear-gradient(135deg, #fff8fa, #ffe8f0);
+    border-radius: 12px; padding: 12px 14px;
+    border: 1px solid rgba(255,220,230,0.3);
+    position: relative;
+}
+.mail-history-reply-name {
+    font-size: 11px; color: #e8829e; font-weight: bold; margin-bottom: 6px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+.mail-history-reply-text {
+    font-size: 13px; color: #806870; line-height: 1.8; white-space: pre-wrap;
+}
+.mail-history-loading {
+    font-size: 12px; color: #d4a0b0; text-align: center; padding: 6px;
+}
+.mail-history-loading span {
+    display: inline-block; animation: beautifulDot 1.4s infinite;
+}
+.mail-history-loading span:nth-child(2) { animation-delay: 0.2s; }
+.mail-history-loading span:nth-child(3) { animation-delay: 0.4s; }
+.mail-history-empty {
+    text-align: center; color: #D4A0B0; font-size: 14px; padding: 40px;
+}
+/* 回信特殊效果 */
+.mail-strikethrough {
+    text-decoration: line-through;
+    text-decoration-color: rgba(200,100,120,0.5);
+    color: #c8a0a8; font-style: italic; opacity: 0.7;
+}
+.mail-scribble {
+    background: linear-gradient(90deg, rgba(200,100,120,0.15) 0%, rgba(200,100,120,0.3) 50%, rgba(200,100,120,0.15) 100%);
+    background-size: 200% 100%;
+    animation: mailScribble 2s ease-in-out infinite;
+    border-radius: 4px; padding: 0 4px;
+    color: transparent; text-shadow: 0 0 2px rgba(200,100,120,0.4);
+}
+@keyframes mailScribble {
+    0%,100% { background-position: 0% 0%; }
+    50% { background-position: 100% 0%; }
+}
+.mail-hesitate {
+    color: #d4a0b0; font-size: 0.85em; font-style: italic;
+    opacity: 0.6;
+}
+.mail-doodle {
+    display: inline-block; transform: rotate(-5deg);
+    color: #e8a0b4; font-size: 0.9em; margin: 0 2px;
+}
+.mail-whisper {
+    font-size: 0.8em; color: #c8a0a8; opacity: 0.5;
+    font-style: italic; letter-spacing: 1px;
+}
+
 /* 密码锁弹窗 */
 .beautiful-pwd-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -14867,6 +15117,7 @@ body.phone-frame-active #beautiful-app-page {
                 <div class="app-item" onclick="openPetApp()"><div class="app-icon" id="icon-app-pet">🐾</div><span class="app-name" data-app-name="圈圈窝">圈圈窝</span></div>
                 <div class="app-item" onclick="openMeetApp()"><div class="app-icon" id="icon-app-meet">🤝</div><span class="app-name" data-app-name="见一面">见一面</span></div>
                 <div class="app-item" onclick="openBeautifulApp()"><div class="app-icon" id="icon-app-beautiful">💄</div><span class="app-name" data-app-name="beautiful">beautiful</span></div>
+                <div class="app-item" onclick="openMailApp()"><div class="app-icon" id="icon-app-mail">📮</div><span class="app-name" data-app-name="邮箱">邮箱</span></div>
             </div>
         </div>
 
@@ -17496,8 +17747,7 @@ body.phone-frame-active #beautiful-app-page {
     <div class="beautiful-tab-bar">
         <div class="beautiful-tab-item active" data-tab="home" onclick="beautifulSwitchTab('home')">🏠</div>
         <div class="beautiful-tab-item" data-tab="weight" onclick="beautifulSwitchTab('weight')">⚖️</div>
-        <div class="beautiful-tab-item" data-tab="exercise" onclick="beautifulSwitchTab('exercise')">🏃</div>
-        <div class="beautiful-tab-item" data-tab="diary" onclick="beautifulSwitchTab('diary')">📖</div>
+        <div class="beautiful-tab-item" data-tab="exercise" onclick="beautifulSwitchTab('exercise')">📋</div>
         <div class="beautiful-tab-item" data-tab="settings" onclick="beautifulSwitchTab('settings')">⚙️</div>
     </div>
 
@@ -17514,7 +17764,7 @@ body.phone-frame-active #beautiful-app-page {
                 <div class="beautiful-companion-avatar" id="beautiful-companion-avatar">👤</div>
                 <div class="beautiful-companion-info">
                     <div class="beautiful-companion-name" id="beautiful-companion-name">未绑定角色</div>
-                    <div class="beautiful-companion-desc" id="beautiful-companion-desc">去设置页绑定减肥伙伴吧~</div>
+                    <div class="beautiful-companion-desc" id="beautiful-companion-desc">去设置页绑定伙伴吧~</div>
                 </div>
             </div>
             <!-- 今日体重卡片 -->
@@ -17527,9 +17777,9 @@ body.phone-frame-active #beautiful-app-page {
                 <div class="beautiful-weight-change" id="beautiful-weight-change"></div>
                 <div class="beautiful-emoji-feedback" id="beautiful-emoji-feedback"></div>
             </div>
-            <!-- 今日运动任务 -->
+            <!-- 今日计划 -->
             <div class="beautiful-card">
-                <div class="beautiful-card-title">今日运动 <span class="beautiful-card-count" id="beautiful-exercise-count">0/0</span></div>
+                <div class="beautiful-card-title">今日计划 <span class="beautiful-card-count" id="beautiful-exercise-count">0/0</span></div>
                 <div id="beautiful-today-exercises"></div>
             </div>
             <!-- 成就预览 -->
@@ -17566,61 +17816,39 @@ body.phone-frame-active #beautiful-app-page {
         </div>
     </div>
 
-    <!-- 运动任务页 -->
+    <!-- 每日计划页 -->
     <div class="beautiful-page" id="beautiful-tab-exercise">
         <div class="beautiful-header">
             <button class="beautiful-back-btn" onclick="closeBeautifulApp()">‹</button>
-            <div class="beautiful-title">运动任务</div>
-            <div style="width:30px;"></div>
+            <div class="beautiful-title">每日计划</div>
+            <button class="beautiful-weight-record-btn" onclick="beautifulShowExercisePopup()">✏️</button>
         </div>
         <div class="beautiful-scroll">
-            <!-- 添加运动 -->
+            <!-- 今日计划 -->
             <div class="beautiful-card">
-                <div class="beautiful-card-title">添加运动</div>
-                <input type="text" id="beautiful-exercise-name" placeholder="运动名称（如：瘦腿操）" class="beautiful-input">
-                <input type="text" id="beautiful-exercise-bvid" placeholder="B站BV号或链接" class="beautiful-input">
-                <button class="beautiful-btn-primary" onclick="beautifulAddExercise()" style="width:100%;margin-top:8px;">+ 添加</button>
-            </div>
-            <!-- 运动列表 -->
-            <div class="beautiful-card">
-                <div class="beautiful-card-title">今日运动</div>
+                <div class="beautiful-card-title">今日计划 <span class="beautiful-card-count" id="beautiful-exercise-count-page">0/0</span></div>
                 <div id="beautiful-exercise-list"></div>
             </div>
-        </div>
-    </div>
-
-    <!-- 减肥日记页 -->
-    <div class="beautiful-page" id="beautiful-tab-diary">
-        <div class="beautiful-header">
-            <button class="beautiful-back-btn" onclick="closeBeautifulApp()">‹</button>
-            <div class="beautiful-title">减肥日记</div>
-            <button class="beautiful-diary-history-btn" onclick="beautifulShowDiaryHistory()">📜</button>
-        </div>
-        <div class="beautiful-scroll">
-            <!-- 信纸 -->
-            <div class="beautiful-diary-paper">
-                <div class="beautiful-diary-paper-header">
-                    <div class="beautiful-diary-paper-date" id="beautiful-diary-paper-date"></div>
-                    <div class="beautiful-diary-paper-weight" id="beautiful-diary-paper-weight" style="display:none;"></div>
-                </div>
-                <div class="beautiful-diary-paper-body">
-                    <textarea id="beautiful-diary-input" placeholder="今天的心情、饮食、运动感受..."></textarea>
-                </div>
-                <div class="beautiful-diary-paper-footer">
-                    <button class="beautiful-diary-send-btn" onclick="beautifulSaveDiary()">寄给TA ✉️</button>
-                </div>
+            <!-- 历史计划 -->
+            <div class="beautiful-card">
+                <div class="beautiful-card-title">历史计划</div>
+                <div id="beautiful-exercise-history-list"></div>
             </div>
         </div>
     </div>
 
-    <!-- 历史记录弹窗 -->
-    <div class="beautiful-diary-history-popup" id="beautiful-diary-history-popup">
-        <div class="beautiful-diary-history-content">
-            <div style="position:relative;">
-                <div class="beautiful-diary-history-title">往期日记</div>
-                <button class="beautiful-diary-history-close" onclick="beautifulCloseDiaryHistory()">✕</button>
+    <!-- 添加计划弹窗 -->
+    <div class="beautiful-weight-popup" id="beautiful-exercise-popup">
+        <div class="beautiful-weight-popup-content">
+            <div class="beautiful-weight-popup-title">添加计划</div>
+            <div id="beautiful-exercise-inputs" style="margin-bottom:10px;">
+                <input type="text" class="beautiful-weight-input beautiful-exercise-input-item" placeholder="计划内容（如：喝水2000ml）" style="width:100%;margin-bottom:6px;">
             </div>
-            <div id="beautiful-diary-history-list"></div>
+            <button class="beautiful-exercise-add-row-btn" onclick="beautifulAddExerciseRow()">+ 再添加一条</button>
+            <div class="beautiful-weight-popup-btns">
+                <button class="beautiful-btn-primary" onclick="beautifulAddExercise()" style="flex:1;">添加</button>
+                <button class="beautiful-weight-popup-cancel" onclick="beautifulCloseExercisePopup()">取消</button>
+            </div>
         </div>
     </div>
 
@@ -17640,30 +17868,18 @@ body.phone-frame-active #beautiful-app-page {
                     <input type="number" id="beautiful-height-input" placeholder="cm" class="beautiful-settings-input" onchange="beautifulSaveSettings()">
                 </div>
                 <div class="beautiful-settings-row">
+                    <span>初始体重</span>
+                    <input type="number" id="beautiful-initial-weight-input" placeholder="kg" step="0.1" class="beautiful-settings-input" onchange="beautifulSaveSettings()">
+                </div>
+                <div class="beautiful-settings-row">
                     <span>目标体重</span>
                     <input type="number" id="beautiful-goal-input" placeholder="kg" step="0.1" class="beautiful-settings-input" onchange="beautifulSaveSettings()">
                 </div>
             </div>
             <!-- 绑定角色 -->
             <div class="beautiful-card">
-                <div class="beautiful-card-title">减肥伙伴</div>
+                <div class="beautiful-card-title">伙伴</div>
                 <div id="beautiful-character-list"></div>
-            </div>
-            <!-- 表情反馈 -->
-            <div class="beautiful-card">
-                <div class="beautiful-card-title">体重反馈表情</div>
-                <div class="beautiful-emoji-setting">
-                    <span>变轻了</span>
-                    <input type="text" id="beautiful-emoji-light-url" placeholder="图片URL" class="beautiful-input" onchange="beautifulSaveSettings()">
-                    <button class="app-icon-upload-btn" onclick="beautifulUploadEmoji('light')" title="上传">📁</button>
-                    <div class="beautiful-emoji-preview" id="beautiful-emoji-light-preview">😊</div>
-                </div>
-                <div class="beautiful-emoji-setting">
-                    <span>变重了</span>
-                    <input type="text" id="beautiful-emoji-heavy-url" placeholder="图片URL" class="beautiful-input" onchange="beautifulSaveSettings()">
-                    <button class="app-icon-upload-btn" onclick="beautifulUploadEmoji('heavy')" title="上传">📁</button>
-                    <div class="beautiful-emoji-preview" id="beautiful-emoji-heavy-preview">😅</div>
-                </div>
             </div>
         </div>
     </div>
@@ -17697,35 +17913,6 @@ body.phone-frame-active #beautiful-app-page {
         </div>
     </div>
 
-    <!-- 密码锁弹窗 -->
-    <div class="beautiful-pwd-overlay" id="beautiful-pwd-overlay">
-        <div class="beautiful-pwd-modal">
-            <div class="beautiful-pwd-title">🔒 请输入密码</div>
-            <div style="font-size:12px;color:#D4A0B0;text-align:center;margin-bottom:16px;line-height:1.5;">8月3日开始新更新功能<br>还未更新完成</div>
-            <div class="beautiful-pwd-dots" id="beautiful-pwd-dots">
-                <span class="beautiful-pwd-dot"></span>
-                <span class="beautiful-pwd-dot"></span>
-                <span class="beautiful-pwd-dot"></span>
-                <span class="beautiful-pwd-dot"></span>
-            </div>
-            <div class="beautiful-pwd-hint" id="beautiful-pwd-hint"></div>
-            <div class="beautiful-pwd-keypad">
-                <button onclick="beautifulPwdInput('1')">1</button>
-                <button onclick="beautifulPwdInput('2')">2</button>
-                <button onclick="beautifulPwdInput('3')">3</button>
-                <button onclick="beautifulPwdInput('4')">4</button>
-                <button onclick="beautifulPwdInput('5')">5</button>
-                <button onclick="beautifulPwdInput('6')">6</button>
-                <button onclick="beautifulPwdInput('7')">7</button>
-                <button onclick="beautifulPwdInput('8')">8</button>
-                <button onclick="beautifulPwdInput('9')">9</button>
-                <button onclick="beautifulPwdCancel()" style="font-size:13px;">取消</button>
-                <button onclick="beautifulPwdInput('0')">0</button>
-                <button onclick="beautifulPwdDelete()">⌫</button>
-            </div>
-        </div>
-    </div>
-
     <!-- 体重记录弹窗 -->
     <div class="beautiful-weight-popup" id="beautiful-weight-popup">
         <div class="beautiful-weight-popup-content">
@@ -17745,6 +17932,44 @@ body.phone-frame-active #beautiful-app-page {
         </div>
     </div>
 </div>
+
+<!-- ========================= 邮箱 APP 页面 ========================= -->
+<div id="mail-app-page">
+    <div class="mail-header">
+        <button class="mail-back-btn" onclick="closeMailApp()">‹</button>
+        <div class="mail-title">邮箱</div>
+        <button class="mail-history-btn" onclick="mailShowHistory()">📜</button>
+    </div>
+    <div class="mail-scroll">
+        <div class="mail-paper">
+            <div class="mail-paper-header">
+                <div class="mail-paper-date" id="mail-paper-date"></div>
+                <div class="mail-paper-to">
+                    <span class="mail-paper-to-label">To:</span>
+                    <select class="mail-paper-to-select" id="mail-to-select">
+                        <option value="">选择收信人...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mail-paper-body">
+                <textarea id="mail-input" placeholder="在这里写下你想对TA说的话..."></textarea>
+            </div>
+            <div class="mail-paper-footer">
+                <button class="mail-send-btn" onclick="mailSend()">寄出 ✉️</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 邮箱历史信件全屏页面 -->
+<div class="mail-history-page" id="mail-history-page">
+    <div class="mail-history-header">
+        <div class="mail-history-title">往期信件</div>
+        <button class="mail-history-close-btn" onclick="mailCloseHistory()">‹</button>
+    </div>
+    <div class="mail-history-list" id="mail-history-list"></div>
+</div>
+
 <div id="floating-pet" onclick="onFloatingPetClick()">
     <img class="floating-pet-img" id="floating-pet-img" src="" style="width:60px;height:60px;display:none;">
 </div>
@@ -41620,7 +41845,7 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         const defaultIcons = {
             'icon-app1': '☁️', 'icon-app2': '🎵', 'icon-app3': '💬', 'icon-app4': '🔮',
             'icon-app5': '🧭', 'icon-app6': '🎮', 'icon-app7': '🥡', 'icon-app8': '💰',
-            'icon-app9': '🖼️', 'icon-app-pet': '🐾', 'icon-app-meet': '🤝', 'icon-app-beautiful': '💄',
+            'icon-app9': '🖼️', 'icon-app-pet': '🐾', 'icon-app-meet': '🤝', 'icon-app-beautiful': '💄', 'icon-app-mail': '📮',
             'icon-dock-settings': '⚙️', 'icon-dock-ai': '🤖', 'icon-dock-safari': '🧭',
             'icon-dock-messages': '⭐', 'icon-dock-gallery': '🖼️', 'icon-dock-tarot': '🔮'
         };
@@ -47449,64 +47674,18 @@ window.executeDisableLock = () => {
         return d.diaries || [];
     }
 
-    const BEAUTIFUL_PWD = '6666';
-    let beautifulPwdBuffer = '';
     window.openBeautifulApp = () => {
-        // 先显示密码锁
-        beautifulPwdBuffer = '';
-        beautifulPwdUpdateDots();
-        document.getElementById('beautiful-pwd-hint').textContent = '';
         document.getElementById('beautiful-app-page').classList.add('active');
-        document.getElementById('beautiful-pwd-overlay').classList.add('active');
-    };
-    window.beautifulPwdInput = (num) => {
-        if (beautifulPwdBuffer.length >= 4) return;
-        beautifulPwdBuffer += num;
-        beautifulPwdUpdateDots();
-        if (beautifulPwdBuffer.length === 4) {
-            if (beautifulPwdBuffer === BEAUTIFUL_PWD) {
-                // 密码正确
-                document.getElementById('beautiful-pwd-overlay').classList.remove('active');
-                beautifulSwitchTab('home');
-                beautifulRefreshAll();
-                const settings = getBeautifulSettings();
-                if (!settings.characterId) {
-                    beautifulShowCharSelect();
-                }
-            } else {
-                // 密码错误
-                document.querySelectorAll('#beautiful-pwd-dots .beautiful-pwd-dot').forEach(d => d.classList.add('error'));
-                document.getElementById('beautiful-pwd-hint').textContent = '密码错误';
-                setTimeout(() => {
-                    beautifulPwdBuffer = '';
-                    beautifulPwdUpdateDots();
-                    document.querySelectorAll('#beautiful-pwd-dots .beautiful-pwd-dot').forEach(d => d.classList.remove('error'));
-                }, 600);
-            }
+        beautifulSwitchTab('home');
+        beautifulRefreshAll();
+        const settings = getBeautifulSettings();
+        if (!settings.characterId) {
+            beautifulShowCharSelect();
         }
     };
-    window.beautifulPwdDelete = () => {
-        if (beautifulPwdBuffer.length > 0) {
-            beautifulPwdBuffer = beautifulPwdBuffer.slice(0, -1);
-            beautifulPwdUpdateDots();
-        }
-    };
-    window.beautifulPwdCancel = () => {
-        beautifulPwdBuffer = '';
-        document.getElementById('beautiful-pwd-overlay').classList.remove('active');
-        document.getElementById('beautiful-app-page').classList.remove('active');
-    };
-    function beautifulPwdUpdateDots() {
-        const dots = document.querySelectorAll('#beautiful-pwd-dots .beautiful-pwd-dot');
-        dots.forEach((d, i) => {
-            d.classList.toggle('filled', i < beautifulPwdBuffer.length);
-            d.classList.remove('error');
-        });
-    }
     window.closeBeautifulApp = () => {
         document.getElementById('beautiful-app-page').classList.remove('active');
         document.getElementById('beautiful-char-select-overlay').classList.remove('active');
-        document.getElementById('beautiful-pwd-overlay').classList.remove('active');
     };
     // 角色选择弹窗
     function beautifulShowCharSelect() {
@@ -47544,7 +47723,7 @@ window.executeDisableLock = () => {
         document.getElementById('beautiful-char-select-overlay').classList.remove('active');
         beautifulRefreshHome();
         beautifulRefreshSettings();
-        showToast('已绑定减肥伙伴，一起加油吧~');
+        showToast('已绑定伙伴，一起加油吧~');
     };
     window.beautifulSkipCharSelect = () => {
         document.getElementById('beautiful-char-select-overlay').classList.remove('active');
@@ -47561,7 +47740,6 @@ window.executeDisableLock = () => {
         if (tab === 'home') beautifulRefreshHome();
         if (tab === 'weight') beautifulRefreshWeight();
         if (tab === 'exercise') beautifulRefreshExercises();
-        if (tab === 'diary') beautifulRefreshDiary();
         if (tab === 'settings') beautifulRefreshSettings();
     };
 
@@ -47594,17 +47772,17 @@ window.executeDisableLock = () => {
                     }
                 } else {
                     charName.textContent = '未绑定角色';
-                    charDesc.textContent = '去设置页绑定减肥伙伴吧~';
+                    charDesc.textContent = '去设置页绑定伙伴吧~';
                     charAvatar.style.backgroundImage = '';
                     charAvatar.textContent = '👤';
                 }
             } catch (e) {
                 charName.textContent = '未绑定角色';
-                charDesc.textContent = '去设置页绑定减肥伙伴吧~';
+                charDesc.textContent = '去设置页绑定伙伴吧~';
             }
         } else {
             charName.textContent = '未绑定角色';
-            charDesc.textContent = '去设置页绑定减肥伙伴吧~';
+            charDesc.textContent = '去设置页绑定伙伴吧~';
             charAvatar.style.backgroundImage = '';
             charAvatar.textContent = '👤';
         }
@@ -47666,15 +47844,14 @@ window.executeDisableLock = () => {
         document.getElementById('beautiful-exercise-count').textContent = `${doneCount}/${todayExercises.length}`;
         const exListEl = document.getElementById('beautiful-today-exercises');
         if (todayExercises.length === 0) {
-            exListEl.innerHTML = '<div style="text-align:center;color:#D4A0B0;font-size:13px;padding:10px;">今天还没有运动任务</div>';
+            exListEl.innerHTML = '<div style="text-align:center;color:#D4A0B0;font-size:13px;padding:10px;">今天还没有计划</div>';
         } else {
             exListEl.innerHTML = todayExercises.map(e => `
                 <div class="beautiful-exercise-item">
                     <div class="beautiful-exercise-check ${e.done ? 'done' : ''}" onclick="beautifulToggleExercise(${e.id})">${e.done ? '✓' : ''}</div>
                     <div class="beautiful-exercise-info">
-                        <div class="beautiful-exercise-name">${e.name}</div>
+                        <div class="beautiful-exercise-name ${e.done ? 'done' : ''}">${e.name}</div>
                     </div>
-                    ${e.bvid ? `<button class="beautiful-exercise-play" onclick="beautifulPlayVideo('${e.bvid}','${e.name.replace(/'/g, '')}')">▶</button>` : ''}
                 </div>
             `).join('');
         }
@@ -47731,11 +47908,51 @@ window.executeDisableLock = () => {
                 const max = Math.max(...values).toFixed(1);
                 const min = Math.min(...values).toFixed(1);
                 const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
+                // 当前最新体重
+                const latest = weights[weights.length - 1];
+                const latestVal = latest.pm || latest.am;
+                // 比上周变化
+                const now = new Date();
+                const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
+                const weekAgoStr = weekAgo.toISOString().slice(0, 10);
+                const weekAgoWeights = weights.filter(w => w.date <= weekAgoStr);
+                const weekAgoVal = weekAgoWeights.length > 0 ? (weekAgoWeights[weekAgoWeights.length - 1].pm || weekAgoWeights[weekAgoWeights.length - 1].am) : null;
+                const weekDiff = (weekAgoVal && latestVal) ? (latestVal - weekAgoVal) : null;
+                // 比上月变化
+                const monthAgo = new Date(now); monthAgo.setDate(monthAgo.getDate() - 30);
+                const monthAgoStr = monthAgo.toISOString().slice(0, 10);
+                const monthAgoWeights = weights.filter(w => w.date <= monthAgoStr);
+                const monthAgoVal = monthAgoWeights.length > 0 ? (monthAgoWeights[monthAgoWeights.length - 1].pm || monthAgoWeights[monthAgoWeights.length - 1].am) : null;
+                const monthDiff = (monthAgoVal && latestVal) ? (latestVal - monthAgoVal) : null;
+                // 距目标还剩
+                const goalDiff = (settings.goal && latestVal) ? (latestVal - parseFloat(settings.goal)) : null;
+                // 初始体重变化
+                const initVal = settings.initialWeight ? parseFloat(settings.initialWeight) : null;
+                const initDiff = (initVal && latestVal) ? (latestVal - initVal) : null;
+
+                const fmtDiff = (d) => {
+                    if (d === null) return '--';
+                    if (d < 0) return `↓${Math.abs(d).toFixed(1)}`;
+                    if (d > 0) return `↑${d.toFixed(1)}`;
+                    return '持平';
+                };
+                const diffColor = (d) => {
+                    if (d === null) return '#d4a0b0';
+                    if (d < 0) return '#ff9eb5';
+                    if (d > 0) return '#E8829E';
+                    return '#d4a0b0';
+                };
+
                 statsEl.innerHTML = `
                     <span>最高<b>${max}</b>kg</span>
                     <span>最低<b>${min}</b>kg</span>
                     <span>平均<b>${avg}</b>kg</span>
+                    ${settings.initialWeight ? `<span>初始<b>${settings.initialWeight}</b>kg</span>` : ''}
+                    ${initDiff !== null ? `<span>总变化<b style="color:${diffColor(initDiff)};">${fmtDiff(initDiff)}</b>kg</span>` : ''}
+                    ${weekDiff !== null ? `<span>比上周<b style="color:${diffColor(weekDiff)};">${fmtDiff(weekDiff)}</b>kg</span>` : ''}
+                    ${monthDiff !== null ? `<span>比上月<b style="color:${diffColor(monthDiff)};">${fmtDiff(monthDiff)}</b>kg</span>` : ''}
                     ${settings.goal ? `<span>目标<b>${settings.goal}</b>kg</span>` : ''}
+                    ${goalDiff !== null ? `<span>距目标<b style="color:${diffColor(goalDiff)};">${goalDiff > 0 ? '剩' + goalDiff.toFixed(1) : '已达成'}</b>kg</span>` : ''}
                 `;
             }
         }
@@ -47910,41 +48127,105 @@ window.executeDisableLock = () => {
         ctx.fillStyle = '#E8829E'; ctx.fillText('● 晚上', cw - 35, 14);
     }
 
-    // ===== 运动任务 =====
+    // ===== 每日计划 =====
     function beautifulRefreshExercises() {
         const exercises = getBeautifulExercises();
         const today = new Date().toISOString().slice(0, 10);
         const todayExercises = exercises.filter(e => !e.date || e.date === today);
         const listEl = document.getElementById('beautiful-exercise-list');
+        // 更新今日计划计数
+        const doneCount = todayExercises.filter(e => e.done).length;
+        const countEl = document.getElementById('beautiful-exercise-count-page');
+        if (countEl) countEl.textContent = `${doneCount}/${todayExercises.length}`;
         if (todayExercises.length === 0) {
-            listEl.innerHTML = '<div class="beautiful-exercise-empty">还没有运动任务，添加一个吧~</div>';
+            listEl.innerHTML = '<div class="beautiful-exercise-empty">还没有计划，点击✏️添加吧~</div>';
+        } else {
+            listEl.innerHTML = todayExercises.map(e => `
+                <div class="beautiful-exercise-item">
+                    <div class="beautiful-exercise-check ${e.done ? 'done' : ''}" onclick="beautifulToggleExercise(${e.id})">${e.done ? '✓' : ''}</div>
+                    <div class="beautiful-exercise-info">
+                        <div class="beautiful-exercise-name ${e.done ? 'done' : ''}">${e.name}</div>
+                    </div>
+                    <span class="beautiful-exercise-del" onclick="beautifulDeleteExercise(${e.id})">✕</span>
+                </div>
+            `).join('');
+        }
+        // 渲染历史计划
+        beautifulRenderExerciseHistory(exercises, today);
+    }
+    function beautifulRenderExerciseHistory(exercises, today) {
+        const historyEl = document.getElementById('beautiful-exercise-history-list');
+        if (!historyEl) return;
+        const historyExercises = exercises.filter(e => e.date && e.date !== today);
+        if (historyExercises.length === 0) {
+            historyEl.innerHTML = '<div class="beautiful-exercise-empty">暂无历史计划</div>';
             return;
         }
-        listEl.innerHTML = todayExercises.map(e => `
-            <div class="beautiful-exercise-item">
-                <div class="beautiful-exercise-check ${e.done ? 'done' : ''}" onclick="beautifulToggleExercise(${e.id})">${e.done ? '✓' : ''}</div>
-                <div class="beautiful-exercise-info">
-                    <div class="beautiful-exercise-name">${e.name}</div>
-                    ${e.bvid ? `<div class="beautiful-exercise-bvid">${e.bvid}</div>` : ''}
+        // 按日期分组
+        const groups = {};
+        historyExercises.forEach(e => {
+            if (!groups[e.date]) groups[e.date] = [];
+            groups[e.date].push(e);
+        });
+        const sortedDates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+        historyEl.innerHTML = sortedDates.map(date => {
+            const items = groups[date];
+            const doneCount = items.filter(e => e.done).length;
+            return `
+                <div class="beautiful-exercise-history-group">
+                    <div class="beautiful-exercise-history-date">${date}（${doneCount}/${items.length}）</div>
+                    ${items.map(e => `
+                        <div class="beautiful-exercise-history-item">
+                            <div class="beautiful-exercise-history-check ${e.done ? 'done' : ''}">${e.done ? '✓' : ''}</div>
+                            <div class="beautiful-exercise-history-name ${e.done ? 'done' : ''}">${e.name}</div>
+                        </div>
+                    `).join('')}
                 </div>
-                ${e.bvid ? `<button class="beautiful-exercise-play" onclick="beautifulPlayVideo('${e.bvid}','${e.name.replace(/'/g, '')}')">▶ 播放</button>` : ''}
-                <span class="beautiful-exercise-del" onclick="beautifulDeleteExercise(${e.id})">✕</span>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
+    window.beautifulShowExercisePopup = () => {
+        document.getElementById('beautiful-exercise-popup').classList.add('active');
+        // 重置为单个输入框
+        document.getElementById('beautiful-exercise-inputs').innerHTML =
+            '<input type="text" class="beautiful-weight-input beautiful-exercise-input-item" placeholder="计划内容（如：喝水2000ml）" style="width:100%;margin-bottom:6px;">';
+        setTimeout(() => {
+            const firstInput = document.querySelector('.beautiful-exercise-input-item');
+            if (firstInput) firstInput.focus();
+        }, 100);
+    };
+    window.beautifulCloseExercisePopup = () => {
+        document.getElementById('beautiful-exercise-popup').classList.remove('active');
+    };
+    window.beautifulAddExerciseRow = () => {
+        const container = document.getElementById('beautiful-exercise-inputs');
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.className = 'beautiful-weight-input beautiful-exercise-input-item';
+        newInput.placeholder = '计划内容（如：跑步30分钟）';
+        newInput.style.cssText = 'width:100%;margin-bottom:6px;';
+        container.appendChild(newInput);
+        newInput.focus();
+    };
     window.beautifulAddExercise = () => {
-        const name = document.getElementById('beautiful-exercise-name').value.trim();
-        const bvid = document.getElementById('beautiful-exercise-bvid').value.trim();
-        if (!name) { showToast('请输入运动名称'); return; }
+        const inputs = document.querySelectorAll('.beautiful-exercise-input-item');
+        const names = [];
+        inputs.forEach(input => {
+            const val = input.value.trim();
+            if (val) names.push(val);
+        });
+        if (names.length === 0) { showToast('请输入计划内容'); return; }
         const data = getBeautifulData();
         if (!data.exercises) data.exercises = [];
         const today = new Date().toISOString().slice(0, 10);
-        data.exercises.push({ id: Date.now(), name, bvid, done: false, date: today });
+        names.forEach(name => {
+            data.exercises.push({ id: Date.now() + Math.random(), name, done: false, date: today });
+        });
         saveBeautifulData(data);
-        document.getElementById('beautiful-exercise-name').value = '';
-        document.getElementById('beautiful-exercise-bvid').value = '';
-        showToast('运动已添加');
+        beautifulCloseExercisePopup();
+        showToast(`已添加${names.length}条计划`);
         beautifulRefreshExercises();
+        beautifulRefreshHome();
     };
     window.beautifulToggleExercise = (id) => {
         const data = getBeautifulData();
@@ -48025,7 +48306,7 @@ window.executeDisableLock = () => {
         const text = document.getElementById('beautiful-diary-input').value.trim();
         if (!text) { showToast('请写点什么'); return; }
         const settings = getBeautifulSettings();
-        if (!settings.characterId) { showToast('请先在设置中绑定减肥伙伴'); return; }
+        if (!settings.characterId) { showToast('请先在设置中绑定伙伴'); return; }
         const weights = getBeautifulWeights();
         const today = new Date().toISOString().slice(0, 10);
         const todayWeight = weights.find(w => w.date === today);
@@ -48169,20 +48450,251 @@ window.executeDisableLock = () => {
         return { text: reply.trim(), name: name };
     }
 
+    // ===== 邮箱 APP（独立功能，与减肥无关）=====
+    function getMailData() {
+        try { return JSON.parse(localStorage.getItem('mail_data') || '{}'); }
+        catch (e) { return {}; }
+    }
+    function saveMailData(data) {
+        localStorage.setItem('mail_data', JSON.stringify(data));
+    }
+    function getMailLetters() {
+        return getMailData().letters || [];
+    }
+    window.openMailApp = () => {
+        mailRefresh();
+        document.getElementById('mail-app-page').classList.add('active');
+    };
+    window.closeMailApp = () => {
+        document.getElementById('mail-app-page').classList.remove('active');
+        document.getElementById('mail-history-page').classList.remove('active');
+    };
+    function mailRefresh() {
+        const now = new Date();
+        const weekDays = ['日','一','二','三','四','五','六'];
+        document.getElementById('mail-paper-date').textContent =
+            `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 星期${weekDays[now.getDay()]}`;
+        // 填充收信人列表
+        const select = document.getElementById('mail-to-select');
+        try {
+            const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+            const currentVal = select.value;
+            select.innerHTML = '<option value="">选择收信人...</option>';
+            contacts.forEach(c => {
+                const name = c.alias || c.name || '未知';
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = name;
+                select.appendChild(opt);
+            });
+            select.value = currentVal;
+        } catch (e) {}
+    }
+    function mailRenderReplyText(text) {
+        if (!text) return '';
+        let html = escapeHtml(text);
+        // ~~划掉的内容~~ -> 划掉效果
+        html = html.replace(/~~(.+?)~~/g, '<span class="mail-strikethrough">$1</span>');
+        // {{犹豫的内容}} -> 犹豫低语效果
+        html = html.replace(/\{\{(.+?)\}\}/g, '<span class="mail-hesitate">$1</span>');
+        // ((涂掉的内容)) -> 涂抹遮盖效果
+        html = html.replace(/\(\((.+?)\)\)/g, '<span class="mail-scribble">$1</span>');
+        // >>小声说的话<< -> 悄悄话效果
+        html = html.replace(/&gt;&gt;(.+?)&lt;&lt;/g, '<span class="mail-whisper">$1</span>');
+        // ~~涂鸦~~ 用emoji标记
+        html = html.replace(/\*\*(.+?)\*\*/g, '<span class="mail-doodle">$1</span>');
+        return html;
+    }
+    window.mailShowHistory = () => {
+        const page = document.getElementById('mail-history-page');
+        const listEl = document.getElementById('mail-history-list');
+        const letters = getMailLetters().sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+        if (letters.length === 0) {
+            listEl.innerHTML = '<div class="mail-history-empty">还没有信件，写第一封吧~</div>';
+        } else {
+            listEl.innerHTML = letters.map(d => `
+                <div class="mail-history-item">
+                    <div class="mail-history-item-header">
+                        <div class="mail-history-date">${d.date}</div>
+                        <div class="mail-history-to">To: ${d.toName || 'TA'}</div>
+                    </div>
+                    <div class="mail-history-text">${escapeHtml(d.text)}</div>
+                    ${d.reply ? `
+                        <div class="mail-history-reply">
+                            <div class="mail-history-reply-name">${d.replyName || 'TA'}</div>
+                            <div class="mail-history-reply-text">${mailRenderReplyText(d.reply)}</div>
+                        </div>
+                    ` : d.loading ? `
+                        <div class="mail-history-loading">TA正在回信<span>.</span><span>.</span><span>.</span></div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        page.classList.add('active');
+    };
+    window.mailCloseHistory = () => {
+        document.getElementById('mail-history-page').classList.remove('active');
+    };
+    window.mailSend = async () => {
+        const text = document.getElementById('mail-input').value.trim();
+        if (!text) { showToast('请写点什么'); return; }
+        const toId = document.getElementById('mail-to-select').value;
+        if (!toId) { showToast('请选择收信人'); return; }
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(toId));
+        if (!contact) { showToast('收信人不存在'); return; }
+        const toName = contact.alias || contact.name || 'TA';
+        const letter = {
+            id: Date.now(),
+            date: new Date().toISOString().slice(0, 10),
+            toId: toId,
+            toName: toName,
+            text: text,
+            reply: '',
+            replyName: '',
+            loading: true
+        };
+        const data = getMailData();
+        if (!data.letters) data.letters = [];
+        data.letters.push(letter);
+        saveMailData(data);
+        document.getElementById('mail-input').value = '';
+        showToast('信已寄出 ✉️');
+        // 调用AI回信
+        try {
+            const reply = await mailCallAI(toId, text, toName);
+            const d2 = getMailData();
+            const target = (d2.letters || []).find(x => x.id === letter.id);
+            if (target) {
+                target.reply = reply.text;
+                target.replyName = reply.name;
+                target.loading = false;
+                saveMailData(d2);
+            }
+        } catch (e) {
+            const d2 = getMailData();
+            const target = (d2.letters || []).find(x => x.id === letter.id);
+            if (target) {
+                target.reply = '（回信失败：' + (e.message || '请检查API配置') + '）';
+                target.replyName = '系统';
+                target.loading = false;
+                saveMailData(d2);
+            }
+        }
+        // 如果历史页面正打开则刷新
+        if (document.getElementById('mail-history-page').classList.contains('active')) {
+            mailShowHistory();
+        }
+    };
+    // 独立的AI回信函数
+    async function mailCallAI(characterId, letterText, toName) {
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        if (!settings?.api?.url || !settings?.api?.key || !settings?.api?.model) {
+            throw new Error('请先配置API');
+        }
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(characterId));
+        if (!contact) throw new Error('角色不存在');
+        const name = contact.alias || contact.name || 'TA';
+        const persona = contact.persona || contact.desc || contact.greeting || '';
+        const globalProfile = getUserProfile();
+        const uName = globalProfile.nickname || '用户';
+        const uPersona = contact.userPersona || '一个普通用户';
+        // 线上规则
+        const onlineRules = contact.onlineRules || '';
+        // 回忆总结
+        let recollectionContext = '';
+        try {
+            const recollectionData = getRecollections(String(contact.id));
+            const items = recollectionData.items || [];
+            if (items.length > 0) {
+                recollectionContext = items.map(item => item.text).join('\n');
+            }
+        } catch (e) {}
+        // 世界书
+        let worldbookContext = '';
+        try {
+            const allWb = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]');
+            const activeWbIds = contact.worldbookIds || [];
+            if (allWb.length > 0 && activeWbIds.length > 0) {
+                worldbookContext = buildWorldbookContext(allWb, activeWbIds, letterText);
+            }
+        } catch (e) {}
+        const userTextLen = letterText.length;
+        let systemPrompt = `你正在参与一个"写信"的互动应用。用户${uName}给你写了一封信，你需要以${name}的身份回信。
+
+【你的身份】
+你是${name}，现在收到用户写给你的信，请以你的身份和语气写一封回信。
+
+【你的人设】
+${persona}`;
+        if (onlineRules) {
+            systemPrompt += `\n\n【线上规则（必须遵守）】\n${onlineRules}`;
+        }
+        if (worldbookContext) {
+            systemPrompt += `\n\n【世界书设定（必须遵守和融入）】\n${worldbookContext}`;
+        }
+        if (recollectionContext) {
+            systemPrompt += `\n\n【你们的回忆总结】\n${recollectionContext}`;
+        }
+        systemPrompt += `\n\n【用户人设】\n${uPersona}`;
+        systemPrompt += `\n\n【用户写给你的信】\n${letterText}`;
+        systemPrompt += `\n\n【回信要求】
+1. 你必须以${name}的身份和语气回信，严格遵守你的人设和世界书设定
+2. 这是书信往来，请用写信的口吻，像真的在写信一样
+3. 回信字数不能少于用户信件的字数（用户写了${userTextLen}字，你的回信必须不少于${userTextLen}字）
+4. 根据信的内容真诚回复，可以表达情感、回忆、关心等
+5. 不要输出思考过程，直接输出回信内容
+6. 提到用户时使用"${uName}"或"你"
+7. 绝对禁止使用诋毁、羞辱性的词语，可以带点小毒舌调侃但不许伤害用户自尊，始终保持善意的底线
+8. 你可以在回信中添加一些特殊的书信效果来增加情感表达，使用以下标记：
+   - ~~划掉的文字~~：表示你想说但又不打算说出口的话，犹豫后划掉
+   - {{犹豫的低语}}：表示小声嘀咕、自言自语的话
+   - ((涂抹的文字))：表示写了又涂掉、不想让对方看到的字
+   - >>悄悄话<<：表示很小声说的话，像是自言自语
+   - **涂鸦/小动作**：表示在信纸边缘画的小图案或动作描写
+   这些特殊效果不要每句都用，只在适合的情感场景偶尔使用，让回信更生动真实`;
+
+        const isGemini = settings.api.url.includes('generativelanguage');
+        let fetchUrl, bodyData, headers = { 'Content-Type': 'application/json' };
+        if (isGemini) {
+            fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model}:generateContent?key=${settings.api.key}`;
+            bodyData = JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: systemPrompt }] }],
+                generationConfig: { temperature: 0.85, maxOutputTokens: 1200 }
+            });
+        } else {
+            fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
+            headers['Authorization'] = `Bearer ${settings.api.key}`;
+            bodyData = JSON.stringify({
+                model: settings.api.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `这是${uName}写给你的信，请回信：\n\n${letterText}` }
+                ],
+                temperature: 0.85,
+                max_tokens: 1200
+            });
+        }
+        const resp = await fetch(fetchUrl, { method: 'POST', headers, body: bodyData });
+        if (!resp.ok) throw new Error(`API请求失败(${resp.status})`);
+        const data = await resp.json();
+        if (data.error) throw new Error(data.error.message || 'API error');
+        let reply = '';
+        if (isGemini) {
+            reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        } else {
+            reply = data?.choices?.[0]?.message?.content || data?.response || '';
+        }
+        return { text: reply.trim(), name: name };
+    }
+
     // ===== 设置 =====
     function beautifulRefreshSettings() {
         const settings = getBeautifulSettings();
         document.getElementById('beautiful-height-input').value = settings.height || '';
+        document.getElementById('beautiful-initial-weight-input').value = settings.initialWeight || '';
         document.getElementById('beautiful-goal-input').value = settings.goal || '';
-        document.getElementById('beautiful-emoji-light-url').value = settings.emojiLight || '';
-        document.getElementById('beautiful-emoji-heavy-url').value = settings.emojiHeavy || '';
-        // 表情预览
-        const lightPreview = document.getElementById('beautiful-emoji-light-preview');
-        if (settings.emojiLight) { lightPreview.innerHTML = `<img src="${settings.emojiLight}">`; lightPreview.style.backgroundImage = ''; }
-        else { lightPreview.textContent = '😊'; }
-        const heavyPreview = document.getElementById('beautiful-emoji-heavy-preview');
-        if (settings.emojiHeavy) { heavyPreview.innerHTML = `<img src="${settings.emojiHeavy}">`; heavyPreview.style.backgroundImage = ''; }
-        else { heavyPreview.textContent = '😅'; }
         // 角色列表
         const listEl = document.getElementById('beautiful-character-list');
         try {
@@ -48214,37 +48726,21 @@ window.executeDisableLock = () => {
         data.settings.characterId = id;
         saveBeautifulData(data);
         beautifulRefreshSettings();
-        showToast('已绑定减肥伙伴');
+        showToast('已绑定伙伴');
     };
     window.beautifulSaveSettings = () => {
         const data = getBeautifulData();
         if (!data.settings) data.settings = {};
         data.settings.height = document.getElementById('beautiful-height-input').value;
+        data.settings.initialWeight = document.getElementById('beautiful-initial-weight-input').value;
         data.settings.goal = document.getElementById('beautiful-goal-input').value;
-        data.settings.emojiLight = document.getElementById('beautiful-emoji-light-url').value;
-        data.settings.emojiHeavy = document.getElementById('beautiful-emoji-heavy-url').value;
         saveBeautifulData(data);
-    };
-    window.beautifulUploadEmoji = (type) => {
-        const input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            compressImage(file, 200, (url) => {
-                document.getElementById(`beautiful-emoji-${type}-url`).value = url;
-                const preview = document.getElementById(`beautiful-emoji-${type}-preview`);
-                preview.innerHTML = `<img src="${url}">`;
-                beautifulSaveSettings();
-                showToast('表情已上传');
-            });
-        };
-        input.click();
     };
 
     // ===== 成就系统 =====
     const BEAUTIFUL_ACHIEVEMENTS = [
         { id: 'first_weight', icon: '⚖️', name: '初次记录', desc: '第一次记录体重' },
-        { id: 'first_exercise', icon: '🏃', name: '迈出第一步', desc: '完成第一个运动任务' },
+        { id: 'first_exercise', icon: '📋', name: '迈出第一步', desc: '完成第一个每日计划' },
         { id: 'streak_3', icon: '🔥', name: '三天打鱼', desc: '连续3天记录体重' },
         { id: 'streak_7', icon: '⭐', name: '坚持一周', desc: '连续7天记录体重' },
         { id: 'streak_30', icon: '👑', name: '月度达人', desc: '连续30天记录体重' },
@@ -48254,7 +48750,7 @@ window.executeDisableLock = () => {
         { id: 'goal_reached', icon: '🏆', name: '达成目标', desc: '达到目标体重' },
         { id: 'diary_1', icon: '📖', name: '心情日记', desc: '写第一篇减肥日记' },
         { id: 'diary_10', icon: '✍️', name: '日记达人', desc: '写10篇减肥日记' },
-        { id: 'exercise_10', icon: '💪', name: '运动健将', desc: '完成10个运动任务' }
+        { id: 'exercise_10', icon: '💪', name: '计划达人', desc: '完成10个每日计划' }
     ];
     function beautifulGetUnlockedAchievements() {
         const data = getBeautifulData();
