@@ -14721,6 +14721,27 @@ body.phone-frame-active #mail-app-page {
     transition: all 0.2s;
 }
 .mail-history-btn:active { transform: scale(0.9); }
+.mail-header-right-group {
+    display: flex; align-items: center; gap: 8px;
+}
+.mail-inbox-btn {
+    font-size: 18px; background: rgba(255,255,255,0.6);
+    border: none; cursor: pointer; padding: 4px 10px;
+    border-radius: 14px; backdrop-filter: blur(8px);
+    transition: all 0.2s; position: relative;
+}
+.mail-inbox-btn:active { transform: scale(0.9); }
+.mail-inbox-dot {
+    display: none; position: absolute; top: 2px; right: 2px;
+    width: 9px; height: 9px; background: #ff4d4f;
+    border-radius: 50%; border: 1.5px solid #fff;
+    animation: mailDotPulse 1.5s ease-in-out infinite;
+}
+.mail-inbox-dot.active { display: block; }
+@keyframes mailDotPulse {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+}
 .mail-scroll {
     flex: 1; overflow-y: auto; padding: 0 0 20px 0;
     -webkit-overflow-scrolling: touch;
@@ -14806,48 +14827,224 @@ body.phone-frame-active .mail-history-page {
 }
 .mail-history-header {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 55px 16px 12px; flex-shrink: 0;
+    padding: 85px 20px 14px; flex-shrink: 0;
+    border-bottom: 1px solid rgba(255,200,214,0.4);
 }
+.mail-history-back-btn {
+    font-size: 30px; color: #e8a0b4; background: none;
+    border: none; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1; padding-bottom: 3px; margin-left: 24px;
+}
+.mail-history-back-btn:active { transform: scale(0.85); }
 .mail-history-title {
-    font-size: 17px; font-weight: 600; color: #c08090;
+    font-size: 18px; font-weight: 600; color: #c08090;
     font-family: 'ZCOOL KuaiLe', cursive;
 }
-.mail-history-close-btn {
-    font-size: 28px; color: #e8a0b4; background: rgba(255,255,255,0.6);
-    border: none; border-radius: 50%; width: 36px; height: 36px;
-    cursor: pointer; backdrop-filter: blur(8px); transition: all 0.15s;
-    display: flex; align-items: center; justify-content: center;
-}
-.mail-history-close-btn:active { transform: scale(0.85); }
+.mail-history-header-right { width: 44px; }
 .mail-history-list {
-    flex: 1; overflow-y: auto; padding: 0 16px 20px;
+    flex: 1; overflow-y: auto; padding: 16px 24px 20px 40px;
     -webkit-overflow-scrolling: touch;
 }
-.mail-history-item {
-    background: #fffdf9; border-radius: 12px;
-    padding: 14px; margin-bottom: 12px;
+/* 小纸张网格 */
+.mail-paper-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+.mail-paper-card {
+    background: #fffdf9; border-radius: 8px;
+    padding: 12px 8px; cursor: pointer;
     border: 1px solid rgba(255,220,230,0.4);
     box-shadow: 0 1px 6px rgba(255,182,193,0.08);
+    transition: all 0.2s; position: relative;
+    min-height: 100px; display: flex; flex-direction: column;
+    justify-content: space-between; overflow: hidden;
 }
-.mail-history-item-header {
+.mail-paper-card:active { transform: scale(0.95); }
+.mail-paper-card::before {
+    content: ''; position: absolute; left: 6px; top: 0; bottom: 0;
+    width: 1px; background: rgba(255,180,200,0.2);
+}
+.mail-paper-card-date {
+    font-size: 10px; color: #d4a0b0; text-align: center;
+    margin-bottom: 4px; font-weight: 500;
+}
+.mail-paper-card-name {
+    font-size: 11px; color: #c08090; text-align: center;
+    font-weight: 600; margin-bottom: 4px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mail-paper-card-preview {
+    font-size: 10px; color: #b0a0a8; line-height: 1.4;
+    overflow: hidden; display: -webkit-box;
+    -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+}
+.mail-paper-card-badge {
+    position: absolute; top: 4px; right: 4px;
+    width: 7px; height: 7px; background: #ff4d4f;
+    border-radius: 50%; border: 1px solid #fff;
+}
+/* 信件详情页 */
+.mail-detail-page {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(170deg, #fff8fa 0%, #fff0f5 40%, #ffe8ef 100%);
+    z-index: 70; display: none; flex-direction: column;
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+}
+.mail-detail-page.active { display: flex; transform: translateY(0); }
+body.phone-frame-active .mail-detail-page {
+    width: var(--phone-w, 375px); height: var(--phone-h, 812px);
+    top: var(--phone-top, 0); left: var(--phone-left, 0);
+}
+.mail-detail-header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 8px;
+    padding: 85px 20px 14px; flex-shrink: 0;
+    border-bottom: 1px solid rgba(255,200,214,0.4);
 }
-.mail-history-date {
-    font-size: 11px; color: #d4a0b0;
+.mail-detail-back-btn {
+    font-size: 30px; color: #e8a0b4; background: none;
+    border: none; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1; padding-bottom: 3px; margin-left: 24px;
 }
-.mail-history-to {
-    font-size: 11px; color: #c08090; font-weight: 500;
+.mail-detail-back-btn:active { transform: scale(0.85); }
+.mail-detail-title {
+    font-size: 16px; font-weight: 600; color: #c08090;
+    font-family: 'ZCOOL KuaiLe', cursive;
 }
-.mail-history-text {
-    font-size: 13px; color: #786068; line-height: 1.7; margin-bottom: 8px;
+.mail-detail-header-right { width: 54px; }
+.mail-detail-slider-wrap {
+    flex: 1; overflow: hidden; position: relative;
+}
+.mail-detail-slider {
+    display: flex; width: 200%; height: 100%;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.mail-detail-slider.show-reply { transform: translateX(-50%); }
+.mail-detail-slide {
+    width: 50%; height: 100%; flex-shrink: 0;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 16px 0 20px;
+}
+.mail-detail-slide-paper {
+    width: 92%; max-width: 700px; margin: 0 auto;
+    background: #fffdf9; border-radius: 6px;
+    box-shadow: 0 2px 20px rgba(255,180,200,0.18), 0 0 0 1px rgba(255,220,230,0.3);
+    position: relative; overflow: hidden;
+    min-height: 300px;
+}
+.mail-detail-slide-paper::before {
+    content: ''; position: absolute; left: 20px; top: 0; bottom: 0;
+    width: 1px; background: rgba(255,180,200,0.25); z-index: 1;
+}
+.mail-detail-slide-header {
+    padding: 18px 20px 10px 45px; text-align: left;
+    border-bottom: 1px dashed rgba(255,180,200,0.3);
+}
+.mail-detail-slide-date {
+    font-size: 13px; color: #d4a0b0; font-weight: 500; margin-bottom: 6px;
+}
+.mail-detail-slide-from {
+    font-size: 13px; color: #c08090; font-weight: 500;
+}
+.mail-detail-slide-body {
+    padding: 16px 20px 20px 45px;
+    font-size: 13px; color: #786068; line-height: 28px;
     white-space: pre-wrap;
+    background-image: repeating-linear-gradient(
+        transparent, transparent 15px, rgba(255,180,200,0.2) 15px, rgba(255,180,200,0.2) 16px
+    );
+    background-size: 100% 28px;
+    min-height: 200px;
 }
-.mail-history-reply {
-    background: linear-gradient(135deg, #fff8fa, #ffe8f0);
-    border-radius: 12px; padding: 12px 14px;
-    border: 1px solid rgba(255,220,230,0.3);
-    position: relative;
+.mail-detail-slide-loading {
+    text-align: center; color: #d4a0b0; font-size: 13px; padding: 30px;
+}
+.mail-detail-tabs {
+    display: flex; justify-content: center; gap: 8px;
+    padding: 8px 0 4px; flex-shrink: 0;
+}
+.mail-detail-tab {
+    padding: 4px 16px; border-radius: 14px;
+    font-size: 12px; cursor: pointer; transition: all 0.2s;
+    background: rgba(255,255,255,0.5); color: #d4a0b0;
+    border: 1px solid rgba(255,200,214,0.3);
+}
+.mail-detail-tab.active {
+    background: linear-gradient(135deg, #ffd8e4, #ffb6c1);
+    color: #fff; border-color: transparent;
+}
+.mail-detail-hint {
+    text-align: center; font-size: 11px; color: #d4a0b0;
+    padding: 0 0 8px; flex-shrink: 0;
+}
+/* 信封回信页面 */
+.mail-inbox-page {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(170deg, #fff8fa 0%, #fff0f5 40%, #ffe8ef 100%);
+    z-index: 68; display: none; flex-direction: column;
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+}
+.mail-inbox-page.active { display: flex; transform: translateY(0); }
+body.phone-frame-active .mail-inbox-page {
+    width: var(--phone-w, 375px); height: var(--phone-h, 812px);
+    top: var(--phone-top, 0); left: var(--phone-left, 0);
+}
+.mail-inbox-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 85px 20px 14px; flex-shrink: 0;
+    border-bottom: 1px solid rgba(255,200,214,0.4);
+}
+.mail-inbox-back-btn {
+    font-size: 30px; color: #e8a0b4; background: none;
+    border: none; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1; padding-bottom: 3px; margin-left: 24px;
+}
+.mail-inbox-back-btn:active { transform: scale(0.85); }
+.mail-inbox-title {
+    font-size: 18px; font-weight: 600; color: #c08090;
+    font-family: 'ZCOOL KuaiLe', cursive;
+}
+.mail-inbox-header-right { width: 54px; }
+.mail-inbox-scroll {
+    flex: 1; overflow-y: auto; padding: 16px 0 20px;
+    -webkit-overflow-scrolling: touch;
+}
+.mail-inbox-empty {
+    text-align: center; color: #D4A0B0; font-size: 14px; padding: 40px;
+}
+.mail-inbox-paper {
+    width: 80%; max-width: 600px; margin: 0 auto 16px;
+    background: #fffdf9; border-radius: 6px;
+    box-shadow: 0 2px 20px rgba(255,180,200,0.18), 0 0 0 1px rgba(255,220,230,0.3);
+    position: relative; overflow: hidden;
+    animation: mailPaperIn 0.3s ease;
+}
+.mail-inbox-paper::before {
+    content: ''; position: absolute; left: 20px; top: 0; bottom: 0;
+    width: 1px; background: rgba(255,180,200,0.25); z-index: 1;
+}
+.mail-inbox-paper-header {
+    padding: 18px 20px 10px 45px; text-align: left;
+    border-bottom: 1px dashed rgba(255,180,200,0.3);
+}
+.mail-inbox-paper-date {
+    font-size: 13px; color: #d4a0b0; font-weight: 500; margin-bottom: 6px;
+}
+.mail-inbox-paper-from {
+    font-size: 13px; color: #c08090; font-weight: 500;
+}
+.mail-inbox-paper-body {
+    padding: 16px 7px 20px 45px;
+    font-size: 13px; color: #786068; line-height: 28px;
+    white-space: pre-wrap;
+    background-image: repeating-linear-gradient(
+        transparent, transparent 15px, rgba(255,180,200,0.2) 15px, rgba(255,180,200,0.2) 16px
+    );
+    background-size: 100% 28px;
+    min-height: 200px;
 }
 .mail-history-reply-name {
     font-size: 11px; color: #e8829e; font-weight: bold; margin-bottom: 6px;
@@ -17938,7 +18135,13 @@ body.phone-frame-active .mail-history-page {
     <div class="mail-header">
         <button class="mail-back-btn" onclick="closeMailApp()">‹</button>
         <div class="mail-title">邮箱</div>
-        <button class="mail-history-btn" onclick="mailShowHistory()">📜</button>
+        <div class="mail-header-right-group">
+            <button class="mail-inbox-btn" id="mail-inbox-btn" onclick="mailShowInbox()">
+                ✉️
+                <span class="mail-inbox-dot" id="mail-inbox-dot"></span>
+            </button>
+            <button class="mail-history-btn" onclick="mailShowHistory()">📜</button>
+        </div>
     </div>
     <div class="mail-scroll">
         <div class="mail-paper">
@@ -17964,10 +18167,40 @@ body.phone-frame-active .mail-history-page {
 <!-- 邮箱历史信件全屏页面 -->
 <div class="mail-history-page" id="mail-history-page">
     <div class="mail-history-header">
+        <button class="mail-history-back-btn" onclick="mailCloseHistory()">‹</button>
         <div class="mail-history-title">往期信件</div>
-        <button class="mail-history-close-btn" onclick="mailCloseHistory()">‹</button>
+        <div class="mail-history-header-right"></div>
     </div>
     <div class="mail-history-list" id="mail-history-list"></div>
+</div>
+
+<!-- 信件详情页 -->
+<div class="mail-detail-page" id="mail-detail-page">
+    <div class="mail-detail-header">
+        <button class="mail-detail-back-btn" onclick="mailCloseDetail()">‹</button>
+        <div class="mail-detail-title" id="mail-detail-title">信件</div>
+        <div class="mail-detail-header-right"></div>
+    </div>
+    <div class="mail-detail-tabs">
+        <div class="mail-detail-tab active" id="mail-detail-tab-mine" onclick="mailDetailShowMine()">我的信</div>
+        <div class="mail-detail-tab" id="mail-detail-tab-reply" onclick="mailDetailShowReply()">回信</div>
+    </div>
+    <div class="mail-detail-slider-wrap" id="mail-detail-slider-wrap">
+        <div class="mail-detail-slider" id="mail-detail-slider">
+            <div class="mail-detail-slide" id="mail-detail-slide-mine"></div>
+            <div class="mail-detail-slide" id="mail-detail-slide-reply"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 信封回信页面（独立页面，直接显示角色回信大信纸） -->
+<div class="mail-inbox-page" id="mail-inbox-page">
+    <div class="mail-inbox-header">
+        <button class="mail-inbox-back-btn" onclick="mailCloseInboxPage()">‹</button>
+        <div class="mail-inbox-title">回信</div>
+        <div class="mail-inbox-header-right"></div>
+    </div>
+    <div class="mail-inbox-scroll" id="mail-inbox-scroll"></div>
 </div>
 
 <div id="floating-pet" onclick="onFloatingPetClick()">
@@ -48461,13 +48694,51 @@ window.executeDisableLock = () => {
     function getMailLetters() {
         return getMailData().letters || [];
     }
+    // 检查未读回信并更新红点
+    function mailUpdateInboxDot() {
+        const letters = getMailLetters();
+        const hasUnread = letters.some(l => l.reply && !l.read);
+        const dot = document.getElementById('mail-inbox-dot');
+        if (dot) dot.classList.toggle('active', hasUnread);
+    }
+    // 查看收件箱（信封页面，直接显示角色回信大信纸）
+    window.mailShowInbox = () => {
+        const page = document.getElementById('mail-inbox-page');
+        const scrollEl = document.getElementById('mail-inbox-scroll');
+        const letters = getMailLetters().filter(l => l.reply).sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+        if (letters.length === 0) {
+            scrollEl.innerHTML = '<div class="mail-inbox-empty">还没有收到回信~</div>';
+        } else {
+            scrollEl.innerHTML = letters.map(d => `
+                <div class="mail-inbox-paper">
+                    <div class="mail-inbox-paper-header">
+                        <div class="mail-inbox-paper-date">${d.date}</div>
+                        <div class="mail-inbox-paper-from">From: ${escapeHtml(d.replyName || d.toName || 'TA')}</div>
+                    </div>
+                    <div class="mail-inbox-paper-body">${mailRenderReplyText(d.reply)}</div>
+                </div>
+            `).join('');
+        }
+        // 标记所有回信为已读
+        const data = getMailData();
+        (data.letters || []).forEach(l => { if (l.reply) l.read = true; });
+        saveMailData(data);
+        mailUpdateInboxDot();
+        page.classList.add('active');
+    };
+    window.mailCloseInboxPage = () => {
+        document.getElementById('mail-inbox-page').classList.remove('active');
+    };
     window.openMailApp = () => {
         mailRefresh();
+        mailUpdateInboxDot();
         document.getElementById('mail-app-page').classList.add('active');
     };
     window.closeMailApp = () => {
         document.getElementById('mail-app-page').classList.remove('active');
         document.getElementById('mail-history-page').classList.remove('active');
+        document.getElementById('mail-detail-page').classList.remove('active');
+        document.getElementById('mail-inbox-page').classList.remove('active');
     };
     function mailRefresh() {
         const now = new Date();
@@ -48493,6 +48764,8 @@ window.executeDisableLock = () => {
     function mailRenderReplyText(text) {
         if (!text) return '';
         let html = escapeHtml(text);
+        // 压缩连续空行为单换行，连续写作不空行
+        html = html.replace(/\n{2,}/g, '\n');
         // ~~划掉的内容~~ -> 划掉效果
         html = html.replace(/~~(.+?)~~/g, '<span class="mail-strikethrough">$1</span>');
         // {{犹豫的内容}} -> 犹豫低语效果
@@ -48512,29 +48785,111 @@ window.executeDisableLock = () => {
         if (letters.length === 0) {
             listEl.innerHTML = '<div class="mail-history-empty">还没有信件，写第一封吧~</div>';
         } else {
-            listEl.innerHTML = letters.map(d => `
-                <div class="mail-history-item">
-                    <div class="mail-history-item-header">
-                        <div class="mail-history-date">${d.date}</div>
-                        <div class="mail-history-to">To: ${d.toName || 'TA'}</div>
-                    </div>
-                    <div class="mail-history-text">${escapeHtml(d.text)}</div>
-                    ${d.reply ? `
-                        <div class="mail-history-reply">
-                            <div class="mail-history-reply-name">${d.replyName || 'TA'}</div>
-                            <div class="mail-history-reply-text">${mailRenderReplyText(d.reply)}</div>
-                        </div>
-                    ` : d.loading ? `
-                        <div class="mail-history-loading">TA正在回信<span>.</span><span>.</span><span>.</span></div>
-                    ` : ''}
+            listEl.innerHTML = '<div class="mail-paper-grid">' + letters.map(d => `
+                <div class="mail-paper-card" onclick="mailOpenDetail(${d.id})">
+                    ${d.reply && !d.read ? '<div class="mail-paper-card-badge"></div>' : ''}
+                    <div class="mail-paper-card-date">${d.date.slice(5)}</div>
+                    <div class="mail-paper-card-name">${escapeHtml(d.toName || 'TA')}</div>
+                    <div class="mail-paper-card-preview">${escapeHtml(d.text.slice(0, 50))}</div>
                 </div>
-            `).join('');
+            `).join('') + '</div>';
         }
         page.classList.add('active');
     };
     window.mailCloseHistory = () => {
         document.getElementById('mail-history-page').classList.remove('active');
     };
+    // 信件详情页
+    let mailDetailCurrentId = null;
+    window.mailOpenDetail = (letterId) => {
+        const letters = getMailLetters();
+        const letter = letters.find(l => l.id === letterId);
+        if (!letter) return;
+        mailDetailCurrentId = letterId;
+        document.getElementById('mail-detail-title').textContent = letter.toName || 'TA';
+        // 我寄出的信
+        const mineEl = document.getElementById('mail-detail-slide-mine');
+        mineEl.innerHTML = `
+            <div class="mail-detail-slide-paper">
+                <div class="mail-detail-slide-header">
+                    <div class="mail-detail-slide-date">${letter.date}</div>
+                    <div class="mail-detail-slide-from">To: ${escapeHtml(letter.toName || 'TA')}</div>
+                </div>
+                <div class="mail-detail-slide-body">${escapeHtml(letter.text)}</div>
+            </div>
+        `;
+        // 角色回信
+        const replyEl = document.getElementById('mail-detail-slide-reply');
+        if (letter.reply) {
+            replyEl.innerHTML = `
+                <div class="mail-detail-slide-paper">
+                    <div class="mail-detail-slide-header">
+                        <div class="mail-detail-slide-date">${letter.date}</div>
+                        <div class="mail-detail-slide-from">From: ${escapeHtml(letter.replyName || 'TA')}</div>
+                    </div>
+                    <div class="mail-detail-slide-body">${mailRenderReplyText(letter.reply)}</div>
+                </div>
+            `;
+        } else if (letter.loading) {
+            replyEl.innerHTML = '<div class="mail-detail-slide-loading">TA正在回信<span>.</span><span>.</span><span>.</span></div>';
+        } else {
+            replyEl.innerHTML = '<div class="mail-detail-slide-loading">暂无回信</div>';
+        }
+        // 重置到第一页
+        mailDetailShowMine();
+        document.getElementById('mail-detail-page').classList.add('active');
+    };
+    window.mailCloseDetail = () => {
+        document.getElementById('mail-detail-page').classList.remove('active');
+        // 返回时刷新往期信件列表（更新红点状态）
+        mailShowHistory();
+    };
+    window.mailDetailShowMine = () => {
+        document.getElementById('mail-detail-slider').classList.remove('show-reply');
+        document.getElementById('mail-detail-tab-mine').classList.add('active');
+        document.getElementById('mail-detail-tab-reply').classList.remove('active');
+    };
+    window.mailDetailShowReply = () => {
+        document.getElementById('mail-detail-slider').classList.add('show-reply');
+        document.getElementById('mail-detail-tab-mine').classList.remove('active');
+        document.getElementById('mail-detail-tab-reply').classList.add('active');
+    };
+    // 详情页触摸滑动
+    (function initMailDetailSwipe() {
+        const wrap = document.getElementById('mail-detail-slider-wrap');
+        if (!wrap) return;
+        let startX = 0, startY = 0, isSwiping = false;
+        wrap.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isSwiping = true;
+        }, { passive: true });
+        wrap.addEventListener('touchend', (e) => {
+            if (!isSwiping) return;
+            isSwiping = false;
+            const dx = e.changedTouches[0].clientX - startX;
+            const dy = e.changedTouches[0].clientY - startY;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+                if (dx < 0) mailDetailShowReply();
+                else mailDetailShowMine();
+            }
+        }, { passive: true });
+        // 鼠标拖拽
+        let mouseStartX = 0, isMouseSwiping = false;
+        wrap.addEventListener('mousedown', (e) => {
+            mouseStartX = e.clientX;
+            isMouseSwiping = true;
+        });
+        wrap.addEventListener('mouseup', (e) => {
+            if (!isMouseSwiping) return;
+            isMouseSwiping = false;
+            const dx = e.clientX - mouseStartX;
+            if (Math.abs(dx) > 60) {
+                if (dx < 0) mailDetailShowReply();
+                else mailDetailShowMine();
+            }
+        });
+    })();
     window.mailSend = async () => {
         const text = document.getElementById('mail-input').value.trim();
         if (!text) { showToast('请写点什么'); return; }
@@ -48556,8 +48911,13 @@ window.executeDisableLock = () => {
         };
         const data = getMailData();
         if (!data.letters) data.letters = [];
+        // 寄新信时清空收件箱（已读的回信从收件箱移除）
+        data.letters = data.letters.filter(l => !l.reply || !l.read);
+        // 标记所有保留的回信为已读（收件箱清空）
+        data.letters.forEach(l => { if (l.reply) l.read = true; });
         data.letters.push(letter);
         saveMailData(data);
+        mailUpdateInboxDot();
         document.getElementById('mail-input').value = '';
         showToast('信已寄出 ✉️');
         // 调用AI回信
@@ -48569,6 +48929,7 @@ window.executeDisableLock = () => {
                 target.reply = reply.text;
                 target.replyName = reply.name;
                 target.loading = false;
+                target.read = false; // 新回信标记为未读
                 saveMailData(d2);
             }
         } catch (e) {
@@ -48578,9 +48939,12 @@ window.executeDisableLock = () => {
                 target.reply = '（回信失败：' + (e.message || '请检查API配置') + '）';
                 target.replyName = '系统';
                 target.loading = false;
+                target.read = false;
                 saveMailData(d2);
             }
         }
+        // 更新红点提示
+        mailUpdateInboxDot();
         // 如果历史页面正打开则刷新
         if (document.getElementById('mail-history-page').classList.contains('active')) {
             mailShowHistory();
