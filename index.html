@@ -20281,9 +20281,17 @@ body.phone-frame-active .mail-inbox-page {
     window.handleWallpaperUpload = function(event) {
         const file = event.target.files[0];
         if (!file) return;
-        compressImage(file, 1920, (result) => {
-            document.getElementById('wallpaper-url').value = result;
-            document.getElementById('wallpaper-preview').style.backgroundImage = `url(${result})`;
+        compressImage(file, 1920, async (result) => {
+            // compressImage 可能返回短ID（local_img_xxx），需解析为真实数据
+            let realData = result;
+            if (result && result.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+                const fromDB = await getImgFromDB(result);
+                if (fromDB) realData = fromDB;
+            }
+            document.getElementById('wallpaper-url').value = '';
+            document.getElementById('wallpaper-preview').style.backgroundImage = `url(${realData})`;
+            saveVisualUpload('wallpaper', realData);
+            applyVisualSettings();
         });
     };
     
@@ -20319,7 +20327,9 @@ body.phone-frame-active .mail-inbox-page {
             }
         });
         const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
-        const wp = settings.visual && settings.visual.wallpaper ? settings.visual.wallpaper : 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib-rb-1.2.1&auto=format&fit=crop&w=1000&q=80';
+        // 壁纸优先级：上传图片 > URL > 默认
+        const uploadedWp = getVisualUpload('wallpaper');
+        const wp = uploadedWp || settings.visual?.wallpaper || 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib-rb-1.2.1&auto=format&fit=crop&w=1000&q=80';
         phoneScreen.style.background = `url(${wp}) center/cover no-repeat`;
         appWrapper.style.background = 'transparent';
         bodyEl.style.background = 'none';
@@ -20330,7 +20340,8 @@ body.phone-frame-active .mail-inbox-page {
             if (appWrapper && bodyEl && phoneContainer && !bodyEl.contains(appWrapper)) {
                 bodyEl.insertBefore(appWrapper, phoneContainer);
                 const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
-                const wp = settings.visual && settings.visual.wallpaper ? settings.visual.wallpaper : 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib-rb-1.2.1&auto=format&fit=crop&w=1000&q=80';
+                const uploadedWp = getVisualUpload('wallpaper');
+                const wp = uploadedWp || settings.visual?.wallpaper || 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib-rb-1.2.1&auto=format&fit=crop&w=1000&q=80';
                 bodyEl.style.background = `url(${wp}) center/cover no-repeat`;
                 appWrapper.style.background = 'transparent';
                 phoneScreen.style.background = 'none';
@@ -33970,8 +33981,27 @@ ${msgContext ? msgContext : '无'}
         window.currentContactAlias = contact.alias || contact.name;
         document.getElementById('chat-conv-title').innerText = contact.alias || contact.name;
         document.getElementById('chat-conv-signature').innerText = contact.signature || ''; 
-        const view = document.getElementById('chat-conversation-view'); 
-        view.style.backgroundImage = contact.backgroundImage ? `url(${contact.backgroundImage})` : ''; 
+        const view = document.getElementById('chat-conversation-view');
+        const bg = contact.backgroundImage || '';
+        if (bg.startsWith('__idb__:')) {
+            // 从 IndexedDB 异步加载聊天背景
+            view.style.backgroundImage = '';
+            getVisualUploadAsync(bg.substring(8)).then(val => {
+                if (val && document.getElementById('chat-conv-title').innerText === (contact.alias || contact.name)) {
+                    view.style.backgroundImage = `url(${val})`;
+                }
+            });
+        } else if (bg.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+            // 旧数据：compressImage 返回的短ID，需从 imgDB 解析
+            view.style.backgroundImage = '';
+            getImgFromDB(bg).then(val => {
+                if (val && document.getElementById('chat-conv-title').innerText === (contact.alias || contact.name)) {
+                    view.style.backgroundImage = `url(${val})`;
+                }
+            });
+        } else {
+            view.style.backgroundImage = bg ? `url(${bg})` : '';
+        }
         let styleTag = document.getElementById('custom-chat-style'); 
         if (!styleTag) { styleTag = document.createElement('style'); styleTag.id = 'custom-chat-style'; document.head.appendChild(styleTag); } 
         styleTag.innerHTML = contact.customCss || ''; 
@@ -40101,9 +40131,33 @@ window.openTransferConfirmPopup = (amount) => {
         roleAvatarImg.removeAttribute('data-loaded');
         roleAvatarImg.src = contact.avatar || '';
         roleAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
-        document.getElementById('role-bg-url-input').value = contact.backgroundImage || '';
-        document.getElementById('role-bg-preview').style.backgroundImage = contact.backgroundImage ? `url(${contact.backgroundImage})` : '';
-        tempRoleBgUrl = contact.backgroundImage || '';
+        const bgVal = contact.backgroundImage || '';
+        if (bgVal.startsWith('__idb__:')) {
+            document.getElementById('role-bg-url-input').value = '';
+            document.getElementById('role-bg-preview').style.backgroundImage = '';
+            tempRoleBgUrl = null;
+            getVisualUploadAsync(bgVal.substring(8)).then(val => {
+                if (val) {
+                    document.getElementById('role-bg-preview').style.backgroundImage = `url(${val})`;
+                    tempRoleBgUrl = val;
+                }
+            });
+        } else if (bgVal.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+            // 旧数据：compressImage 返回的短ID，需从 imgDB 解析
+            document.getElementById('role-bg-url-input').value = '';
+            document.getElementById('role-bg-preview').style.backgroundImage = '';
+            tempRoleBgUrl = null;
+            getImgFromDB(bgVal).then(val => {
+                if (val) {
+                    document.getElementById('role-bg-preview').style.backgroundImage = `url(${val})`;
+                    tempRoleBgUrl = val;
+                }
+            });
+        } else {
+            document.getElementById('role-bg-url-input').value = bgVal;
+            document.getElementById('role-bg-preview').style.backgroundImage = bgVal ? `url(${bgVal})` : '';
+            tempRoleBgUrl = bgVal;
+        }
         // 回显角色头像URL
         document.getElementById('role-avatar-url-input').value = contact.avatar || '';
         document.getElementById('role-avatar-preview').style.backgroundImage = contact.avatar ? `url(${contact.avatar})` : '';
@@ -40200,7 +40254,7 @@ window.openTransferConfirmPopup = (amount) => {
 
     window.closeRoleSettings = () => { document.getElementById('role-settings-page').classList.remove('active'); };
 
-            window.saveRoleSettings = () => {
+            window.saveRoleSettings = async () => {
         if (!currentChatContactId) return;
         const alias = document.getElementById('role-setting-alias').value.trim();
         const signature = document.getElementById('role-setting-signature').value.trim();
@@ -40249,7 +40303,24 @@ window.openTransferConfirmPopup = (amount) => {
             contacts[idx].signature = signature;
             contacts[idx].persona = persona;
             contacts[idx].onlineRules = onlineRules;
-            contacts[idx].backgroundImage = tempRoleBgUrl;
+            // base64 图片存入 IndexedDB，避免 localStorage 溢出
+            if (tempRoleBgUrl && (tempRoleBgUrl.startsWith('data:') || tempRoleBgUrl.startsWith('local_img_'))) {
+                // 如果是短ID，先解析为真实数据
+                let realBg = tempRoleBgUrl;
+                if (tempRoleBgUrl.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+                    const fromDB = await getImgFromDB(tempRoleBgUrl);
+                    if (fromDB) realBg = fromDB;
+                }
+                if (realBg.startsWith('data:')) {
+                    const idbKey = `chatBg_${contacts[idx].id}`;
+                    saveVisualUpload(idbKey, realBg);
+                    contacts[idx].backgroundImage = `__idb__:${idbKey}`;
+                } else {
+                    contacts[idx].backgroundImage = realBg;
+                }
+            } else {
+                contacts[idx].backgroundImage = tempRoleBgUrl;
+            }
             contacts[idx].timePerceptionEnabled = timeEnabled;
             contacts[idx].memoryDepth = memoryDepth;
             
@@ -40645,7 +40716,21 @@ window.openTransferConfirmPopup = (amount) => {
     };
 
     window.triggerRoleBgUpload = () => { document.getElementById('input-role-chat-bg').click(); };
-    window.handleRoleChatBgUpload = (event) => { compressImage(event.target.files[0], 800, (base64) => { tempRoleBgUrl = base64; document.getElementById('role-bg-url-input').value = ""; const prev = document.getElementById('role-bg-preview'); prev.style.backgroundImage = `url(${base64})`; prev.removeAttribute('data-loaded'); if (typeof processLocalImages === 'function') processLocalImages(prev); }); };
+    window.handleRoleChatBgUpload = (event) => {
+        compressImage(event.target.files[0], 800, async (result) => {
+            // compressImage 可能返回短ID（local_img_xxx）而非 base64，需解析
+            let realData = result;
+            if (result && result.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+                const fromDB = await getImgFromDB(result);
+                if (fromDB) realData = fromDB;
+            }
+            tempRoleBgUrl = realData;
+            document.getElementById('role-bg-url-input').value = "";
+            const prev = document.getElementById('role-bg-preview');
+            prev.style.backgroundImage = `url(${realData})`;
+            prev.removeAttribute('data-loaded');
+        });
+    };
     window.setRoleBgByUrl = () => { const url = document.getElementById('role-bg-url-input').value.trim(); if(url){ tempRoleBgUrl = url; document.getElementById('role-bg-preview').style.backgroundImage = `url(${url})`; showToast('已应用URL背景'); } };
     window.triggerRoleAvatarEdit = () => { const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); const contact = contacts.find(c => String(c.id) === String(currentChatContactId)); if (!contact) return; const currentUrl = contact.avatar; const newUrl = prompt('请输入新的头像URL (或取消以保持不变)', currentUrl); if (newUrl !== null && newUrl.trim() !== '') { contact.avatar = newUrl.trim(); localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); const avatarImg = document.getElementById('role-setting-avatar'); avatarImg.onerror = function() { this.onerror = null; this.src = ''; }; avatarImg.src = newUrl.trim(); showToast('头像已更新'); } };
     window.applyRoleAvatarUrl = () => { const url = document.getElementById('role-avatar-modal-input').value.trim(); const avatarImg = document.getElementById('role-setting-avatar'); if (!url) { avatarImg.src = ''; showToast('已清除头像'); } else { avatarImg.onerror = function() { this.onerror = null; this.src = ''; }; avatarImg.src = url; showToast('头像已应用'); } const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); const contact = contacts.find(c => String(c.id) === String(currentChatContactId)); if (contact) { contact.avatar = url; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); } closeRoleAvatarModal(); };
@@ -40705,7 +40790,16 @@ window.openTransferConfirmPopup = (amount) => {
         tempRoleBgUrl = null;
         const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
         const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
-        if (contact && contact.chatBg) { delete contact.chatBg; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); if (typeof applyChatBackground === 'function') applyChatBackground(); }
+        if (contact && contact.backgroundImage) {
+            // 如果背景存在 IndexedDB 中，删除它
+            if (contact.backgroundImage.startsWith('__idb__:')) {
+                removeVisualUpload(contact.backgroundImage.substring(8));
+            }
+            delete contact.backgroundImage;
+            localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts));
+        }
+        const view = document.getElementById('chat-conversation-view');
+        if (view) view.style.backgroundImage = '';
         showToast('聊天背景已重置');
     };
     window.openRoleAvatarModal = () => { const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]'); const contact = contacts.find(c => String(c.id) === String(currentChatContactId)); document.getElementById('role-avatar-modal-input').value = contact ? (contact.avatar || '') : ''; document.getElementById('role-avatar-modal-overlay').classList.add('active'); setTimeout(() => document.getElementById('role-avatar-modal-input').focus(), 300); };
@@ -41733,6 +41827,8 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
     const VISUAL_UPLOAD_DB = 'VisualUploadDB';
     const VISUAL_UPLOAD_STORE = 'visuals';
     let visualDB = null;
+    // 内存缓存，解决 localStorage 容量不足导致读取失败的问题
+    const visualUploadCache = {};
 
     function openVisualDB() {
         return new Promise((resolve, reject) => {
@@ -41745,28 +41841,53 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
     }
 
     async function saveVisualUpload(key, base64) {
+        // 写入内存缓存（同步，立即可读）
+        visualUploadCache[key] = base64;
         try {
             const db = await openVisualDB();
             const tx = db.transaction(VISUAL_UPLOAD_STORE, 'readwrite');
             tx.objectStore(VISUAL_UPLOAD_STORE).put(base64, key);
-            try { localStorage.setItem(`visualUpload_${key}`, base64); } catch(e) {}
         } catch(e) { console.error('保存上传失败', e); }
+        // 尝试写入 localStorage 作为备用，失败也不影响
+        try { localStorage.setItem(`visualUpload_${key}`, base64); } catch(e) {}
     }
 
     function getVisualUpload(key) {
+        // 优先读内存缓存
+        if (visualUploadCache[key]) return visualUploadCache[key];
+        // 回退到 localStorage
         try { return localStorage.getItem(`visualUpload_${key}`) || ''; } catch(e) { return ''; }
     }
 
+    // 异步从 IndexedDB 读取（内存缓存为空时）
+    async function getVisualUploadAsync(key) {
+        if (visualUploadCache[key]) return visualUploadCache[key];
+        try {
+            const db = await openVisualDB();
+            const tx = db.transaction(VISUAL_UPLOAD_STORE, 'readonly');
+            return new Promise((resolve) => {
+                const req = tx.objectStore(VISUAL_UPLOAD_STORE).get(key);
+                req.onsuccess = () => {
+                    const val = req.result || '';
+                    if (val) visualUploadCache[key] = val; // 缓存到内存
+                    resolve(val);
+                };
+                req.onerror = () => resolve('');
+            });
+        } catch(e) { return ''; }
+    }
+
     async function removeVisualUpload(key) {
+        delete visualUploadCache[key];
         try {
             const db = await openVisualDB();
             const tx = db.transaction(VISUAL_UPLOAD_STORE, 'readwrite');
             tx.objectStore(VISUAL_UPLOAD_STORE).delete(key);
-            localStorage.removeItem(`visualUpload_${key}`);
         } catch(e) {}
+        localStorage.removeItem(`visualUpload_${key}`);
     }
 
-    // 页面加载时恢复上传的壁纸和图片组件
+    // 页面加载时从 IndexedDB 恢复所有上传的图片到内存缓存
     (async function() {
         try {
             const db = await openVisualDB();
@@ -41776,8 +41897,11 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
             req.onsuccess = (e) => {
                 const cursor = e.target.result;
                 if (cursor) {
-                    try { localStorage.setItem(`visualUpload_${cursor.key}`, cursor.value); } catch(e) {}
+                    visualUploadCache[cursor.key] = cursor.value; // 写入内存缓存
                     cursor.continue();
+                } else {
+                    // 所有数据加载完毕，重新应用视觉设置
+                    if (typeof applyVisualSettings === 'function') applyVisualSettings();
                 }
             };
         } catch(e) {}
