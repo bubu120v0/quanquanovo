@@ -15899,6 +15899,24 @@ body.phone-frame-active .mail-inbox-page {
             </label>
         </div>
 
+        <div class="settings-row-with-switch" style="width:100%; padding: 10px 5px; border-top: 1px solid #f0f0f0; margin-top: 10px;">
+            <label for="role-proactive-msg-switch">主动发消息</label>
+            <label class="ios-switch">
+                <input type="checkbox" id="role-proactive-msg-switch">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div id="role-proactive-msg-settings" style="display:none; padding: 8px 5px;">
+            <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:#888;">
+                <span>每隔</span>
+                <input type="number" id="role-proactive-min" min="1" max="1440" placeholder="30" style="width:55px; padding:4px; border:1px solid #ddd; border-radius:6px; text-align:center;">分钟
+                <span>~</span>
+                <input type="number" id="role-proactive-max" min="1" max="1440" placeholder="120" style="width:55px; padding:4px; border:1px solid #ddd; border-radius:6px; text-align:center;">分钟
+                <span>主动发消息</span>
+            </div>
+            <p style="font-size:11px; color:#bbb; margin:4px 0 0 0;">角色会在此时间区间内随机主动给你发消息，内容根据人设和聊天上下文生成</p>
+        </div>
+
         <div class="settings-row" style="width:100%; padding: 10px 5px; border-top: 1px solid #f0f0f0; margin-top: 10px; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
             <label for="role-memory-depth" style="margin-bottom:0;">记忆条数 (Memory)</label>
             <input type="number" id="role-memory-depth" placeholder="10" style="width: 80px; padding: 6px; border: 1px solid #ddd; border-radius: 8px; text-align: center;">
@@ -17324,6 +17342,14 @@ body.phone-frame-active .mail-inbox-page {
                                         <span class="slider round"></span>
                 </label>
             </div>
+            <div class="settings-row-with-switch" style="margin-top: 10px;">
+                <label for="ios-keepalive-switch">iOS 后台保活通知</label>
+                <label class="ios-switch">
+                    <input type="checkbox" id="ios-keepalive-switch">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <p style="font-size: 11px; color: #999; margin: 4px 0 0 0; padding-left: 2px;">添加到主屏幕后，切到其他APP时角色回复会显示系统通知（需iOS 16.4+）</p>
             <div class="settings-row-with-switch" style="margin-top: 10px;">
                 <label for="phone-frame-switch">手机框</label>
                 <label class="ios-switch">
@@ -20062,7 +20088,8 @@ body.phone-frame-active .mail-inbox-page {
     const WALLET_DATA_KEY = 'walletData_v3'; 
     const WORLDBOOK_DATA_KEY = 'worldbookData_v3_covers';
     const IOS_MODE_KEY = 'iosModeEnabled_v1';
-    const PHONE_FRAME_KEY = 'phoneFrameEnabled_v2'; 
+    const IOS_KEEPALIVE_KEY = 'iosKeepAliveEnabled_v1';
+    const PHONE_FRAME_KEY = 'phoneFrameEnabled_v2';
     const PHONE_CASE_COLOR_KEY = 'phoneCaseColor_v1';
     const CAT_EARS_KEY = 'catEarsEnabled_v1';
     const CAT_EAR_COLOR_KEY = 'catEarColor_v1';
@@ -33821,6 +33848,122 @@ ${msgContext ? msgContext : '无'}
 
     // --- Role Chat Conversation & Transfer Logic ---
 
+    // ========================= iOS 后台保活通知系统 =========================
+    let keepAliveAudio = null;
+    let wakeLockController = null;
+    let swRegistration = null;
+
+    // 初始化 Service Worker（页面加载时调用）
+    async function initIOSKeepAlive() {
+        if (!('serviceWorker' in navigator)) return;
+        try {
+            swRegistration = await navigator.serviceWorker.register('sw.js');
+            console.log('[KeepAlive] SW registered');
+        } catch (e) {
+            console.warn('[KeepAlive] SW registration failed:', e);
+        }
+        // 如果已开启保活，启动保活机制
+        if (localStorage.getItem(IOS_KEEPALIVE_KEY) === 'true') {
+            startKeepAlive();
+        }
+        // 监听 SW 消息（通知点击）
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'NOTIFICATION_CLICK') {
+                // 聚焦到对应聊天
+                if (event.data.url && event.data.url !== '/') {
+                    const contactId = event.data.url.replace('/#chat=', '');
+                    if (contactId) openChatWindow(contactId);
+                }
+            }
+        });
+    }
+
+    // 启动保活机制
+    async function startKeepAlive() {
+        // 请求通知权限
+        if ('Notification' in window && Notification.permission === 'default') {
+            try { await Notification.requestPermission(); } catch (e) {}
+        }
+        // 播放静音音频保持后台存活（iOS 核心保活手段）
+        if (!keepAliveAudio) {
+            // 生成 1 秒静音 WAV
+            const sampleRate = 44100;
+            const numSamples = sampleRate;
+            const buffer = new ArrayBuffer(44 + numSamples * 2);
+            const view = new DataView(buffer);
+            const writeStr = (offset, str) => { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); };
+            writeStr(0, 'RIFF'); view.setUint32(4, 36 + numSamples * 2, true); writeStr(8, 'WAVE');
+            writeStr(12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true); view.setUint16(34, 16, true);
+            writeStr(36, 'data'); view.setUint32(40, numSamples * 2, true);
+            const blob = new Blob([buffer], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            keepAliveAudio = new Audio(url);
+            keepAliveAudio.loop = true;
+            keepAliveAudio.volume = 0.01;
+            keepAliveAudio.setAttribute('playsinline', '');
+        }
+        try { await keepAliveAudio.play(); } catch (e) { console.warn('[KeepAlive] audio play failed:', e); }
+        // 请求屏幕唤醒锁
+        if ('wakeLock' in navigator) {
+            try {
+                wakeLockController = await navigator.wakeLock.request('screen');
+                console.log('[KeepAlive] WakeLock acquired');
+            } catch (e) { console.warn('[KeepAlive] WakeLock failed:', e); }
+        }
+    }
+
+    // 停止保活机制
+    function stopKeepAlive() {
+        if (keepAliveAudio) {
+            keepAliveAudio.pause();
+            keepAliveAudio = null;
+        }
+        if (wakeLockController) {
+            wakeLockController.release().catch(() => {});
+            wakeLockController = null;
+        }
+    }
+
+    // 页面恢复可见时重新获取唤醒锁
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && localStorage.getItem(IOS_KEEPALIVE_KEY) === 'true') {
+            if ('wakeLock' in navigator && !wakeLockController) {
+                navigator.wakeLock.request('screen').then(lock => {
+                    wakeLockController = lock;
+                }).catch(() => {});
+            }
+        }
+    });
+
+    // 发送系统通知
+    function showSystemNotification(title, body, iconUrl, contactId) {
+        if (localStorage.getItem(IOS_KEEPALIVE_KEY) !== 'true') return;
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+        const options = {
+            body: body,
+            icon: iconUrl || '',
+            badge: iconUrl || '',
+            tag: 'role-message-' + (contactId || ''),
+            renotify: true,
+            data: { url: contactId ? '/#chat=' + contactId : '/' },
+            silent: false
+        };
+
+        try {
+            if (swRegistration) {
+                swRegistration.showNotification(title, options);
+            } else if ('Notification' in window) {
+                new Notification(title, options);
+            }
+        } catch (e) {
+            // SW 不可用时回退到普通 Notification
+            try { new Notification(title, options); } catch (e2) {}
+        }
+    }
+
     // ========================= 消息通知栏系统 =========================
     const NOTIFICATION_DURATION = 6000;
 
@@ -33837,6 +33980,9 @@ ${msgContext ? msgContext : '无'}
 
         const name = contact.alias || contact.name;
         const avatar = contact.avatar || '';
+
+        // 同时发送系统通知（iOS后台保活）
+        try { showSystemNotification(name, messageText, avatar, contactId); } catch (e) {}
 
         const container = document.getElementById('msg-notification-container');
 
@@ -33917,6 +34063,9 @@ ${msgContext ? msgContext : '无'}
         const notif = document.createElement('div');
         notif.className = 'msg-notification';
         const groupName = group ? group.groupName : '群聊';
+
+        // 同时发送系统通知（iOS后台保活）
+        try { showSystemNotification(groupName, `${senderName}: ${messageText}`, senderAvatar || (group ? group.groupAvatar : ''), groupId); } catch (e) {}
         notif.innerHTML = `
             <img class="msg-notification-avatar" src="${senderAvatar || ''}" onerror="this.style.visibility='hidden'">
             <div class="msg-notification-content">
@@ -40164,6 +40313,12 @@ window.openTransferConfirmPopup = (amount) => {
         
         document.getElementById('role-time-perception-switch').checked = contact.timePerceptionEnabled || false;
         document.getElementById('role-memory-depth').value = contact.memoryDepth || 15;
+
+        // 主动发消息回显
+        document.getElementById('role-proactive-msg-switch').checked = contact.proactiveMsgEnabled || false;
+        document.getElementById('role-proactive-min').value = contact.proactiveMsgMin || 30;
+        document.getElementById('role-proactive-max').value = contact.proactiveMsgMax || 120;
+        document.getElementById('role-proactive-msg-settings').style.display = contact.proactiveMsgEnabled ? 'block' : 'none';
         
         document.getElementById('role-auto-post-switch').checked = contact.autoPostEnabled || false;
         // 新增：读取这两个开关，默认值为 true
@@ -40254,6 +40409,11 @@ window.openTransferConfirmPopup = (amount) => {
 
     window.closeRoleSettings = () => { document.getElementById('role-settings-page').classList.remove('active'); };
 
+    // 主动发消息开关联动
+    document.getElementById('role-proactive-msg-switch').addEventListener('change', (e) => {
+        document.getElementById('role-proactive-msg-settings').style.display = e.target.checked ? 'block' : 'none';
+    });
+
             window.saveRoleSettings = async () => {
         if (!currentChatContactId) return;
         const alias = document.getElementById('role-setting-alias').value.trim();
@@ -40323,6 +40483,16 @@ window.openTransferConfirmPopup = (amount) => {
             }
             contacts[idx].timePerceptionEnabled = timeEnabled;
             contacts[idx].memoryDepth = memoryDepth;
+
+            // 保存主动发消息设置
+            const proactiveMsgEnabled = document.getElementById('role-proactive-msg-switch').checked;
+            let proactiveMin = parseInt(document.getElementById('role-proactive-min').value) || 30;
+            let proactiveMax = parseInt(document.getElementById('role-proactive-max').value) || 120;
+            if (proactiveMin > proactiveMax) { let t = proactiveMin; proactiveMin = proactiveMax; proactiveMax = t; }
+            if (proactiveMin < 1) proactiveMin = 1;
+            contacts[idx].proactiveMsgEnabled = proactiveMsgEnabled;
+            contacts[idx].proactiveMsgMin = proactiveMin;
+            contacts[idx].proactiveMsgMax = proactiveMax;
             
             contacts[idx].userName = uName;
             contacts[idx].userPersona = uPersona;
@@ -40372,9 +40542,16 @@ window.openTransferConfirmPopup = (amount) => {
             clearHushhCaches();
 
             showToast("角色设置已保存");
-            
-            if (autoPostEnabled) { scheduleAutoPost(contacts[idx].id, autoPostInterval); } 
+
+            if (autoPostEnabled) { scheduleAutoPost(contacts[idx].id, autoPostInterval); }
             else { stopAutoPost(contacts[idx].id); }
+
+            // 主动发消息定时器管理
+            if (proactiveMsgEnabled) {
+                scheduleProactiveMsg(contacts[idx].id, proactiveMin, proactiveMax);
+            } else {
+                stopProactiveMsg(contacts[idx].id);
+            }
 
             closeRoleSettings();
             openChatWindow(currentChatContactId); 
@@ -41482,6 +41659,7 @@ ${verifyHistory}
             document.getElementById('lock-pwd-setting-row').style.display = e.target.checked ? 'flex' : 'none';
         });
 document.getElementById('ios-mode-switch').checked = localStorage.getItem(IOS_MODE_KEY) === 'true';
+document.getElementById('ios-keepalive-switch').checked = localStorage.getItem(IOS_KEEPALIVE_KEY) === 'true';
 document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHONE_FRAME_KEY) === 'true';
         document.getElementById('cat-ears-switch').checked = localStorage.getItem(CAT_EARS_KEY) === 'true';
 
@@ -41976,7 +42154,16 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         
         const iosMode = document.getElementById('ios-mode-switch').checked;
         applyIOSMode(iosMode);
-        
+
+        // iOS 后台保活通知
+        const iosKeepAlive = document.getElementById('ios-keepalive-switch').checked;
+        localStorage.setItem(IOS_KEEPALIVE_KEY, iosKeepAlive);
+        if (iosKeepAlive) {
+            startKeepAlive();
+        } else {
+            stopKeepAlive();
+        }
+
         const phoneFrame = document.getElementById('phone-frame-switch').checked;
         applyPhoneFrame(phoneFrame);
         
@@ -42583,6 +42770,237 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         content = content.trim();
 
         return content;
+    }
+
+    // ========================= 主动发消息系统 =========================
+    const proactiveTimers = {}; // { contactId: timeoutId }
+
+    function scheduleProactiveMsg(contactId, minMin, maxMin) {
+        stopProactiveMsg(contactId);
+        const delay = (Math.random() * (maxMin - minMin) + minMin) * 60 * 1000;
+        console.log(`[ProactiveMsg] 角色${contactId}将在${Math.round(delay / 1000 / 60)}分钟后主动发消息`);
+        proactiveTimers[contactId] = setTimeout(() => {
+            triggerProactiveMsg(contactId).finally(() => {
+                // 递归调度下一次
+                try {
+                    const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+                    const c = contacts.find(x => String(x.id) === String(contactId));
+                    if (c && c.proactiveMsgEnabled) {
+                        scheduleProactiveMsg(contactId, c.proactiveMsgMin || minMin, c.proactiveMsgMax || maxMin);
+                    }
+                } catch (e) {}
+            });
+        }, delay);
+    }
+
+    function stopProactiveMsg(contactId) {
+        if (proactiveTimers[contactId]) {
+            clearTimeout(proactiveTimers[contactId]);
+            delete proactiveTimers[contactId];
+            console.log(`[ProactiveMsg] 角色${contactId}的定时器已停止`);
+        }
+    }
+
+    async function triggerProactiveMsg(contactId) {
+        const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+        if (!settings?.api?.url || !settings?.api?.key) return;
+
+        let contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(contactId));
+        if (!contact || !contact.proactiveMsgEnabled) return;
+        // 角色拉黑用户时不主动发消息
+        if (contact.isBlockedByChar) return;
+
+        const key = getMessagesKey(contactId);
+        let messages = JSON.parse(localStorage.getItem(key) || '[]');
+        const depth = contact.memoryDepth || 15;
+        let recentMsgs = messages.slice(-depth);
+
+        const globalProfile = getUserProfile();
+        const uName = contact.userName || globalProfile.nickname || "User";
+        const uPersona = contact.userPersona || "一个普通用户";
+
+        // 回忆总结
+        const recollectionData = getRecollections(contactId);
+        const recollectionContext = recollectionData.items.map(item => item.text).join('\n');
+
+        // 世界书
+        let worldbookContext = "";
+        if (contact.worldbookIds && contact.worldbookIds.length > 0) {
+            const allWb = JSON.parse(localStorage.getItem(WORLDBOOK_DATA_KEY) || '[]');
+            const lastUserMsg = [...recentMsgs].reverse().find(m => m.type === 'sent');
+            const userMsgText = lastUserMsg ? lastUserMsg.text : '';
+            worldbookContext = buildWorldbookContext(allWb, contact.worldbookIds, userMsgText);
+        }
+
+        // 时间感知
+        let timeContext = "";
+        if (contact.timePerceptionEnabled) {
+            const now = new Date();
+            const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000) + now.getTimezoneOffset() * 60 * 1000);
+            const pad = (n) => String(n).padStart(2, '0');
+            timeContext = `\n当前时间：${beijingTime.getFullYear()}年${pad(beijingTime.getMonth()+1)}月${pad(beijingTime.getDate())}日 ${pad(beijingTime.getHours())}时${pad(beijingTime.getMinutes())}分 星期${['日','一','二','三','四','五','六'][beijingTime.getDay()]}`;
+
+            // 计算距离上次消息的时间
+            if (messages.length > 0) {
+                const lastMsg = messages[messages.length - 1];
+                const gapMs = Date.now() - lastMsg.timestamp;
+                const gapMin = Math.floor(gapMs / 60000);
+                const gapHour = Math.floor(gapMs / 3600000);
+                let gapStr = '';
+                if (gapMin < 1) gapStr = '刚刚';
+                else if (gapMin < 60) gapStr = `${gapMin}分钟前`;
+                else if (gapHour < 24) gapStr = `${gapHour}小时前`;
+                else gapStr = `${Math.floor(gapHour / 24)}天前`;
+                timeContext += `\n距离上次对话过去了：${gapStr}`;
+            } else {
+                timeContext += `\n你们还没有聊过天。`;
+            }
+        }
+
+        // 构建历史记录字符串
+        const historyStr = recentMsgs.map(m => {
+            const sender = m.type === 'sent' ? uName : (contact.alias || contact.name);
+            return `${sender}: ${m.text || ''}`;
+        }).join('\n');
+
+        const sysPrompt = `你现在扮演角色：${contact.alias || contact.name}。
+角色设定：${contact.persona}
+${contact.onlineRules ? `\n线上规则（在线上聊天时必须遵守的规则）：\n${contact.onlineRules}\n` : ''}
+${worldbookContext ? `\n背景设定(世界书)：\n${worldbookContext}\n` : ''}
+${recollectionContext ? `\n回忆总结(曾发生过的事)：\n${recollectionContext}\n` : ''}
+
+与你对话的用户是：${uName}
+用户的设定：${uPersona}
+${timeContext}
+
+**重要规则**:
+1.  你必须以符合角色设定的口吻和性格进行回复。
+2.  **这是主动发消息！不是回复用户的消息。你要主动找用户聊天。**
+3.  你可以参考之前的聊天记录，主动发起话题。比如：
+    - 询问用户在干嘛
+    - 分享你正在做的事
+    - 表达想用户了
+    - 质问用户为什么没有回消息
+    - 分享你看到的有意思的事
+    - 或者其他符合你性格的主动行为
+4.  内容要自然，符合你的性格和人设，不要太刻意。
+5.  **最终输出格式必须是一个JSON对象**，包含一个名为 "reply" 的键，值为字符串数组（2到4条消息）。
+
+**输出格式示例**:
+{"reply": ["在干嘛呢？", "好久没聊天了~"]}`;
+
+        const payload = {
+            model: settings.api.model || 'gpt-3.5-turbo',
+            messages: [
+                { role: "system", content: sysPrompt },
+                { role: "user", content: `历史聊天记录:\n${historyStr}\n\n现在请你主动给${uName}发消息，严格按JSON格式输出:` }
+            ],
+            max_tokens: 1000,
+            temperature: parseFloat(settings.api.temp || 0.8),
+            response_format: { "type": "json_object" }
+        };
+
+        try {
+            let fetchUrl = settings.api.url.endsWith('/v1') ? settings.api.url + '/chat/completions' : settings.api.url + '/v1/chat/completions';
+            const isGemini = settings.api.url.includes('generativelanguage');
+            let res;
+
+            if (isGemini) {
+                fetchUrl = `https://generativelanguage.googleapis.com/v1beta/models/${settings.api.model}:generateContent?key=${settings.api.key}`;
+                res = await fetch(fetchUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: sysPrompt + '\n\n' + historyStr }] }] })
+                });
+            } else {
+                res = await fetch(fetchUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${settings.api.key}` },
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            if (!res.ok) throw new Error(`API ${res.status}`);
+            const data = await res.json();
+
+            let replyText = isGemini
+                ? data.candidates[0].content.parts[0].text
+                : data.choices[0].message.content;
+
+            // 解析 JSON 回复
+            let replies = [];
+            try {
+                const parsed = JSON.parse(replyText);
+                if (parsed.reply && Array.isArray(parsed.reply)) {
+                    replies = parsed.reply;
+                } else if (typeof replyText === 'string') {
+                    replies = [replyText];
+                }
+            } catch (e) {
+                // JSON 解析失败，按行分割
+                replies = [replyText];
+            }
+
+            if (replies.length === 0) return;
+
+            // 逐条添加消息
+            for (let i = 0; i < replies.length; i++) {
+                const msgText = (replies[i] || '').trim();
+                if (!msgText) continue;
+
+                messages.push({
+                    id: Date.now() + i,
+                    type: 'received',
+                    text: msgText,
+                    timestamp: Date.now() + i * 100,
+                    isProactive: true
+                });
+            }
+
+            localStorage.setItem(key, JSON.stringify(messages));
+
+            // 更新联系人列表预览
+            let liveContacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+            let liveIdx = liveContacts.findIndex(c => c.id === contactId);
+            if (liveIdx > -1) {
+                liveContacts[liveIdx].lastMsg = replies[replies.length - 1] || '';
+                liveContacts[liveIdx].timestamp = Date.now();
+                localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(liveContacts));
+            }
+
+            // 弹通知（包含系统通知）
+            const displayMsg = replies[0] || '';
+            try {
+                if (typeof showMessageNotification === 'function') {
+                    showMessageNotification(contactId, displayMsg);
+                }
+            } catch (e) {}
+            try { playRoleNotificationSound(contactId); } catch (e) {}
+
+            // 刷新 UI
+            const chatView = document.getElementById('chat-conversation-view');
+            if (chatView && chatView.classList.contains('active') && currentChatContactId === contactId) {
+                try { renderConversationMessages(); } catch (e) {}
+            } else {
+                try { renderChatList(); } catch (e) {}
+            }
+
+        } catch (e) {
+            console.error('[ProactiveMsg] 发送失败:', e);
+        }
+    }
+
+    // 页面加载时恢复所有角色的主动发消息定时器
+    function restoreProactiveMsgTimers() {
+        try {
+            const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+            contacts.forEach(c => {
+                if (c.proactiveMsgEnabled) {
+                    scheduleProactiveMsg(c.id, c.proactiveMsgMin || 30, c.proactiveMsgMax || 120);
+                }
+            });
+        } catch (e) {}
     }
 
                 // 【修改后】的 triggerAIAutoReply 函数
@@ -44532,6 +44950,11 @@ document.addEventListener('DOMContentLoaded', () => {
         event.target.value = '';
     };
     document.getElementById('app-wrapper').appendChild(fileInput);
+
+    // 初始化 iOS 后台保活通知
+    if (typeof initIOSKeepAlive === 'function') initIOSKeepAlive();
+    // 恢复主动发消息定时器
+    if (typeof restoreProactiveMsgTimers === 'function') restoreProactiveMsgTimers();
 });
 
 
