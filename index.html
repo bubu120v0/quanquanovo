@@ -44505,19 +44505,62 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
         const file = e.target.files[0];
         if(!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => {
+        reader.onload = async (ev) => {
+            // 1. 先单独解析 JSON，区分"格式错误"与"写入失败"
+            let data;
             try {
-                const data = JSON.parse(ev.target.result);
-                // 覆盖写入所有导入的数据
-                Object.keys(data).forEach(k => {
-                    if(data[k] !== null && data[k] !== undefined) {
-                        localStorage.setItem(k, data[k]);
-                    }
+                data = JSON.parse(ev.target.result);
+            } catch(err) {
+                showToast("备份文件格式错误（JSON 解析失败）");
+                e.target.value = '';
+                return;
+            }
+            if (typeof data !== 'object' || data === null || Array.isArray(data)) {
+                showToast("备份文件格式错误（结构不是对象）");
+                e.target.value = '';
+                return;
+            }
+
+            // 2. 拆分：visualUpload_ 前缀的键体量大（多为 base64 图片），
+            //    按项目规范应存 IndexedDB，直接写 localStorage 会触发 QuotaExceededError
+            const idbKeys = [];
+            const lsKeys = [];
+            Object.keys(data).forEach(k => {
+                if (data[k] === null || data[k] === undefined) return;
+                if (k.startsWith('visualUpload_')) idbKeys.push(k);
+                else lsKeys.push(k);
+            });
+
+            // 3. 写入 localStorage（逐项独立 try/catch，单项失败不中断整体）
+            let lsFail = 0;
+            lsKeys.forEach(k => {
+                try {
+                    localStorage.setItem(k, data[k]);
+                } catch(err) {
+                    lsFail++;
+                    console.error('写入 localStorage 失败:', k, err);
+                }
+            });
+
+            // 4. 写入 IndexedDB（剥掉 visualUpload_ 前缀后调用 saveVisualUpload）
+            const idbResults = await Promise.all(idbKeys.map(k => {
+                const realKey = k.replace(/^visualUpload_/, '');
+                return saveVisualUpload(realKey, data[k]).then(() => 0).catch(err => {
+                    console.error('写入 IndexedDB 失败:', k, err);
+                    return 1;
                 });
+            }));
+            const idbFail = idbResults.reduce((a, b) => a + b, 0);
+
+            // 5. 汇报结果
+            e.target.value = '';
+            if (lsFail === 0 && idbFail === 0) {
                 showToast("全量数据恢复成功，即将刷新页面", 2000);
                 setTimeout(() => location.reload(), 2000);
-            } catch(err) { 
-                showToast("备份文件格式错误"); 
+            } else {
+                const total = lsFail + idbFail;
+                showToast(`恢复完成，${total} 项写入失败（可能超出存储配额），即将刷新`, 3000);
+                setTimeout(() => location.reload(), 3000);
             }
         };
         reader.readAsText(file);
