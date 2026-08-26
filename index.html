@@ -44485,13 +44485,95 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
         e.target.value = '';
     };
 
-        // --- Backup & Restore (终极完全备份版) ---
-    window.exportBackup = () => {
+        // --- Backup & Restore (终极完全备份版，含 IndexedDB 图片数据) ---
+    // 导出 IndexedDB 某个 store 的全部记录（只读，不修改数据库结构）
+    // 返回 { keys:[], values:[], keyPath } 或 null
+    async function exportIDBStore(dbName, storeName) {
+        return new Promise((resolve) => {
+            let req;
+            try {
+                // 不指定版本打开，使用数据库当前版本，避免触发升级/结构错乱
+                req = indexedDB.open(dbName);
+            } catch(e) { return resolve(null); }
+            req.onupgradeneeded = () => { /* 数据库不存在，不创建 store */ };
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(storeName)) { db.close(); resolve(null); return; }
+                try {
+                    const tx = db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const out = { keys: [], values: [], keyPath: store.keyPath };
+                    const cr = store.openCursor();
+                    cr.onsuccess = (ev) => {
+                        const cursor = ev.target.result;
+                        if (cursor) {
+                            out.keys.push(cursor.key);
+                            out.values.push(cursor.value);
+                            cursor.continue();
+                        } else {
+                            db.close();
+                            resolve(out);
+                        }
+                    };
+                    cr.onerror = () => { db.close(); resolve(null); };
+                } catch(err) { db.close(); resolve(null); }
+            };
+            req.onerror = () => resolve(null);
+        });
+    }
+
+    // 导入数据到 IndexedDB 某 store（按导出时的 keyPath 模式还原）
+    // 两个数据库当前均为版本 1；store 不存在则按规范创建
+    async function importIDBStore(dbName, storeName, exportData) {
+        const keyPath = exportData.keyPath || null;
+        const values = exportData.values || [];
+        const keys = exportData.keys || [];
+        return new Promise((resolve) => {
+            const req = indexedDB.open(dbName, 1);
+            req.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(storeName)) {
+                    if (storeName === 'images') db.createObjectStore('images', { keyPath: 'id' });
+                    else db.createObjectStore(storeName);
+                }
+            };
+            req.onsuccess = (e) => {
+                const db = e.target.result;
+                try {
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    store.clear();
+                    for (let i = 0; i < values.length; i++) {
+                        if (keyPath) store.put(values[i]);
+                        else store.put(values[i], keys[i]);
+                    }
+                    tx.oncomplete = () => { db.close(); resolve(true); };
+                    tx.onerror = () => { db.close(); resolve(false); };
+                } catch(err) { db.close(); resolve(false); }
+            };
+            req.onerror = () => resolve(false);
+        });
+    }
+
+    // IndexedDB 导出项的键前缀：__idb__:<dbName>/<storeName>
+    const IDB_EXPORT_PREFIX = '__idb__:';
+
+    window.exportBackup = async () => {
         const data = {};
-        // 自动遍历并打包所有的本地数据，一行不漏
+        // 1. localStorage 全量打包
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             data[key] = localStorage.getItem(key);
+        }
+        // 2. 打包两个 IndexedDB 数据库（本地图片短ID库 + 视觉上传库）
+        //    否则备份恢复后 local_img_xxx / 壁纸 / 聊天背景等图片全是空白
+        const imgExport = await exportIDBStore('QuanQuanJi_ImageDB', 'images');
+        if (imgExport && imgExport.values.length) {
+            data[IDB_EXPORT_PREFIX + 'QuanQuanJi_ImageDB/images'] = imgExport;
+        }
+        const visExport = await exportIDBStore('VisualUploadDB', 'visuals');
+        if (visExport && visExport.values.length) {
+            data[IDB_EXPORT_PREFIX + 'VisualUploadDB/visuals'] = visExport;
         }
         const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
         const url = URL.createObjectURL(blob);
@@ -44521,13 +44603,17 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
                 return;
             }
 
-            // 2. 拆分：visualUpload_ 前缀的键体量大（多为 base64 图片），
-            //    按项目规范应存 IndexedDB，直接写 localStorage 会触发 QuotaExceededError
-            const idbKeys = [];
+            // 2. 拆分三类键：
+            //    a) __idb__: 前缀 → IndexedDB 导出块，写入对应数据库
+            //    b) visualUpload_ 前缀 → 旧版兼容，体量大，应存 IndexedDB（避免 localStorage 配额超限）
+            //    c) 其余 → 普通 localStorage 键
+            const idbExportKeys = [];
+            const visualUploadKeys = [];
             const lsKeys = [];
             Object.keys(data).forEach(k => {
                 if (data[k] === null || data[k] === undefined) return;
-                if (k.startsWith('visualUpload_')) idbKeys.push(k);
+                if (k.startsWith(IDB_EXPORT_PREFIX)) idbExportKeys.push(k);
+                else if (k.startsWith('visualUpload_')) visualUploadKeys.push(k);
                 else lsKeys.push(k);
             });
 
@@ -44542,15 +44628,19 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
                 }
             });
 
-            // 4. 写入 IndexedDB（剥掉 visualUpload_ 前缀后调用 saveVisualUpload）
-            const idbResults = await Promise.all(idbKeys.map(k => {
+            // 4. 写入 IndexedDB
+            //    a) __idb__: 导出块 → 直接还原到对应 store
+            const idbExportPromises = idbExportKeys.map(k => {
+                const path = k.slice(IDB_EXPORT_PREFIX.length).split('/');
+                return importIDBStore(path[0], path[1], data[k]).then(ok => ok ? 0 : 1);
+            });
+            //    b) visualUpload_ 前缀 → 剥掉前缀调用 saveVisualUpload（写入 IDB + 内存缓存）
+            const visualPromises = visualUploadKeys.map(k => {
                 const realKey = k.replace(/^visualUpload_/, '');
-                return saveVisualUpload(realKey, data[k]).then(() => 0).catch(err => {
-                    console.error('写入 IndexedDB 失败:', k, err);
-                    return 1;
-                });
-            }));
-            const idbFail = idbResults.reduce((a, b) => a + b, 0);
+                return saveVisualUpload(realKey, data[k]).then(() => 0).catch(() => 1);
+            });
+            const results = await Promise.all([...idbExportPromises, ...visualPromises]);
+            const idbFail = results.reduce((a, b) => a + b, 0);
 
             // 5. 汇报结果
             e.target.value = '';
