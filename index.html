@@ -2441,7 +2441,7 @@
         }
         .role-avatar-edit { 
             width: 100%; height: 100%; border-radius: 50%; object-fit: cover; 
-            border: 3px solid white; cursor: pointer;
+            border: 3px solid white;
         }
         .avatar-edit-hint {
             position: absolute; bottom: -2px; right: -2px; background: var(--theme-pink-btn); color: white;
@@ -2551,7 +2551,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-radius: 50%; cursor: pointer;
         }
         .user-name-input {
-            flex: 1; border: 1px solid #eee; border-radius: 10px; padding: 10px;
+            flex: 1; min-width: 0; border: 1px solid #eee; border-radius: 10px; padding: 10px;
             font-size: 15px; outline: none; background: #FAFAFA;
         }
         .user-name-input:focus { background: white; border-color: var(--theme-pink-btn); }
@@ -40600,16 +40600,17 @@ window.openTransferConfirmPopup = (amount) => {
         document.getElementById('role-setting-online-rules').value = contact.onlineRules || '';
         const roleAvatarImg = document.getElementById('role-setting-avatar');
         roleAvatarImg.removeAttribute('data-loaded');
-        roleAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
-        if (contact.avatar && contact.avatar.startsWith('local_img_') && typeof getImgFromDB === 'function') {
-            getImgFromDB(contact.avatar).then(val => {
-                if (val) {
-                    roleAvatarImg.src = val;
-                    document.getElementById('role-avatar-preview').style.backgroundImage = `url(${val})`;
-                }
-            });
+        roleAvatarImg.src = contact.avatar || '';
+        const roleAvatarPreview = document.getElementById('role-avatar-preview');
+        if (contact.avatar && contact.avatar.startsWith('local_img_')) {
+            roleAvatarPreview.style.backgroundImage = `url(${contact.avatar})`;
+            roleAvatarPreview.removeAttribute('data-loaded');
         } else {
-            roleAvatarImg.src = contact.avatar || '';
+            roleAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
+        }
+        if (typeof processLocalImages === 'function') {
+            processLocalImages(roleAvatarImg);
+            processLocalImages(roleAvatarPreview);
         }
         const bgVal = contact.backgroundImage || '';
         if (bgVal.startsWith('__idb__:')) {
@@ -40704,14 +40705,11 @@ window.openTransferConfirmPopup = (amount) => {
 
         const userAvatarImg = document.getElementById('role-user-avatar');
         userAvatarImg.removeAttribute('data-loaded');
-        userAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
-        if (contact.userAvatar && contact.userAvatar.startsWith('local_img_') && typeof getImgFromDB === 'function') {
-            getImgFromDB(contact.userAvatar).then(val => {
-                if (val) userAvatarImg.src = val;
-            });
-        } else {
-            userAvatarImg.src = contact.userAvatar || '';
+        userAvatarImg.src = contact.userAvatar || '';
+        if (!(contact.userAvatar && contact.userAvatar.startsWith('local_img_'))) {
+            userAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
         }
+        if (typeof processLocalImages === 'function') processLocalImages(userAvatarImg);
         document.getElementById('role-user-name').value = contact.userName || globalProfile.nickname || '';
         document.getElementById('role-user-persona').value = contact.userPersona || '';
         
@@ -41276,20 +41274,17 @@ window.openTransferConfirmPopup = (amount) => {
         input.type = 'file'; input.accept = 'image/*';
         input.onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
-            compressImage(file, 400, async (result) => {
-                let realData = result;
-                if (result && result.startsWith('local_img_') && typeof getImgFromDB === 'function') {
-                    const fromDB = await getImgFromDB(result);
-                    if (fromDB) realData = fromDB;
-                }
+            compressImage(file, 400, (result) => {
                 document.getElementById('role-avatar-url-input').value = '';
                 const preview = document.getElementById('role-avatar-preview');
-                preview.style.backgroundImage = `url(${realData})`;
+                preview.style.backgroundImage = `url(${result})`;
+                preview.removeAttribute('data-loaded');
                 const avatarImg = document.getElementById('role-setting-avatar');
-                if (avatarImg) avatarImg.src = realData;
+                if (avatarImg) { avatarImg.onerror = null; avatarImg.removeAttribute('data-loaded'); avatarImg.src = result; }
                 const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
                 const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
-                if (contact) { contact.avatar = realData; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                if (contact) { contact.avatar = result; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                if (typeof processLocalImages === 'function') { processLocalImages(preview); if (avatarImg) processLocalImages(avatarImg); }
                 showToast('角色头像已上传');
             });
         };
@@ -41336,17 +41331,15 @@ window.openTransferConfirmPopup = (amount) => {
         input.type = 'file'; input.accept = 'image/*';
         input.onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
-            compressImage(file, 200, async (result) => {
-                let realData = result;
-                if (result && result.startsWith('local_img_') && typeof getImgFromDB === 'function') {
-                    const fromDB = await getImgFromDB(result);
-                    if (fromDB) realData = fromDB;
-                }
+            compressImage(file, 200, (result) => {
                 const avatarImg = document.getElementById('role-user-avatar');
-                avatarImg.src = realData;
+                avatarImg.onerror = null;
+                avatarImg.removeAttribute('data-loaded');
+                avatarImg.src = result;
                 const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
                 const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
-                if (contact) { contact.userAvatar = realData; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                if (contact) { contact.userAvatar = result; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                if (typeof processLocalImages === 'function') processLocalImages(avatarImg);
                 showToast('用户头像已上传');
             });
         };
