@@ -15998,12 +15998,15 @@ body.phone-frame-active .mail-inbox-page {
         <div class="settings-card-title">用户设置 (User)</div>
 
         <div class="user-avatar-row">
-            <div class="user-avatar-edit-wrapper">
+            <input type="text" id="role-user-avatar-url" class="user-name-input" placeholder="输入用户头像图片URL" style="flex:1;" onkeydown="if(event.key==='Enter')applyUserAvatarUrlInline()">
+            <button class="app-icon-upload-btn" onclick="uploadUserAvatar()" title="上传图片" style="width:28px;height:28px;font-size:12px;">📁</button>
+            <button class="app-icon-upload-btn reset" onclick="resetUserAvatar()" title="重置" style="width:28px;height:28px;font-size:10px;">✕</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:15px;">
+            <div class="user-avatar-edit-wrapper" style="width:40px;height:40px;">
                 <img id="role-user-avatar" class="role-avatar-edit" src="">
             </div>
             <input type="text" id="role-user-name" class="user-name-input" placeholder="您的名字">
-            <button class="app-icon-upload-btn" onclick="uploadUserAvatar()" title="上传图片" style="width:28px;height:28px;font-size:12px;">📁</button>
-            <button class="app-icon-upload-btn reset" onclick="resetUserAvatar()" title="重置" style="width:28px;height:28px;font-size:10px;">✕</button>
         </div>
         <textarea id="role-user-persona" class="role-persona-input" placeholder="输入您的人设 (User Persona)..."></textarea>
     </div>
@@ -35880,6 +35883,16 @@ ${msgContext ? msgContext : '无'}
         }
     }
 
+    // 解析头像：如果是 local_img_ 短ID，从 IndexedDB 取出真实 base64；否则原样返回
+    function resolveAvatarSync(avatarVal) {
+        if (!avatarVal) return avatarVal || '';
+        if (avatarVal.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+            // 同步尝试从 DB 缓存读取（IndexedDB 事务是异步的，此处返回 Promise）
+            return getImgFromDB(avatarVal).then(b64 => b64 || avatarVal);
+        }
+        return Promise.resolve(avatarVal);
+    }
+
     window.renderConversationMessages = () => {
         if (!currentChatContactId) return;
         const container = document.getElementById('chat-conv-messages');
@@ -35890,7 +35903,7 @@ ${msgContext ? msgContext : '无'}
         const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
         const isGroupChat = String(currentChatContactId).startsWith('group_');
         const contact = isGroupChat ? null : contacts.find(c => c.id === currentChatContactId);
-        const themAvatar = contact ? contact.avatar : '';
+        let themAvatar = contact ? contact.avatar : '';
         const globalProfile = getUserProfile();
         let meAvatar;
         if (isGroupChat) {
@@ -35899,6 +35912,16 @@ ${msgContext ? msgContext : '无'}
         } else {
             meAvatar = (contact && contact.userAvatar) ? contact.userAvatar : (globalProfile.avatar || 'https://img.heliar.top/file/1770068438490_添加人群_people-plus.png');
         }
+        // 解析 local_img_ 短ID为真实 base64（异步）
+        Promise.all([resolveAvatarSync(themAvatar), resolveAvatarSync(meAvatar)]).then(([resolvedThem, resolvedMe]) => {
+            themAvatar = resolvedThem;
+            meAvatar = resolvedMe;
+            _renderMessagesWithAvatars(container, messages, themAvatar, meAvatar, isGroupChat, contact, globalProfile);
+        });
+        return; // 异步渲染，直接返回
+    };
+
+    function _renderMessagesWithAvatars(container, messages, themAvatar, meAvatar, isGroupChat, contact, globalProfile) {
 
         let lastMsgTime = 0;
         let hasInsertedBlockTip = false; // 是否已插入拉黑提示分隔线
@@ -40713,15 +40736,16 @@ window.openTransferConfirmPopup = (amount) => {
 
         const userAvatarImg = document.getElementById('role-user-avatar');
         userAvatarImg.removeAttribute('data-loaded');
-        // 若 userAvatar 是 local_img_ 短ID，先从 IndexedDB 取出真实 base64 再赋给 src，
-        // 否则浏览器会把短ID当成URL加载失败（蓝色问号）
         const _userAvatarRaw = contact.userAvatar || '';
-        if (_userAvatarRaw && _userAvatarRaw.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+        const avatarUrlInput = document.getElementById('role-user-avatar-url');
+        if (_userAvatarRaw && _userAvatarRaw.startsWith('local_img_')) {
+            avatarUrlInput.value = '';
             userAvatarImg.src = '';
-            getImgFromDB(_userAvatarRaw).then(b64 => {
-                userAvatarImg.src = b64 || '';
-            }).catch(() => { userAvatarImg.src = ''; });
+            if (typeof getImgFromDB === 'function') {
+                getImgFromDB(_userAvatarRaw).then(b64 => { userAvatarImg.src = b64 || ''; });
+            }
         } else {
+            avatarUrlInput.value = _userAvatarRaw;
             userAvatarImg.src = _userAvatarRaw;
             if (_userAvatarRaw) {
                 userAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
@@ -41361,6 +41385,9 @@ window.openTransferConfirmPopup = (amount) => {
                 avatarImg.onerror = null;
                 avatarImg.removeAttribute('data-loaded');
                 avatarImg.src = realData;
+                // 更新 URL 输入框（本地上传时清空，因为不是 URL）
+                const urlInput = document.getElementById('role-user-avatar-url');
+                if (urlInput) urlInput.value = '';
                 const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
                 const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
                 if (contact) { contact.userAvatar = realData; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
@@ -41370,10 +41397,28 @@ window.openTransferConfirmPopup = (amount) => {
         };
         input.click();
     };
+    // 用户头像URL内联应用
+    window.applyUserAvatarUrlInline = () => {
+        const url = document.getElementById('role-user-avatar-url').value.trim();
+        const avatarImg = document.getElementById('role-user-avatar');
+        if (!url) {
+            avatarImg.src = '';
+            showToast('已清除头像');
+        } else {
+            avatarImg.onerror = function() { this.onerror = null; this.src = ''; showToast('头像URL无效'); };
+            avatarImg.src = url;
+            showToast('头像已应用');
+        }
+        const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
+        const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
+        if (contact) { contact.userAvatar = url; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+    };
     // 用户头像重置
     window.resetUserAvatar = () => {
         const avatarImg = document.getElementById('role-user-avatar');
         avatarImg.src = '';
+        const urlInput = document.getElementById('role-user-avatar-url');
+        if (urlInput) urlInput.value = '';
         const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
         const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
         if (contact) { contact.userAvatar = ''; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
