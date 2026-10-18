@@ -19685,6 +19685,13 @@ body.phone-frame-active .mail-inbox-page {
 <input type="file" id="input-role-chat-bg" class="file-input-hidden" accept="image/*" onchange="handleRoleChatBgUpload(event)">
 <input type="file" id="input-role-avatar" class="file-input-hidden" accept="image/*" onchange="handleRoleAvatarUpload(event)">
 <input type="file" id="input-user-avatar" class="file-input-hidden" accept="image/*" onchange="handleUserAvatarUpload(event)">
+<input type="file" id="input-couple-avatar-left" class="file-input-hidden" accept="image/*" data-side="left" onchange="handleCoupleAvatarUpload(event)">
+<input type="file" id="input-couple-avatar-right" class="file-input-hidden" accept="image/*" data-side="right" onchange="handleCoupleAvatarUpload(event)">
+<input type="file" id="input-member-icon" class="file-input-hidden" accept="image/*" onchange="handleMemberIconUpload(event)">
+<input type="file" id="input-app-icon" class="file-input-hidden" accept="image/*" onchange="handleAppIconUpload(event)">
+<input type="file" id="input-wallpaper-visual" class="file-input-hidden" accept="image/*" onchange="handleWallpaperVisualUpload(event)">
+<input type="file" id="input-photo-widget" class="file-input-hidden" accept="image/*" onchange="handlePhotoWidgetUpload(event)">
+<input type="file" id="input-lock-wallpaper" class="file-input-hidden" accept="image/*" onchange="handleLockWallpaperUpload(event)">
 <input type="file" id="input-moment-image" class="file-input-hidden" multiple accept="image/*" onchange="handleMomentImageUpload(event)">
 <input type="file" id="input-forum-avatar" class="file-input-hidden" accept="image/*" onchange="handleForumAvatarUpload(event)">
 <input type="file" id="input-wb-cover" class="file-input-hidden" accept="image/*" onchange="handleWbCoverUpload(event)">
@@ -42060,18 +42067,22 @@ ${verifyHistory}
     // 重置：朋友圈背景
     window.resetMomentsCover = () => { document.getElementById('me-settings-moments-cover-url').value = ''; document.getElementById('me-settings-moments-cover-preview').src = ''; const momentsProfile = getMomentsProfile(); momentsProfile.cover = ''; saveMomentsProfile(momentsProfile); showToast('朋友圈背景已重置'); };
     // 会员图标上传
+    let _memberIconIndex = 0;
     window.uploadMemberIcon = (index) => {
-        const input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            compressImage(file, 100, (base64) => {
-                const inputs = document.querySelectorAll('.member-icon-input');
-                if (inputs[index]) { inputs[index].value = base64; }
-                showToast(`图标 ${index+1} 已上传`);
-            });
-        };
-        input.click();
+        _memberIconIndex = index;
+        const inputEl = document.getElementById('input-member-icon');
+        if (!inputEl) return;
+        inputEl.value = '';
+        inputEl.click();
+    };
+    window.handleMemberIconUpload = (event) => {
+        const file = event.target.files[0]; if (!file) return;
+        const index = _memberIconIndex;
+        compressImage(file, 100, (base64) => {
+            const inputs = document.querySelectorAll('.member-icon-input');
+            if (inputs[index]) { inputs[index].value = base64; }
+            showToast(`图标 ${index+1} 已上传`);
+        });
     };
     // 会员图标重置
     window.resetMemberIcon = (index) => {
@@ -42276,62 +42287,66 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
         } catch(e) {}
     })();
 
+    let _appIconId = null;
     window.uploadAppIcon = (appId) => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-                // 压缩图片：用canvas缩放到最大120x120
-                const img = new Image();
-                img.onload = async () => {
-                    const canvas = document.createElement('canvas');
-                    const max = 120;
-                    let w = img.width, h = img.height;
-                    if (w > max || h > max) {
-                        if (w > h) { h = Math.round(h * max / w); w = max; }
-                        else { w = Math.round(w * max / h); h = max; }
-                    }
-                    canvas.width = w; canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    const base64 = canvas.toDataURL('image/png', 0.9);
-                    await saveAppIconUpload(appId, base64);
-                    // 刷新设置列表和主屏图标
-                    const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
-                    renderSettingsAppList(settings.apps || {});
-                    applyVisualSettings();
-                    showToast('图标已上传');
-                };
-                img.src = ev.target.result;
+        _appIconId = appId;
+        const inputEl = document.getElementById('input-app-icon');
+        if (!inputEl) return;
+        inputEl.value = '';
+        inputEl.click();
+    };
+    window.handleAppIconUpload = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const appId = _appIconId;
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            // 压缩图片：用canvas缩放到最大120x120
+            const img = new Image();
+            img.onload = async () => {
+                const canvas = document.createElement('canvas');
+                const max = 120;
+                let w = img.width, h = img.height;
+                if (w > max || h > max) {
+                    if (w > h) { h = Math.round(h * max / w); w = max; }
+                    else { w = Math.round(w * max / h); h = max; }
+                }
+                canvas.width = w; canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+                const base64 = canvas.toDataURL('image/png', 0.9);
+                await saveAppIconUpload(appId, base64);
+                // 刷新设置列表和主屏图标
+                const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
+                renderSettingsAppList(settings.apps || {});
+                applyVisualSettings();
+                showToast('图标已上传');
             };
-            reader.readAsDataURL(file);
+            img.src = ev.target.result;
         };
-        input.click();
+        reader.readAsDataURL(file);
     };
 
     // === 壁纸和图片组件上传功能 ===
     window.uploadWallpaper = () => {
-        const input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const url = ev.target.result;
-                document.getElementById('wallpaper-url').value = '';
-                document.getElementById('wallpaper-preview').style.backgroundImage = `url(${url})`;
-                // 存储上传的壁纸到IndexedDB
-                saveVisualUpload('wallpaper', url);
-                applyVisualSettings();
-                showToast('壁纸已上传');
-            };
-            reader.readAsDataURL(file);
+        const inputEl = document.getElementById('input-wallpaper-visual');
+        if (!inputEl) return;
+        inputEl.value = '';
+        inputEl.click();
+    };
+    window.handleWallpaperVisualUpload = (event) => {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const url = ev.target.result;
+            document.getElementById('wallpaper-url').value = '';
+            document.getElementById('wallpaper-preview').style.backgroundImage = `url(${url})`;
+            // 存储上传的壁纸到IndexedDB
+            saveVisualUpload('wallpaper', url);
+            applyVisualSettings();
+            showToast('壁纸已上传');
         };
-        input.click();
+        reader.readAsDataURL(file);
     };
 
     window.resetWallpaper = () => {
@@ -42345,22 +42360,23 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
     };
 
     window.uploadPhotoWidget = () => {
-        const input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const url = ev.target.result;
-                document.getElementById('photo-widget-url').value = '';
-                document.getElementById('photo-widget-preview').style.backgroundImage = `url(${url})`;
-                saveVisualUpload('photoWidget', url);
-                applyVisualSettings();
-                showToast('图片组件已上传');
-            };
-            reader.readAsDataURL(file);
+        const inputEl = document.getElementById('input-photo-widget');
+        if (!inputEl) return;
+        inputEl.value = '';
+        inputEl.click();
+    };
+    window.handlePhotoWidgetUpload = (event) => {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const url = ev.target.result;
+            document.getElementById('photo-widget-url').value = '';
+            document.getElementById('photo-widget-preview').style.backgroundImage = `url(${url})`;
+            saveVisualUpload('photoWidget', url);
+            applyVisualSettings();
+            showToast('图片组件已上传');
         };
-        input.click();
+        reader.readAsDataURL(file);
     };
 
     window.resetPhotoWidget = () => {
@@ -42376,24 +42392,26 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
     };
 
     window.uploadCoupleAvatar = (side) => {
-        const input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const url = ev.target.result;
-                const urlInput = document.getElementById(side === 'left' ? 'couple-avatar-left-url' : 'couple-avatar-right-url');
-                const preview = document.getElementById(side === 'left' ? 'couple-avatar-left-preview' : 'couple-avatar-right-preview');
-                urlInput.value = '';
-                preview.style.backgroundImage = `url(${url})`;
-                saveVisualUpload(`coupleAvatar_${side}`, url);
-                applyVisualSettings();
-                showToast(`${side === 'left' ? '左侧' : '右侧'}头像已上传`);
-            };
-            reader.readAsDataURL(file);
+        const inputEl = document.getElementById(side === 'left' ? 'input-couple-avatar-left' : 'input-couple-avatar-right');
+        if (!inputEl) return;
+        inputEl.value = ''; // 允许重复选择同一文件
+        inputEl.click();
+    };
+    window.handleCoupleAvatarUpload = (event) => {
+        const file = event.target.files[0]; if (!file) return;
+        const side = event.target.dataset.side || 'left';
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const url = ev.target.result;
+            const urlInput = document.getElementById(side === 'left' ? 'couple-avatar-left-url' : 'couple-avatar-right-url');
+            const preview = document.getElementById(side === 'left' ? 'couple-avatar-left-preview' : 'couple-avatar-right-preview');
+            urlInput.value = '';
+            preview.style.backgroundImage = `url(${url})`;
+            saveVisualUpload(`coupleAvatar_${side}`, url);
+            applyVisualSettings();
+            showToast(`${side === 'left' ? '左侧' : '右侧'}头像已上传`);
         };
-        input.click();
+        reader.readAsDataURL(file);
     };
 
     window.resetCoupleAvatar = (side) => {
@@ -42413,22 +42431,23 @@ document.getElementById('phone-frame-switch').checked = localStorage.getItem(PHO
     };
 
     window.uploadLockWallpaper = () => {
-        const input = document.createElement('input');
-        input.type = 'file'; input.accept = 'image/*';
-        input.onchange = (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const url = ev.target.result;
-                document.getElementById('lock-wallpaper-url').value = '';
-                document.getElementById('lock-wallpaper-preview').style.backgroundImage = `url(${url})`;
-                saveVisualUpload('lockWallpaper', url);
-                applyVisualSettings();
-                showToast('锁屏壁纸已上传');
-            };
-            reader.readAsDataURL(file);
+        const inputEl = document.getElementById('input-lock-wallpaper');
+        if (!inputEl) return;
+        inputEl.value = '';
+        inputEl.click();
+    };
+    window.handleLockWallpaperUpload = (event) => {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const url = ev.target.result;
+            document.getElementById('lock-wallpaper-url').value = '';
+            document.getElementById('lock-wallpaper-preview').style.backgroundImage = `url(${url})`;
+            saveVisualUpload('lockWallpaper', url);
+            applyVisualSettings();
+            showToast('锁屏壁纸已上传');
         };
-        input.click();
+        reader.readAsDataURL(file);
     };
 
     window.resetLockWallpaper = () => {
