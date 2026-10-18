@@ -15509,7 +15509,7 @@ body.phone-frame-active .mail-inbox-page {
                 <div class="chat-conv-signature" id="chat-conv-signature"></div>
             </div>
             <div style="display:flex;align-items:center;gap:12px;">
-                <img class="chat-conv-right-icon" id="listen-together-icon" src="https://i.postimg.cc/jSJDcMgB/Air-Pods-airpods.png" onclick="openListenTogetherPopup()" title="一起听">
+                <svg class="chat-conv-right-icon" id="listen-together-icon" onclick="openListenTogetherPopup()" title="一起听" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 13v-1c0-4.4 3.6-8 8-8s8 3.6 8 8v1" stroke="#555" stroke-width="1.8" stroke-linecap="round" fill="none"/><rect x="2" y="13" width="4" height="7" rx="2" fill="#555" opacity="0.3" stroke="#555" stroke-width="1.4"/><rect x="18" y="13" width="4" height="7" rx="2" fill="#555" opacity="0.3" stroke="#555" stroke-width="1.4"/></svg>
                 <img class="chat-conv-right-icon" id="chat-settings-icon" src="https://imgbed.heliar.top/i/gYMlSdmJMzehCqvI_更多_more.png" onclick="openRoleSettings()">
             </div>
         </div>
@@ -17140,7 +17140,7 @@ body.phone-frame-active .mail-inbox-page {
 <div id="add-friend-modal">
     <div class="add-friend-card">
         <div class="add-friend-close" onclick="closeAddFriendModal()">✕</div>
-                <img src="https://img.heliar.top/file/1770069003752_保存_save.png" class="add-friend-save" onclick="saveNewFriend()">
+                <svg class="add-friend-save" onclick="saveNewFriend()" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#555" stroke-width="1.8" fill="none"/><path d="M7 3v6h8V3" stroke="#555" stroke-width="1.8" stroke-linejoin="round"/><rect x="7" y="13" width="10" height="5" rx="1" fill="#555" opacity="0.25" stroke="#555" stroke-width="1.2"/><line x1="15" y1="5" x2="15" y2="8" stroke="#555" stroke-width="1.5" stroke-linecap="round"/></svg>
         <div class="add-friend-avatar-upload" onclick="triggerAvatarUpload()">
             <span id="avatar-placeholder-icon">+</span>
             <img id="new-friend-avatar-preview" class="add-friend-avatar-preview">
@@ -40600,8 +40600,17 @@ window.openTransferConfirmPopup = (amount) => {
         document.getElementById('role-setting-online-rules').value = contact.onlineRules || '';
         const roleAvatarImg = document.getElementById('role-setting-avatar');
         roleAvatarImg.removeAttribute('data-loaded');
-        roleAvatarImg.src = contact.avatar || '';
         roleAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
+        if (contact.avatar && contact.avatar.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+            getImgFromDB(contact.avatar).then(val => {
+                if (val) {
+                    roleAvatarImg.src = val;
+                    document.getElementById('role-avatar-preview').style.backgroundImage = `url(${val})`;
+                }
+            });
+        } else {
+            roleAvatarImg.src = contact.avatar || '';
+        }
         const bgVal = contact.backgroundImage || '';
         if (bgVal.startsWith('__idb__:')) {
             document.getElementById('role-bg-url-input').value = '';
@@ -40630,8 +40639,12 @@ window.openTransferConfirmPopup = (amount) => {
             tempRoleBgUrl = bgVal;
         }
         // 回显角色头像URL
-        document.getElementById('role-avatar-url-input').value = contact.avatar || '';
-        document.getElementById('role-avatar-preview').style.backgroundImage = contact.avatar ? `url(${contact.avatar})` : '';
+        if (contact.avatar && contact.avatar.startsWith('local_img_')) {
+            document.getElementById('role-avatar-url-input').value = '';
+        } else {
+            document.getElementById('role-avatar-url-input').value = contact.avatar || '';
+            document.getElementById('role-avatar-preview').style.backgroundImage = contact.avatar ? `url(${contact.avatar})` : '';
+        }
         
         document.getElementById('role-time-perception-switch').checked = contact.timePerceptionEnabled || false;
         document.getElementById('role-memory-depth').value = contact.memoryDepth || 15;
@@ -40691,8 +40704,14 @@ window.openTransferConfirmPopup = (amount) => {
 
         const userAvatarImg = document.getElementById('role-user-avatar');
         userAvatarImg.removeAttribute('data-loaded');
-        userAvatarImg.src = contact.userAvatar || '';
         userAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
+        if (contact.userAvatar && contact.userAvatar.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+            getImgFromDB(contact.userAvatar).then(val => {
+                if (val) userAvatarImg.src = val;
+            });
+        } else {
+            userAvatarImg.src = contact.userAvatar || '';
+        }
         document.getElementById('role-user-name').value = contact.userName || globalProfile.nickname || '';
         document.getElementById('role-user-persona').value = contact.userPersona || '';
         
@@ -41257,15 +41276,20 @@ window.openTransferConfirmPopup = (amount) => {
         input.type = 'file'; input.accept = 'image/*';
         input.onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
-            compressImage(file, 400, (base64) => {
+            compressImage(file, 400, async (result) => {
+                let realData = result;
+                if (result && result.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+                    const fromDB = await getImgFromDB(result);
+                    if (fromDB) realData = fromDB;
+                }
                 document.getElementById('role-avatar-url-input').value = '';
                 const preview = document.getElementById('role-avatar-preview');
-                preview.style.backgroundImage = `url(${base64})`;
+                preview.style.backgroundImage = `url(${realData})`;
                 const avatarImg = document.getElementById('role-setting-avatar');
-                if (avatarImg) avatarImg.src = base64;
+                if (avatarImg) avatarImg.src = realData;
                 const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
                 const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
-                if (contact) { contact.avatar = base64; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                if (contact) { contact.avatar = realData; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
                 showToast('角色头像已上传');
             });
         };
@@ -41312,12 +41336,17 @@ window.openTransferConfirmPopup = (amount) => {
         input.type = 'file'; input.accept = 'image/*';
         input.onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
-            compressImage(file, 200, (base64) => {
+            compressImage(file, 200, async (result) => {
+                let realData = result;
+                if (result && result.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+                    const fromDB = await getImgFromDB(result);
+                    if (fromDB) realData = fromDB;
+                }
                 const avatarImg = document.getElementById('role-user-avatar');
-                avatarImg.src = base64;
+                avatarImg.src = realData;
                 const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
                 const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
-                if (contact) { contact.userAvatar = base64; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                if (contact) { contact.userAvatar = realData; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
                 showToast('用户头像已上传');
             });
         };
@@ -44685,8 +44714,9 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
     }
 
         // --- Beauty Config Export/Import ---
-    window.exportBeautyConfig = () => {
-        const config = { _type: 'beauty_config', _version: 1, _exportTime: new Date().toISOString() };
+    // v2：完整导出本地上传的图片（IndexedDB base64），旧版仅导出 URL 导致对方本地上传的美化导入后全空
+    window.exportBeautyConfig = async () => {
+        const config = { _type: 'beauty_config', _version: 2, _exportTime: new Date().toISOString() };
         const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
         const visual = settings.visual || {};
 
@@ -44727,24 +44757,86 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
             config.petSoundUrl = '';
         }
 
+        // 11. ★ 本地上传的视觉资源（IndexedDB VisualUploadDB，经内存缓存同步读取）
+        config.visualUploads = {};
+        ['wallpaper', 'lockWallpaper', 'photoWidget', 'coupleAvatar_left', 'coupleAvatar_right'].forEach(k => {
+            const v = getVisualUpload(k);
+            if (v) config.visualUploads[k] = v;
+        });
+
+        // 12. ★ App 图标本地上传（localStorage 同步缓存 appIconUpload_${appId}）
+        config.appIconUploads = {};
+        Object.keys(config.appIcons || {}).forEach(appId => {
+            try {
+                const v = localStorage.getItem('appIconUpload_' + appId);
+                if (v) config.appIconUploads[appId] = v;
+            } catch(e) {}
+        });
+
+        // 13. ★ 收集所有 local_img_ 短 ID，从 QuanQuanJi_ImageDB 取真实 base64 一并打包
+        //     （profile头像/背景、朋友圈头像/背景、会员图标等本地上传都以短ID形式存储）
+        const shortIds = new Set();
+        const collectIds = (v) => {
+            if (typeof v === 'string') {
+                const m = v.match(/local_img_\d+_\d+/g);
+                if (m) m.forEach(x => shortIds.add(x));
+            }
+        };
+        collectIds(config.wallpaper); collectIds(config.lockWallpaper); collectIds(config.photoWidget);
+        collectIds(config.coupleAvatarLeft); collectIds(config.coupleAvatarRight);
+        collectIds(config.meAvatar); collectIds(config.meCover);
+        collectIds(config.momentsAvatar); collectIds(config.momentsCover);
+        (config.memberIcons || []).forEach(collectIds);
+        Object.values(config.appIcons || {}).forEach(o => collectIds(o && o.icon));
+        try { collectIds(JSON.stringify(config.petUrls || {})); } catch(e) {}
+        try { collectIds((config.petRandomUrls || []).join('|')); } catch(e) {}
+        collectIds(config.petSoundUrl || '');
+
+        config.localImages = {};
+        for (const id of shortIds) {
+            const b64 = await getImgFromDB(id);
+            if (b64) config.localImages[id] = b64;
+        }
+
         const blob = new Blob([JSON.stringify(config, null, 2)], {type: 'application/json'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url; a.download = `BeautyConfig_${new Date().toISOString().slice(0,10)}.json`;
         a.click(); URL.revokeObjectURL(url);
-        showToast("美化配置导出成功！");
+        const uploadCount = Object.keys(config.visualUploads).length + Object.keys(config.appIconUploads).length + shortIds.size;
+        showToast(uploadCount > 0 ? `美化配置导出成功！（含 ${uploadCount} 张本地图片）` : "美化配置导出成功！");
     };
 
     window.importBeautyConfig = (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => {
+        reader.onload = async (ev) => {
             try {
                 const config = JSON.parse(ev.target.result);
                 if (config._type !== 'beauty_config') {
                     showToast("文件不是有效的美化配置");
+                    e.target.value = '';
                     return;
+                }
+
+                // 诊断：v1 旧配置不含本地上传图片，若 URL 字段又为空说明原美化依赖本地上传，
+                // 导入后壁纸/头像等必然保持默认
+                const ver = config._version || 1;
+                if (ver < 2) {
+                    const urlFields = ['lockWallpaper','wallpaper','photoWidget','coupleAvatarLeft','coupleAvatarRight','meAvatar','meCover'];
+                    const hasAnyUrl = urlFields.some(f => typeof config[f] === 'string' && config[f].trim() !== '');
+                    if (!hasAnyUrl) {
+                        showToast('该配置不含本地图片数据（旧版导出），图片类美化无法恢复。请让分享者更新后重新导出', 5000);
+                        e.target.value = '';
+                        return;
+                    }
+                }
+
+                // 诊断：检测"UTF-8 被 GBK 转码"导致的中文乱码（box-drawing 字符与 CJK 混排为典型特征）
+                const rawText = ev.target.result;
+                if (/[\u2500-\u257F]/.test(rawText) && /[\u4E00-\u9FFF]/.test(rawText)) {
+                    showToast('警告：文件中文可能因传输转码损坏，名称/含中文URL 或许显示异常', 4000);
                 }
 
                 const settings = JSON.parse(localStorage.getItem(ALL_SETTINGS_KEY) || '{}');
@@ -44795,12 +44887,51 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
                     localStorage.setItem(PET_STORAGE_KEY, JSON.stringify(petData));
                 } catch(e) {}
 
+                // 11. ★ 还原本地上传的视觉资源（写入 IndexedDB + 内存缓存）
+                if (config.visualUploads) {
+                    for (const k of Object.keys(config.visualUploads)) {
+                        try { await saveVisualUpload(k, config.visualUploads[k]); } catch(err) { console.error('还原视觉上传失败:', k, err); }
+                    }
+                }
+
+                // 12. ★ 还原 App 图标本地上传
+                if (config.appIconUploads) {
+                    for (const appId of Object.keys(config.appIconUploads)) {
+                        try { await saveAppIconUpload(appId, config.appIconUploads[appId]); } catch(err) { console.error('还原图标上传失败:', appId, err); }
+                    }
+                }
+
+                // 13. ★ 还原 local_img_ 短 ID 对应的真实图片（写入 QuanQuanJi_ImageDB/images）
+                if (config.localImages && Object.keys(config.localImages).length) {
+                    await new Promise((resolve) => {
+                        const req = indexedDB.open(DB_NAME, 1);
+                        req.onupgradeneeded = (ev2) => {
+                            const db = ev2.target.result;
+                            if (!db.objectStoreNames.contains('images')) db.createObjectStore('images', { keyPath: 'id' });
+                        };
+                        req.onsuccess = (ev2) => {
+                            const db = ev2.target.result;
+                            try {
+                                const tx = db.transaction('images', 'readwrite');
+                                const store = tx.objectStore('images');
+                                Object.keys(config.localImages).forEach(id => {
+                                    store.put({ id: id, data: config.localImages[id] });
+                                });
+                                tx.oncomplete = () => { db.close(); resolve(); };
+                                tx.onerror = () => { db.close(); resolve(); };
+                            } catch(err) { db.close(); resolve(); }
+                        };
+                        req.onerror = () => resolve();
+                    });
+                }
+
                 applyVisualSettings();
                 showToast("美化配置导入成功，即将刷新页面", 2000);
                 setTimeout(() => location.reload(), 2000);
             } catch(err) {
                 showToast("配置文件格式错误");
             }
+            e.target.value = '';
         };
         reader.readAsText(file);
         e.target.value = '';
@@ -44963,8 +45094,28 @@ ${historyStr ? `\n最近聊天记录：\n${historyStr}\n` : ''}
             const results = await Promise.all([...idbExportPromises, ...visualPromises]);
             const idbFail = results.reduce((a, b) => a + b, 0);
 
+            // 4.5 诊断：备份里引用了本地上传的图片（local_img_ / __idb__: 标记），
+            //     但文件里没有对应的 IndexedDB 图片数据块 → 说明是旧版代码导出的备份，
+            //     图片本体从未被导出，导入后图片类美化必然显示默认/空白
+            const hasVisualDataBlock = idbExportKeys.length > 0 || visualUploadKeys.length > 0;
+            let refsLocalImages = false;
+            if (!hasVisualDataBlock) {
+                for (const k of lsKeys) {
+                    const v = data[k];
+                    if (typeof v === 'string' && (v.indexOf('local_img_') !== -1 || v.indexOf('__idb__:') !== -1)) {
+                        refsLocalImages = true;
+                        break;
+                    }
+                }
+            }
+
             // 5. 汇报结果
             e.target.value = '';
+            if (refsLocalImages && !hasVisualDataBlock) {
+                showToast('设置已恢复，但该备份缺少本地上传的图片数据（旧版导出），图片类美化无法显示。请让分享者用最新版本重新导出', 5000);
+                setTimeout(() => location.reload(), 5000);
+                return;
+            }
             if (lsFail === 0 && idbFail === 0) {
                 showToast("全量数据恢复成功，即将刷新页面", 2000);
                 setTimeout(() => location.reload(), 2000);
