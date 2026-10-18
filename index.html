@@ -20008,6 +20008,10 @@ body.phone-frame-active .mail-inbox-page {
             const tx = imgDB.transaction('images', 'readwrite');
             tx.objectStore('images').put({ id: id, data: base64Str });
             tx.oncomplete = () => resolve(id);
+            // 兜底：iOS Safari/PWA 模式下事务可能失败/中止，此时直接回退返回 base64 原文
+            // 避免 callback 永不调用导致头像上传"卡住"或显示蓝色问号
+            tx.onerror = () => resolve(base64Str);
+            tx.onabort = () => resolve(base64Str);
         });
     };
 
@@ -36277,6 +36281,9 @@ ${msgContext ? msgContext : '无'}
 
         container.appendChild(fragment);
 
+        // 显式解析所有 local_img_ 短ID为真实 base64（iOS Safari/PWA 模式下 MutationObserver 不可靠时也能解析头像）
+        if (typeof processLocalImages === 'function') processLocalImages(container);
+
         // 角色拉黑用户时，在最后一条消息后添加提示
         if (contact && contact.isBlockedByChar) {
             const tipDiv = document.createElement('div');
@@ -40706,9 +40713,19 @@ window.openTransferConfirmPopup = (amount) => {
 
         const userAvatarImg = document.getElementById('role-user-avatar');
         userAvatarImg.removeAttribute('data-loaded');
-        userAvatarImg.src = contact.userAvatar || '';
-        if (!(contact.userAvatar && contact.userAvatar.startsWith('local_img_'))) {
-            userAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
+        // 若 userAvatar 是 local_img_ 短ID，先从 IndexedDB 取出真实 base64 再赋给 src，
+        // 否则浏览器会把短ID当成URL加载失败（蓝色问号）
+        const _userAvatarRaw = contact.userAvatar || '';
+        if (_userAvatarRaw && _userAvatarRaw.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+            userAvatarImg.src = '';
+            getImgFromDB(_userAvatarRaw).then(b64 => {
+                userAvatarImg.src = b64 || '';
+            }).catch(() => { userAvatarImg.src = ''; });
+        } else {
+            userAvatarImg.src = _userAvatarRaw;
+            if (_userAvatarRaw) {
+                userAvatarImg.onerror = function() { this.onerror = null; this.src = ''; };
+            }
         }
         if (typeof processLocalImages === 'function') processLocalImages(userAvatarImg);
         document.getElementById('role-user-name').value = contact.userName || globalProfile.nickname || '';
@@ -41332,14 +41349,21 @@ window.openTransferConfirmPopup = (amount) => {
         input.type = 'file'; input.accept = 'image/*';
         input.onchange = (e) => {
             const file = e.target.files[0]; if (!file) return;
-            compressImage(file, 200, (result) => {
+            compressImage(file, 200, async (result) => {
+                // compressImage 可能返回短ID（local_img_xxx），需解析为真实 base64 数据，
+                // 否则浏览器会把短ID当成URL加载失败（显示蓝色问号图标，尤其在 iOS 上）
+                let realData = result;
+                if (result && result.startsWith('local_img_') && typeof getImgFromDB === 'function') {
+                    const fromDB = await getImgFromDB(result);
+                    if (fromDB) realData = fromDB;
+                }
                 const avatarImg = document.getElementById('role-user-avatar');
                 avatarImg.onerror = null;
                 avatarImg.removeAttribute('data-loaded');
-                avatarImg.src = result;
+                avatarImg.src = realData;
                 const contacts = JSON.parse(localStorage.getItem(CHAT_DATA_KEY) || '[]');
                 const contact = contacts.find(c => String(c.id) === String(currentChatContactId));
-                if (contact) { contact.userAvatar = result; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
+                if (contact) { contact.userAvatar = realData; localStorage.setItem(CHAT_DATA_KEY, JSON.stringify(contacts)); }
                 if (typeof processLocalImages === 'function') processLocalImages(avatarImg);
                 showToast('用户头像已上传');
             });
